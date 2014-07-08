@@ -1,31 +1,52 @@
 
-/************** Login page styles **************/
-.login {
+
+body {
+
+}
+#dialogue_popup_container {
+	display: none;
+}
+#ovelay {
+	display: none;
+}
+.container {
+	width: 100%;
+	min-height: 500px;
+	padding: 0px !important;
+}
+/************** Login page  and create user styles**************/
+.login, .create_user {
 	width: 20%;
 	float: right;
 	margin: 10% 10% 0 0;
 }
+.create_user {
+	float: left;
+    margin-left: 5%;
+    margin-top: 3%;
+    width: 35%;
+}
 
-.login h3 {
+.login h3, .create_user h3, .user_list h3 {
 	color: #1ABC9C;
 	padding: 0px 0px 10px 0px;
 	border-bottom: 1px solid #1ABC9C;
 }
 
-.login form {
+.login form, .create_user .field_set {
 	display: block;
 	width: 95%;
 	float: right;
 }
-.login label {
+.login label, .create_user label {
 	width: 40%;
 	height: 30px;
 }
-.login input {
+.login input, .create_user input {
 	width: 58%;
 	height: 30px;
 }
-.login input[type="submit"] {
+.login input[type="submit"], .create_user input[type="submit"] {
 	border: none;
 	background-color: #1ABC9C;
 	width: 20%;
@@ -33,37 +54,131 @@
 	padding: 2px;
 	border: 1px solid #D6D4D2;
 }
-
+.create_user input[type="checkbox"] {
+	margin-right: 20px;
+}
 /************ Login page style send ***************/
 
-.container {
+/************ Header Style **************/
+
+header {
 	width: 100%;
+	height: 75px;
+	float: left;
+	background-color: #1ABC9C;
+	padding: 10px;
 }
 
 .page_header {
-	width: 70%;
+	color: #FFFFFF;
+}
+
+.page_header {
+	width: 17%;
 	float: left;
 }
 .dropdown {
 	display: block;
 	float: right;
-}
+	margin-top: 15px;
+	padding: 10px;
+	background-color: #1ABC9C;
 
-header {
-	width: 100%;
-	height: 50px;
 }
 
 .dropdown_anchor {
 	display: block;
 	width: auto;
 	height: 30px;
+	color: #FFFFFF;
+	font-weight: bold;
 }
 .dropdown_anchor:hover {
 	text-decoration: none;
+	color: #FFFFFF;
 }
 
 #dropdown_menu {
 	padding: 0px;
 	list-style: none;
 }
+#dropdown_menu li a, #dropdown_menu li a:hover{
+	text-decoration: none;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+
+
+/************ Header style end ******************/
+
+/************* Dashboard style *****************/
+
+
+
+/************ Dashboard style end ************/
+
+/********** Menu style **************/
+
+.menu_container {
+	width: 17%;
+	float: left;
+	background-color: #1ABC9C;
+	min-height: 500px;
+
+}
+.menu_container ul {
+	display: block;
+	padding: 5px;
+	list-style: none;
+	
+}
+.menu_container ul li {
+	height: 40px;
+	padding: 5px;
+	display: block;	
+	border-bottom: 1px ridge #FFFFFF;
+}
+
+.menu_container ul li a {
+	color: #FFFFFF;
+	text-decoration: none;
+	width: 95%;
+	display: block;
+	float: left;
+}
+.menu_container ul li span {
+	color: #FFFFFF;
+	display: none;
+	float: left;
+}
+.menu_container ul li:hover span {
+	color: #FFFFFF;
+	display: block;
+	float: left;
+	font-weight: bold;
+}
+.no-border {
+	border: none !important;
+}
+/*************** Menu style end ************/
+
+
+
+/******************* Administration Style ***************/
+
+#administration .administration {
+	display: block !important;
+}
+
+.user_list {
+	width: 75%;
+	float: left;
+	margin-left: 5%;
+    margin-top: 3%;
+}
+.user_list table tbody td, .user_list table tbody th{
+	border-top: none !important;
+	border-bottom: 1px solid #DDDDDD;
+}
+
+/******************* End Administration Style ***************/
