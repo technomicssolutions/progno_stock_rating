@@ -74,6 +74,7 @@ footer p{
 }
 .create_user input[type="checkbox"] {
 	margin-right: 20px;
+	width: 4%;
 }
 /************ Login page style send ***************/
 
@@ -192,7 +193,7 @@ header {
 }
 
 .user_list {
-	width: 75%;
+	width: 90%;
 	float: left;
 	margin-left: 5%;
     margin-top: 3%;
