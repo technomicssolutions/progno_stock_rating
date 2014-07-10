@@ -92,6 +92,31 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         $scope.new_user.analytical_heads = user.analytical_heads;
         $scope.new_user.id = user.id;
     }
+    $scope.reset_password = function(user){
+        $scope.reset_password_flag = true;
+        $scope.current_user.id = user.id;
+    }
+    $scope.save_password = function(){
+        if($scope.current_user.password != '' && $scope.current_user.password == $scope.current_user.confirm_password){
+           params = { 
+                'id': $scope.current_user.id,
+                'password': $scope.current_user.password,
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/reset_password/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {            
+                $scope.reset_password_flag = false;
+            }).error(function(data, status){
+                $scope.message = data.message;
+            }); 
+        }
+    }
     $scope.validate_user = function(){
         $scope.msg = '';
         if($scope.new_user.username == '') {

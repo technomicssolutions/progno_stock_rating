@@ -31,6 +31,15 @@
 			<input type="submit" name="submit" value="Save" ng-click="save_new_user()"/>
 			<input type="submit" name="submit" value="Reset" ng-click="reset_user()"/>
 		</div>
+		<div class="field_set" ng-show="rest_password_flag">
+			<input type="hidden" ng-model="new_user.id" />
+			<label ng-hide="edit_flag"> New Password: </label>
+			<input ng-hide="edit_flag" type="password" name="password" ng-model="current_user.password" />
+			<label ng-hide="edit_flag"> Confirm Password: </label>
+			<input ng-hide="edit_flag" type="password" name="confirm_password" ng-model="current_user.confirm_password" />
+			<p class="error_msg"> [[msg]] </p>
+			<input type="submit" name="submit" value="Save" ng-click="save_password()"/>
+		</div>
 	</div>
 	<div class="user_list" ng-show="users.length > 0">
 		<h3> Users & Permissions </h3>

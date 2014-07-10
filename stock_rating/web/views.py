@@ -104,3 +104,19 @@ class SaveUser(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'administration.html', {})
+
+
+class ResetPassword(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            if request.POST['id'] != '':
+                user = User.objects.get(id=request.POST['id'])
+            user.set_password(request.POST['password'])
+            user.save()
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'administration.html', {})
