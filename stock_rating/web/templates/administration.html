@@ -8,14 +8,15 @@
 	<div class="create_user">
 		<h3> Create User </h3>
 		<div class="field_set" >
+			<input type="hidden" ng-model="new_user.id" />
 			<label> User Id: </label>
 			<input type="text" name="username" ng-model="new_user.username" />
 			<label> Name: </label>
 			<input type="text" name="first_name" ng-model="new_user.first_name" />
-			<label> Password: </label>
-			<input type="password" name="password" ng-model="new_user.password" />
-			<label> Confirm Password: </label>
-			<input type="password" name="confirm_password" ng-model="new_user.confirm_password" />
+			<label ng-hide="edit_flag"> Password: </label>
+			<input ng-hide="edit_flag" type="password" name="password" ng-model="new_user.password" />
+			<label ng-hide="edit_flag"> Confirm Password: </label>
+			<input ng-hide="edit_flag" type="password" name="confirm_password" ng-model="new_user.confirm_password" />
 			<label> Data Upload </label>
 			<input type="checkbox" ng-model="new_user.data_upload" />
 			<label> Field Settings </label>
@@ -26,6 +27,7 @@
 			<input type="checkbox" ng-model="new_user.function_settings" />
 			<label> Analytical Heads </label>
 			<input type="checkbox" ng-model="new_user.analytical_heads" />
+			<p class="error_msg"> [[msg]] </p>
 			<input type="submit" name="submit" value="Save" ng-click="save_new_user()"/>
 			<input type="submit" name="submit" value="Reset" ng-click="reset_user()"/>
 		</div>
@@ -41,7 +43,7 @@
 				<th> Field Settings</th>
 				<th> Analytical Heads </th>
 				<th> Function Settings</th>
-				<th> Change</th>
+				<th> Actions</th>
 			</tr>
 			<tr ng-repeat="user in users">
 				<td> [[user.first_name]] </td>
@@ -51,7 +53,7 @@
 				<td> [[user.field_settings]] </td>
 				<td> [[user.analytical_heads]] </td>
 				<td> [[user.function_settings]] </td>
-				<td> <a href=""> Modify </a> / <a href=""> Delete </a> </td>
+				<td> <a href="" ng-click="edit_user(user)"> Modify </a> / <a href=""> Delete </a>/ <a href="" ng-click="reset_password()"> Reset Password </a> </td>
 			</tr>
 		</table>
 	</div>

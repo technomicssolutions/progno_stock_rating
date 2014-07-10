@@ -64,8 +64,10 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         $scope.hide_dropdown();
         $scope.reset_user();
         $scope.get_users();
+        $scope.edit_flag = false;
     }
     $scope.reset_user = function(){
+        $scope.msg = '';
         $scope.new_user = {
             'username': '',
             'password': '',
@@ -75,31 +77,65 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
             'field_settings': false,
             'score_settings': false,
             'function_settings': false,
-            'analytical_heads': false
+            'analytical_heads': false,
+            'id': ''
+        }
+    }
+    $scope.edit_user = function(user){
+        $scope.edit_flag = true;
+        $scope.new_user.username = user.username;
+        $scope.new_user.first_name = user.first_name;
+        $scope.new_user.data_upload = user.data_upload;
+        $scope.new_user.field_settings = user.field_settings;
+        $scope.new_user.score_settings = user.score_settings;
+        $scope.new_user.function_settings = user.function_settings;
+        $scope.new_user.analytical_heads = user.analytical_heads;
+        $scope.new_user.id = user.id;
+    }
+    $scope.validate_user = function(){
+        $scope.msg = '';
+        if($scope.new_user.username == '') {
+            $scope.msg = "Please enter User Id";
+            return false;
+        } else if($scope.new_user.password == '' && !$scope.edit_flag ) {
+            $scope.msg = "Please enter Password";
+            return false;
+        } else if($scope.new_user.password != $scope.new_user.confirm_password && !$scope.edit_flag) {
+            $scope.msg = "Password mismatch";
+            return false;
+        } else if($scope.new_user.first_name == ''){
+            $scope.msg = "Please enter Name";
+            return false;
+        } else {
+            return true;
         }
     }
     $scope.save_new_user = function(){
-        $scope.new_user.data_upload = String($scope.new_user.data_upload)
-        $scope.new_user.field_settings = String($scope.new_user.field_settings)
-        $scope.new_user.score_settings = String($scope.new_user.score_settings)
-        $scope.new_user.function_settings = String($scope.new_user.function_settings)
-        $scope.new_user.analytical_heads = String($scope.new_user.analytical_heads)
-        params = { 
-            'user_details': angular.toJson($scope.new_user),
-            "csrfmiddlewaretoken" : $scope.csrf_token,
-        }
-        $http({
-            method : 'post',
-            url : "/save_user/",
-            data : $.param(params),
-            headers : {
-                'Content-Type' : 'application/x-www-form-urlencoded'
+        if($scope.validate_user()){
+            $scope.new_user.data_upload = String($scope.new_user.data_upload)
+            $scope.new_user.field_settings = String($scope.new_user.field_settings)
+            $scope.new_user.score_settings = String($scope.new_user.score_settings)
+            $scope.new_user.function_settings = String($scope.new_user.function_settings)
+            $scope.new_user.analytical_heads = String($scope.new_user.analytical_heads)
+            params = { 
+                'user_details': angular.toJson($scope.new_user),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
             }
-        }).success(function(data, status) {            
-            $scope.get_users();
-        }).error(function(data, status){
-            $scope.message = data.message;
-        });
+            $http({
+                method : 'post',
+                url : "/save_user/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {            
+                $scope.get_users();
+                $scope.reset_user();
+                $scope.edit_flag = false;
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }        
     }
     $scope.get_users = function(){
         var url = '/users/';

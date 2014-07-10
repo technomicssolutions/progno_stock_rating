@@ -1,8 +1,12 @@
 
 
-body {
-
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%
 }
+
 #dialogue_popup_container {
 	display: none;
 }
@@ -11,8 +15,22 @@ body {
 }
 .container {
 	width: 100%;
-	min-height: 500px;
 	padding: 0px !important;
+	height: 100%;
+}
+.clear {
+	clear: both;
+}
+footer p{
+	text-align: center;
+}
+.content {
+	float: right;
+	width: 83%;
+}
+.error_msg {
+	color: #FF0000;
+	font-weight: bold;
 }
 /************** Login page  and create user styles**************/
 .login, .create_user {
@@ -39,7 +57,7 @@ body {
 	float: right;
 }
 .login label, .create_user label {
-	width: 40%;
+	width: 39%;
 	height: 30px;
 }
 .login input, .create_user input {
@@ -74,8 +92,9 @@ header {
 }
 
 .page_header {
-	width: 17%;
+	width: 100%;
 	float: left;
+	height: 75px;
 }
 .dropdown {
 	display: block;
@@ -120,16 +139,18 @@ header {
 /********** Menu style **************/
 
 .menu_container {
-	width: 17%;
-	float: left;
 	background-color: #1ABC9C;
-	min-height: 500px;
-
+    float: left;
+    height: 100%;
+    position: fixed;
+    width: 17%;
 }
 .menu_container ul {
 	display: block;
-	padding: 5px;
-	list-style: none;
+    float: left;
+    list-style: none outside none;
+    padding: 5px;
+    width: 100%;
 	
 }
 .menu_container ul li {

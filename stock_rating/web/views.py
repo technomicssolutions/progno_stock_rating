@@ -55,11 +55,13 @@ class Users(View):
                 permission = None
             if user.username != request.user.username:
                 users.append({
+                    'id': user.id,
                     'username': user.username,
                     'first_name': user.first_name,
                     'password': user.password,
                     'data_upload': permission.data_upload if permission else False,
                     'field_settings': permission.field_settings if permission else False,
+                    'score_settings': permission.score_settings if permission else False,
                     'function_settings': permission.function_settings if permission else False,
                     'analytical_heads': permission.analytical_heads if permission else False
                 })
@@ -76,8 +78,12 @@ class Users(View):
 class SaveUser(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
+
             user_details = ast.literal_eval(request.POST['user_details'])
-            user = User()
+            if user_details['id'] != '':
+                user = User.objects.get(id=user_details['id'])
+            else:
+                user = User()
             user.username = user_details['username']
             user.first_name = user_details['first_name']
             user.save()
