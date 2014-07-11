@@ -1,15 +1,14 @@
+{% load base_tags %}
 <div class="menu_container">
 	<h3 class="page_header"> Progno Stock Rating </h3>
 
 	<ul class="menu">
-		<li> 
-			<a href =""> Setup </a>
-			 <span class="set_up"> > </span>
-		</li>
-		<li> 
-			<a href ="{% url 'administration' %}"> Administration </a>
-			<span class="administration"> > </span> 
-		</li>
+		{% if user.is_superuser %}
+			<li> 
+				<a href ="{% url 'administration' %}"> Administration </a>
+				<span class="administration"> > </span> 
+			</li>
+		{% endif %}
 		<li> 
 			<a href =""> Data Upload </a>
 			<span class="data_upload"> > </span> 

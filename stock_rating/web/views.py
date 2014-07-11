@@ -60,7 +60,7 @@ class Users(View):
                 permission = user.userpermission_set.all()[0]
             else:
                 permission = None
-            if user.username != request.user.username:
+            if not user.is_superuser:
                 users.append({
                     'id': user.id,
                     'username': user.username,
@@ -124,14 +124,15 @@ class SaveUser(View):
             print request.POST['user_details']
             if user_details['id'] != '':
                 user = User.objects.get(id=user_details['id'])
+                permission = UserPermission.objects.get(user=user)
             else:
+                permission = UserPermission()
                 user = User()
             user.username = user_details['username']
             user.first_name = user_details['first_name']
             user.save()
             user.set_password(user_details['password'])
-            user.save()
-            permission = UserPermission()
+            user.save()            
             permission.user = user
             permission.data_upload = True if user_details['data_upload'] == "true" else False
             permission.field_settings = True if user_details['field_settings'] == "true" else False
