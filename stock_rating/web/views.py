@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission
+from models import UserPermission, DataField
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -20,6 +20,13 @@ class Administration(View):
     def get(self, request, *args, **kwargs):
         context = {}
         return render(request, 'administration.html', context)
+
+
+class FieldSettings(View):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, 'field_settings.html', context)
+
 
 class Login(View):
     def get(self, request, *args, **kwargs):
@@ -75,11 +82,46 @@ class Users(View):
             'users': user_objects
         })
 
+
+class Fields(View):
+
+    def get(self, request, *args, **kwargs):
+        field_objects = DataField.objects.all()
+        # print field_objects
+        fields = []
+        for field in field_objects:
+            if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
+                status = "Modified"
+                date = field.updated_date
+            else:
+                status = "Created"
+                date = field.created_date
+            fields.append({
+                    'id': field.id,
+                    'name': field.name,
+                    'description': field.description,
+                    'status': status,
+                    'date': date.strftime("%d/%m/%Y"),
+                })
+            # print fields
+        if request.is_ajax():
+            response = simplejson.dumps({
+                'result': 'OK',
+                'fields': fields
+            })
+            # print fields
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'field_settings.html', {
+            'fields': field_objects
+        })
+
+
 class SaveUser(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
 
             user_details = ast.literal_eval(request.POST['user_details'])
+            print request.POST['user_details']
             if user_details['id'] != '':
                 user = User.objects.get(id=user_details['id'])
             else:
@@ -100,10 +142,30 @@ class SaveUser(View):
             res = {
                 'result': 'ok',
             }
-
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'administration.html', {})
+
+
+class SaveField(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            field_details = ast.literal_eval(request.POST['field_details'])
+            try:
+                field = DataField.objects.get(id=field_details['id'])
+            except:
+                field = DataField()
+            field.name = field_details['field_name']
+            field.description = field_details['field_description']
+            field.created_by = request.user
+            field.save()
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'field_settings.html', {})
 
 
 class ResetPassword(View):

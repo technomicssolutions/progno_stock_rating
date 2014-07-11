@@ -45,7 +45,7 @@ footer p{
     width: 35%;
 }
 
-.login h3, .create_user h3, .user_list h3 {
+.sub_heading {
 	color: #1ABC9C;
 	padding: 0px 0px 10px 0px;
 	border-bottom: 1px solid #1ABC9C;

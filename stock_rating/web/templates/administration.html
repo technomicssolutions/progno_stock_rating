@@ -6,7 +6,7 @@
 {% endblock controller %}
 {% block content%}
 	<div class="create_user">
-		<h3> Create User </h3>
+		<h3 class="sub_heading"> Create User </h3>
 		<div class="field_set"   ng-hide="reset_password_flag">
 			<input type="hidden" ng-model="new_user.id" />
 			<label> User Id: </label>
@@ -42,7 +42,7 @@
 		</div>
 	</div>
 	<div class="user_list" ng-show="users.length > 0">
-		<h3> Users & Permissions </h3>
+		<h3 class="sub_heading"> Users & Permissions </h3>
 		<table class="table table-stripped">
 			<tr> 
 				<th> Name </th>

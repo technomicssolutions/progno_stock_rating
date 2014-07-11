@@ -65,7 +65,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         $scope.reset_user();
         $scope.get_users();
         $scope.edit_flag = false;
-        $scope.current_user = {};
+        $scope.current_user = {};        
     }
     $scope.reset_user = function(){
         $scope.msg = '';
@@ -209,5 +209,76 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     $scope.hide_popup_divs = function(){
         $('#assign_mentee_mentor').css('display', 'none');
         $('#assign_mentee_saq').css('display', 'none');
+    }
+}
+
+function FieldController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.get_fields();    
+        $scope.hide_dropdown();
+    }
+
+    $scope.edit_field = function(field){
+       $scope.new_field = {
+            'field_name': '',
+            'field_description': '',
+            'id': '',
+        }
+        $scope.new_field.field_name = field.name;
+        $scope.new_field.field_description = field.description;
+        $scope.new_field.id = field.id;
+    }
+    $scope.get_fields = function(){
+        var url = '/fields/';
+        $http.get(url).success(function(data) {
+            console.log(data.fields);
+            $scope.fields = data.fields;
+        })
+    }
+    $scope.validate_field = function(){
+        $scope.msg = '';
+        if($scope.new_field.field_name == '') {
+            $scope.msg = "Please enter Field Name";
+            return false;
+        } else if($scope.new_field.field_description == '' ) {
+            $scope.msg = "Please enter Field Description";
+            return false;
+        } else {
+            return true;
+        }
+    }
+    $scope.save_new_field = function(){
+        if($scope.validate_field()){
+           /* $scope.new_user.analytical_heads = String($scope.new_user.analytical_heads)*/
+            params = { 
+                'field_details': angular.toJson($scope.new_field),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_field/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                $scope.new_field = {
+                'field_name': '',
+                'field_description': '',
+                'id': '',
+                }          
+                $scope.get_fields();
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }        
+    }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
     }
 }

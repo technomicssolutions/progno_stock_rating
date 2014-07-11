@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block body %}
 	<div class="login">
-		<h3> Login </h3>
+		<h3 class="sub_heading"> Login </h3>
 		<form action="{%url 'login' %}" method="POST" >
 			{% csrf_token %}
 			<label> Username: </label>
