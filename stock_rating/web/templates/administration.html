@@ -7,7 +7,7 @@
 {% block content%}
 	<div class="create_user">
 		<h3> Create User </h3>
-		<div class="field_set" >
+		<div class="field_set"   ng-hide="reset_password_flag">
 			<input type="hidden" ng-model="new_user.id" />
 			<label> User Id: </label>
 			<input type="text" name="username" ng-model="new_user.username" />
@@ -31,7 +31,7 @@
 			<input type="submit" name="submit" value="Save" ng-click="save_new_user()"/>
 			<input type="submit" name="submit" value="Reset" ng-click="reset_user()"/>
 		</div>
-		<div class="field_set" ng-show="rest_password_flag">
+		<div class="field_set" ng-show="reset_password_flag">
 			<input type="hidden" ng-model="new_user.id" />
 			<label ng-hide="edit_flag"> New Password: </label>
 			<input ng-hide="edit_flag" type="password" name="password" ng-model="current_user.password" />
@@ -62,7 +62,7 @@
 				<td> [[user.field_settings]] </td>
 				<td> [[user.analytical_heads]] </td>
 				<td> [[user.function_settings]] </td>
-				<td> <a href="" ng-click="edit_user(user)"> Modify </a> / <a href=""> Delete </a>/ <a href="" ng-click="reset_password()"> Reset Password </a> </td>
+				<td> <a href="" ng-click="edit_user(user)"> Modify </a> / <a href=""> Delete </a>/ <a href="" ng-click="reset_password(user)"> Reset Password </a> </td>
 			</tr>
 		</table>
 	</div>

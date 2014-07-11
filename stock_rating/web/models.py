@@ -93,7 +93,7 @@ class Function(Date):
     formula = models.ForeignKey(Formula, null=True, blank=True)
 
     def __unicode__(self):
-        return function_name
+        return self.function_name
 
 class HardcodedFormula(models.Model):
     continuity_formula = models.CharField('Continuity Formula', max_length=200)
@@ -116,7 +116,7 @@ class Industry(models.Model):
     industry_name = models.CharField('Industry', max_length=200, unique=True)
 
     def __unicode__(self):
-        return industry_name
+        return self.industry_name
 
 class Company(models.Model):
     company_name = models.CharField('company_name', max_length=200, unique=True)

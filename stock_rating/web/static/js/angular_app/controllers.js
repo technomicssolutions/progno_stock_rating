@@ -65,6 +65,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         $scope.reset_user();
         $scope.get_users();
         $scope.edit_flag = false;
+        $scope.current_user = {};
     }
     $scope.reset_user = function(){
         $scope.msg = '';
