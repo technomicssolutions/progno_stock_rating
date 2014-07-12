@@ -204,3 +204,22 @@ header {
 }
 
 /******************* End Administration Style ***************/
+
+/******************* Field_Settings Style ***************/
+
+#field_settings .field_settings {
+	display: block !important;
+}
+
+.field_list {
+	width: 90%;
+	float: left;
+	margin-left: 5%;
+    margin-top: 3%;
+}
+.field_list table tbody td, .field_list table tbody th{
+	border-top: none !important;
+	border-bottom: 1px solid #DDDDDD;
+}
+
+/******************* End Field_Settings Style ***************/

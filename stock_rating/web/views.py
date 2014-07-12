@@ -87,7 +87,6 @@ class Fields(View):
 
     def get(self, request, *args, **kwargs):
         field_objects = DataField.objects.all()
-        # print field_objects
         fields = []
         for field in field_objects:
             if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
@@ -103,13 +102,11 @@ class Fields(View):
                     'status': status,
                     'date': date.strftime("%d/%m/%Y"),
                 })
-            # print fields
         if request.is_ajax():
             response = simplejson.dumps({
                 'result': 'OK',
                 'fields': fields
             })
-            # print fields
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'field_settings.html', {
             'fields': field_objects
@@ -162,7 +159,7 @@ class SaveField(View):
             field.created_by = request.user
             field.save()
             res = {
-                'result': 'ok',
+              'result': 'ok',
             }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')

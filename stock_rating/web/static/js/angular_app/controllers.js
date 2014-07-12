@@ -178,7 +178,6 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         else
             return '';
     }
-  
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
@@ -214,18 +213,17 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
 
 function FieldController($scope, $element, $http, $timeout, $location)
 {
+    $scope.new_field = {
+        'field_name': '',
+        'field_description': '',
+        'id': '',
+    }
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.get_fields();    
         $scope.hide_dropdown();
     }
-
     $scope.edit_field = function(field){
-       $scope.new_field = {
-            'field_name': '',
-            'field_description': '',
-            'id': '',
-        }
         $scope.new_field.field_name = field.name;
         $scope.new_field.field_description = field.description;
         $scope.new_field.id = field.id;
@@ -233,7 +231,6 @@ function FieldController($scope, $element, $http, $timeout, $location)
     $scope.get_fields = function(){
         var url = '/fields/';
         $http.get(url).success(function(data) {
-            console.log(data.fields);
             $scope.fields = data.fields;
         })
     }
@@ -264,21 +261,53 @@ function FieldController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
-                $scope.new_field = {
-                'field_name': '',
-                'field_description': '',
-                'id': '',
-                }          
-                $scope.get_fields();
+                if(data.result == 'error'){
+                     $scope.msg = "Field already exists";
+                    }
+                else
+                    {
+                        $scope.msg = "";
+                     $scope.new_field = {
+                     'field_name': '',
+                     'field_description': '',
+                     'id': '',
+                     }   
+                    }       
+                $scope.get_fields();                    
             }).error(function(data, status){
                 $scope.message = data.message;
             });
         }        
+    }
+    $scope.getClass = function(page) {
+        if(page == $scope.current_page)
+            return "current";
+        else
+            return '';
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.paginate = function(){
+        $scope.current_ques_page = 1;
+        $scope.que_pages = $scope.questionairs.length / $scope.ques_page_interval;
+        if($scope.que_pages > parseInt($scope.que_pages))
+            $scope.que_pages = parseInt($scope.que_pages) + 1;
+        $scope.visible_questionairs = $scope.questionairs.slice(0, $scope.ques_page_interval);
+    }
+    $scope.select_page = function(page) {
+        if(ques_page == 0){
+            ques_page = $scope.current_ques_page + 1;
+        } else if(ques_page == -1){
+            ques_page = $scope.current_ques_page - 1;
+        }
+        var last_ques_page = ques_page - 1;
+        var start = (last_ques_page * $scope.ques_page_interval) ;
+        var end = $scope.ques_page_interval * ques_page;
+        $scope.current_ques_page = ques_page;
+        $scope.visible_questionairs = $scope.questionairs.slice(start, end);
     }
 }
