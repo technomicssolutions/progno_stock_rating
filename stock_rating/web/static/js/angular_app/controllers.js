@@ -311,3 +311,46 @@ function FieldController($scope, $element, $http, $timeout, $location)
         $scope.visible_questionairs = $scope.questionairs.slice(start, end);
     }
 }
+
+
+function FunctionController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.hide_dropdown();
+        $scope.change();
+        $scope.show_general = true;
+        $scope.show_consistency = false;
+        $scope.show_continuity = false;    
+        $scope.select_value = 1;  
+    }
+    $scope.change = function (){
+       console.log($scope.select_value);
+       if($scope.select_value==1)
+        {
+         $scope.show_general = true;
+         $scope.show_continuity = false;
+         $scope.show_consistency = false;
+        }
+       if($scope.select_value==2)
+        {
+         $scope.show_general = false;
+         $scope.show_continuity = true;
+         $scope.show_consistency = false;
+        }       
+       if($scope.select_value==3)
+        {
+         $scope.show_general = false;
+         $scope.show_continuity = false;
+         $scope.show_consistency = true;
+        } 
+        
+    }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+
+}

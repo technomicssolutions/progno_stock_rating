@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission, DataField
+from models import UserPermission, DataField, FunctionCategory, AnalyticalHead
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -26,6 +26,14 @@ class FieldSettings(View):
     def get(self, request, *args, **kwargs):
         context = {}
         return render(request, 'field_settings.html', context)
+
+
+class FunctionSettings(View):
+    def get(self, request, *args, **kwargs):
+        item_list = FunctionCategory.objects.all()
+        an_heads = AnalyticalHead.objects.all()
+        context = {'item_list': item_list, 'an_heads': an_heads}
+        return render(request, 'function_settings.html', context)
 
 
 class Login(View):
@@ -157,10 +165,15 @@ class SaveField(View):
             field.name = field_details['field_name']
             field.description = field_details['field_description']
             field.created_by = request.user
-            field.save()
-            res = {
-              'result': 'ok',
-            }
+            try:
+                field.save()
+                res = {
+                  'result': 'ok',
+                }
+            except:
+                res = {
+                  'result': 'error',  
+                }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'field_settings.html', {})

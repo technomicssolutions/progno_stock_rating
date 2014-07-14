@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %} Field Settings {% endblock title%}
+{% block body_id %}field{% endblock %}
+{% block controller %}
+	ng-controller="FunctionController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+	<div class="function_settings">
+		<h3 class="function_heading"> Function Settings </h3>
+			<input type="hidden" ng-model="new_field.id" />
+			<div class="function_row">
+				<div class="function_text">
+					<label>Select Type</label>
+				</div>
+				<div class="function_input">
+					<select ng-model="select_value" ng-change="change()">
+				   	<option value="1" selected="selected">General</option>
+				    <option value="2">Continuity</option>
+				    <option value="3">Consistency</option>
+					</select>
+				</div>
+			</div>
+			<div class="function_row">
+				<div class="function_text">
+					<label>Select Category</label>
+				</div>
+				<div class="function_input">
+					<select>
+						{% for entry in item_list %}
+			   			 <option value="{{ entry.id }}">{{ entry.category_name }}</option>
+						{% endfor %}	 	
+				   	</select>
+				</div>
+			</div>
+			<p class="error_msg"> [[msg]] </p>
+		<div class="function_set" ng-show="show_general">
+			<h3 class="sub_heading"> General </h3>
+				<input type="hidden" ng-model="new_field.id" />
+				<label> Function Name: </label>
+				<input type="text" name="field_name" ng-model="new_field.field_name" />
+				<label> Function Description: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Formula: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Analytical Head: </label>
+				<select>
+						{% for entry in an_heads %}
+			   			 <option value="{{ entry.id }}">{{ entry.title }}</option>
+						{% endfor %}	 	
+				</select>
+				<p class="error_msg"> [[msg]] </p>
+				<input type="submit" name="submit" value="Save" ng-click=""/>
+				<input type="submit" name="submit" value="Reset" ng-click=""/>
+		</div>		
+		<div class="function_set" ng-show="show_continuity">
+			<h3 class="sub_heading"> Continuity </h3>
+				<input type="hidden" ng-model="new_field.id" />
+				<label> Function Name: </label>
+				<input type="text" name="field_name" ng-model="new_field.field_name" />
+				<label> Function Description: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> No of Periods: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Minimum Value: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Period 1: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Period 2: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Period 3: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<p class="error_msg"> [[msg]] </p>
+				<input type="submit" name="submit" value="Save" ng-click=""/>
+				<input type="submit" name="submit" value="Reset" ng-click=""/>
+		</div>
+		<div class="function_set" ng-show="show_consistency">
+			<h3 class="sub_heading"> Consistency </h3>
+				<input type="hidden" ng-model="new_field.id" />
+				<label> Function Name: </label>
+				<input type="text" name="field_name" ng-model="new_field.field_name" />
+				<label> Function Description: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> No of Periods: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Mean: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Period 1: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<label> Period 2: </label>
+				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<p class="error_msg"> [[msg]] </p>
+				<input type="submit" name="submit" value="Save" ng-click=""/>
+				<input type="submit" name="submit" value="Reset" ng-click=""/>
+		</div>
+	</div>
+{% endblock content %}
+

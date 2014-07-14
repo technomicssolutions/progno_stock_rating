@@ -56,6 +56,11 @@ footer p{
 	width: 95%;
 	float: right;
 }
+.function_set {
+	display: block;
+	width: 150%;
+	float: left;
+}
 .login label, .create_user label {
 	width: 39%;
 	height: 30px;
@@ -223,3 +228,69 @@ header {
 }
 
 /******************* End Field_Settings Style ***************/
+
+/******************* Function_Settings Style ***************/
+.function_heading {
+	color: #1ABC9C;
+	padding: 0px 0px 10px 0px;
+	border-bottom: 1px solid #1ABC9C;
+	margin-left: 3%;
+	margin-right: 3%;
+	 margin-top: 3%;
+}
+
+.function_row {
+	min-height: 40px;
+    width: 40%;
+    float: left;
+    margin-top: 1%;
+    margin-bottom: -1.5%;
+    margin-left: 3%;
+}
+
+.function_text {
+	float: left;
+    width: 150px;
+
+}
+
+.function_input {
+	float: left;
+}
+
+.function_settings {
+	float: left;	
+	width: 100%;
+}
+
+.function_set {
+	float: left;
+    margin-left: 5%;
+    margin-top: 3%;
+    width: 35%;	
+}
+
+.function_set label {
+	width: 39%;
+	height: 30px;
+}
+.function_set input {
+	width: 58%;
+	height: 30px;
+}
+
+.function_set input[type="submit"] {
+	border: none;
+	background-color: #1ABC9C;
+	width: 20%;
+	float: right;
+	padding: 2px;
+	border: 1px solid #D6D4D2;
+}
+.function_set input[type="checkbox"] {
+	margin-right: 20px;
+	width: 4%;
+}
+
+
+/******************* End Function_Settings Style ***************/

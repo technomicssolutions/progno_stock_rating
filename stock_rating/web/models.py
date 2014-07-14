@@ -30,7 +30,7 @@ class AnalyticalHead(Date):
 
 class DataField(Date):
     created_by = models.ForeignKey(User)
-    name = models.CharField('Name', max_length=200)
+    name = models.CharField('Name', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
 
     def __unicode__(self):
@@ -59,7 +59,7 @@ class FieldMap(models.Model):
 
 class FunctionCategory(models.Model):
 
-    category_name = models.CharField('Category Name', max_length=200)
+    category_name = models.CharField('Category Name', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
 
     def __unicode__(self):
