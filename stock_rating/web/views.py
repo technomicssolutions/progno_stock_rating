@@ -1,6 +1,7 @@
 
 import simplejson
 import ast
+import re
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -9,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission, DataField, FunctionCategory, AnalyticalHead
+from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -30,9 +31,7 @@ class FieldSettings(View):
 
 class FunctionSettings(View):
     def get(self, request, *args, **kwargs):
-        item_list = FunctionCategory.objects.all()
-        an_heads = AnalyticalHead.objects.all()
-        context = {'item_list': item_list, 'an_heads': an_heads}
+        context = {}
         return render(request, 'function_settings.html', context)
 
 
@@ -90,6 +89,37 @@ class Users(View):
             'users': user_objects
         })
 
+class Category(View):
+
+    def get(self, request, *args, **kwargs):
+        item_list = FunctionCategory.objects.all()
+        items = []
+        for item in item_list:
+            items.append({
+                'id':item.id,
+                'category': item.category_name
+            })
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'item_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+class Analyt_Heads(View):
+
+    def get(self, request, *args, **kwargs):
+        item_list = AnalyticalHead.objects.all()
+        items = []
+        for item in item_list:
+            items.append({
+                'id':item.id,
+                'title': item.title
+            })
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'item_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
 
 class Fields(View):
 
@@ -177,6 +207,94 @@ class SaveField(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'field_settings.html', {})
+
+
+class SaveFunction(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            function_details = ast.literal_eval(request.POST['function_details'])
+            function_type = ast.literal_eval(request.POST['function_type'])
+            function_category = ast.literal_eval(request.POST['function_category'])
+            category=FunctionCategory.objects.get(id=function_category)
+            if function_type == 1:
+                try:
+                    general_function = Function.objects.get(id=function_details['id'])
+                except:
+                    general_function = Function()
+                # general_function.category = function_category
+                anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
+                general_function.category = category
+                general_function.function_name = function_details['function_name']
+                general_function.description = function_details['function_description']
+                general_function.function_type = 'general'
+                general_function.analytical_head = anly_head
+                # formula_list = [part for part in re.split("([-()+*/])", function_details['function_formula']) if part]
+                try:
+                    general_function.save()
+                    res = {
+                      'result': 'ok',
+                    }
+                except:
+                    res = {
+                      'result': 'error',  
+                    }
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=200, mimetype='application/json')
+            elif int(function_type) == 2:
+                try:
+                    continuity_function = ContinuityFunction.objects.get(id=function_details['id'])
+                except:
+                    continuity_function = ContinuityFunction()
+                anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
+                continuity_function.category = category
+                continuity_function.function_name = function_details['function_name']
+                continuity_function.description = function_details['function_description']
+                continuity_function.function_type = 'consistency'
+                continuity_function.analytical_head = anly_head
+                continuity_function.number_of_periods = function_details['no_of_periods']
+                continuity_function.minimum_value = function_details['minimum_value']
+                continuity_function.period_1 = function_details['period_1']
+                continuity_function.period_2 = function_details['period_2']
+                continuity_function.period_3 = function_details['period_3']
+                try:
+                    continuity_function.save()
+                    res = {
+                      'result': 'ok',
+                    }
+                except:
+                    res = {
+                      'result': 'error',  
+                    }
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=200, mimetype='application/json')
+            elif int(function_type) == 3:
+                try:
+                    consistency_function = ConsistencyFunction.objects.get(id=function_details['id'])
+                except:
+                    consistency_function = ConsistencyFunction()
+                anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
+                consistency_function.category = category
+                consistency_function.function_name = function_details['function_name']
+                consistency_function.description = function_details['function_description']
+                consistency_function.function_type = 'continuity'
+                consistency_function.analytical_head = anly_head
+                consistency_function.number_of_periods = function_details['no_of_periods']
+                consistency_function.mean = function_details['mean']
+                consistency_function.period_1 = function_details['period_1']
+                consistency_function.period_2 = function_details['period_2']
+                try:
+                    consistency_function.save()
+                    res = {
+                      'result': 'ok',
+                    }
+                except:
+                    res = {
+                      'result': 'error',  
+                    }
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'function_settings.html', {})
 
 
 class ResetPassword(View):

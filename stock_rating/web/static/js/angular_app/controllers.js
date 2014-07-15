@@ -84,6 +84,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     }
     $scope.edit_user = function(user){
         $scope.edit_flag = true;
+        $scope.reset_password_flag = false;
         $scope.new_user.username = user.username;
         $scope.new_user.first_name = user.first_name;
         $scope.new_user.data_upload = user.data_upload;
@@ -95,6 +96,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     }
     $scope.reset_password = function(user){
         $scope.reset_password_flag = true;
+        $scope.edit_flag = false;
         $scope.current_user.id = user.id;
     }
     $scope.save_password = function(){
@@ -315,42 +317,276 @@ function FieldController($scope, $element, $http, $timeout, $location)
 
 function FunctionController($scope, $element, $http, $timeout, $location)
 {
+    $scope.new_general = {
+        'function_name': '',
+        'function_description': '',
+        'function_formula': '',
+        'select_head': '',
+    }
+   $scope.new_continuity = {
+        'function_name': '',
+        'function_description': '',
+        'no_of_periods': '',
+        'minimum_value': '',
+        'period_1': '',
+        'period_2': '',
+        'period_3': '',
+        'select_head': '',
+    }
+   $scope.new_consistency = {
+        'function_name': '',
+        'function_description': '',
+        'no_of_periods': '',
+        'mean': '',
+        'period_1': '',
+        'period_2': '',
+        'select_head': '',
+    }
+    $scope.select_category = ''
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
-        $scope.change();
+        $scope.change_type();
+        $scope.get_category();
+        $scope.get_anly_head();
         $scope.show_general = true;
         $scope.show_consistency = false;
         $scope.show_continuity = false;    
-        $scope.select_value = 1;  
-    }
-    $scope.change = function (){
-       console.log($scope.select_value);
-       if($scope.select_value==1)
+        $scope.select_type = 1;  
+     }
+    $scope.change_type = function(type){
+        if(type==1)
         {
          $scope.show_general = true;
          $scope.show_continuity = false;
          $scope.show_consistency = false;
         }
-       if($scope.select_value==2)
+       if(type==2)
         {
          $scope.show_general = false;
          $scope.show_continuity = true;
          $scope.show_consistency = false;
         }       
-       if($scope.select_value==3)
+       if(type==3)
         {
          $scope.show_general = false;
          $scope.show_continuity = false;
          $scope.show_consistency = true;
-        } 
-        
+        }       
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
+    }  
+    $scope.validate_field_general = function(){
+        $scope.msg = '';
+        if($scope.new_general.function_name == '') {
+            $scope.msg = "Please enter Function Name";
+            return false;
+        } else if($scope.new_general.function_description == '' ) {
+            $scope.msg = "Please enter Function Description";
+            return false;
+        } else if($scope.new_general.function_formula == '' ) {
+            $scope.msg = "Please enter Formula";
+            return false;
+        } else if($scope.new_general.select_head == '' ) {
+            $scope.msg = "Please select analytical head";
+            return false;
+        } else if($scope.select_category == '' ) {
+            $scope.msg = "Please select category";
+            return false;
+        } else {
+            return true;
+        }  
+    }
+    $scope.validate_field_continuity = function(){
+        $scope.msg = '';
+        if($scope.new_continuity.function_name == '') {
+            $scope.msg = "Please enter Function Name";
+            return false;
+        } else if($scope.new_continuity.function_description == '' ) {
+            $scope.msg = "Please enter Function Description";
+            return false;
+        } else if($scope.new_continuity.no_of_periods == '' ) {
+            $scope.msg = "Please enter Number of periods";
+            return false;
+        } else if($scope.new_continuity.minimum_value == '' ) {
+            $scope.msg = "Please enter Minimum Value";
+            return false;
+        } else if($scope.new_continuity.period_1 == '' ) {
+            $scope.msg = "Please enter Period 1";
+            return false;
+        } else if($scope.new_continuity.period_2 == '' ) {
+            $scope.msg = "Please enter Period 2";
+            return false;
+        } else if($scope.new_continuity.period_3 == '' ) {
+            $scope.msg = "Please enter Period 3";
+            return false;
+        } else if($scope.new_continuity.select_head == '' ) {
+            $scope.msg = "Please select analytical head";
+            return false;
+        } else if($scope.select_category == '' ) {
+            $scope.msg = "Please select category";
+            return false;
+        } else {
+            return true;
+        }  
+    }
+    $scope.validate_field_consistency = function(){
+        $scope.msg = '';
+        if($scope.new_consistency.function_name == '') {
+            $scope.msg = "Please enter Function Name";
+            return false;
+        } else if($scope.new_consistency.function_description == '' ) {
+            $scope.msg = "Please enter Function Description";
+            return false;
+        }else if($scope.new_consistency.no_of_periods == '' ) {
+            $scope.msg = "Please enter Number of periods";
+            return false;
+        }else if($scope.new_consistency.mean == '' ) {
+            $scope.msg = "Please enter Mean";
+            return false;
+        } else if($scope.new_consistency.period_1 == '' ) {
+            $scope.msg = "Please enter Period 1";
+            return false;
+        } else if($scope.new_consistency.period_2 == '' ) {
+            $scope.msg = "Please enter Period 2";
+            return false;
+        } else if($scope.new_consistency.select_head == '' ) {
+            $scope.msg = "Please select analytical head";
+            return false;
+        } else if($scope.select_category == '' ) {
+            $scope.msg = "Please select category";
+            return false;
+        } else {
+            return true;
+        }  
+    }
+    $scope.save_new_general = function(){
+        if($scope.validate_field_general()){
+            params = { 
+                'function_details': angular.toJson($scope.new_general),
+                'function_type' : angular.toJson($scope.select_type),
+                'function_category' : angular.toJson($scope.select_category),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_function/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                if(data.result == 'error'){
+                     $scope.msg = "Function already exists";
+                    }
+                else
+                    {
+                     $scope.msg = "";
+                     $scope.new_general = {
+                     'id': '',
+                     'function_name': '',
+                     'function_description': '',
+                     'function_formula': '',            
+                     'select_head': '',
+                     }   
+                    }       
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }        
+    }
+    $scope.save_new_continuity = function(){
+        if($scope.validate_field_continuity()){
+            params = { 
+                'function_details': angular.toJson($scope.new_continuity),
+                'function_type' : angular.toJson($scope.select_type),
+                'function_category' : angular.toJson($scope.select_category),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_function/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                if(data.result == 'error'){
+                     $scope.msg = "Function already exists";
+                    }
+                else
+                    {
+                     $scope.msg = "";
+                     $scope.new_continuity = {
+                     'id': '',
+                     'function_name': '',
+                     'function_description': '',
+                     'no_of_periods': '',
+                     'minimum_value': '',
+                     'period_1': '',
+                     'period_2': '',
+                     'period_3': '',
+                     'select_head': '',
+                     }   
+                    }       
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }        
+    }
+    $scope.save_new_consistency = function(){
+        if($scope.validate_field_consistency()){
+            params = { 
+                'function_details': angular.toJson($scope.new_consistency),
+                'function_type' : angular.toJson($scope.select_type),
+                'function_category' : angular.toJson($scope.select_category),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_function/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                if(data.result == 'error'){
+                     $scope.msg = "Function already exists";
+                    }
+                else
+                    {
+                     $scope.msg = "";
+                     $scope.new_consistency = {
+                     'id': '',
+                     'function_name': '',
+                     'function_description': '',
+                     'no_of_periods': '',
+                     'mean': '',
+                     'period_1': '',
+                     'period_2': '',
+                     'select_head': '',
+                     }   
+                    }       
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }        
+    }
+   $scope.get_category = function(){
+        var url = '/category/';
+        $http.get(url).success(function(data) {
+            $scope.item_list = data.item_list;
+        })
+    }
+    $scope.get_anly_head = function(){
+        var url = '/anly_head/';
+        $http.get(url).success(function(data) {
+            $scope.cat_list = data.item_list;
+        })
     }
 
 }

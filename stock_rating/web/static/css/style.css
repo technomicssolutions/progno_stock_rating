@@ -190,6 +190,20 @@ header {
 /*************** Menu style end ************/
 
 
+/******************* Table Display Style ***************/
+
+.tab_list {
+	width: 90%;
+	float: left;
+	margin-left: 5%;
+    margin-top: 3%;
+}
+.tab_list table tbody td, .tab_list table tbody th{
+	border-top: none !important;
+	border-bottom: 1px solid #DDDDDD;
+}
+
+/******************* End Table Display Style ***************/
 
 /******************* Administration Style ***************/
 
@@ -210,33 +224,21 @@ header {
 
 /******************* End Administration Style ***************/
 
-/******************* Field_Settings Style ***************/
-
-#field_settings .field_settings {
-	display: block !important;
-}
-
-.field_list {
-	width: 90%;
-	float: left;
-	margin-left: 5%;
-    margin-top: 3%;
-}
-.field_list table tbody td, .field_list table tbody th{
-	border-top: none !important;
-	border-bottom: 1px solid #DDDDDD;
-}
-
-/******************* End Field_Settings Style ***************/
 
 /******************* Function_Settings Style ***************/
+
+.function_settings {
+	float: left;	
+	width: 100%;
+}
+
 .function_heading {
 	color: #1ABC9C;
 	padding: 0px 0px 10px 0px;
 	border-bottom: 1px solid #1ABC9C;
-	margin-left: 3%;
+	margin-left: 5%;
 	margin-right: 3%;
-	 margin-top: 3%;
+	margin-top: 3%;
 }
 
 .function_row {
@@ -251,16 +253,12 @@ header {
 .function_text {
 	float: left;
     width: 150px;
+    margin-left: 5%;
 
 }
 
 .function_input {
 	float: left;
-}
-
-.function_settings {
-	float: left;	
-	width: 100%;
 }
 
 .function_set {

@@ -7,13 +7,12 @@
 {% block content%}
 	<div class="function_settings">
 		<h3 class="function_heading"> Function Settings </h3>
-			<input type="hidden" ng-model="new_field.id" />
 			<div class="function_row">
 				<div class="function_text">
 					<label>Select Type</label>
 				</div>
 				<div class="function_input">
-					<select ng-model="select_value" ng-change="change()">
+					<select name="function_type" ng-model="select_type" ng-change="change_type(select_type)">
 				   	<option value="1" selected="selected">General</option>
 				    <option value="2">Continuity</option>
 				    <option value="3">Consistency</option>
@@ -25,73 +24,101 @@
 					<label>Select Category</label>
 				</div>
 				<div class="function_input">
-					<select>
-						{% for entry in item_list %}
-			   			 <option value="{{ entry.id }}">{{ entry.category_name }}</option>
-						{% endfor %}	 	
+					<select name="select_category" ng-model="select_category" >
+						 <option value="" disabled="True">Select</option>
+						 <option value="[[entry.id]]" ng-repeat="entry in item_list">[[entry.category]]</option>
 				   	</select>
 				</div>
 			</div>
-			<p class="error_msg"> [[msg]] </p>
 		<div class="function_set" ng-show="show_general">
 			<h3 class="sub_heading"> General </h3>
-				<input type="hidden" ng-model="new_field.id" />
+				<input type="hidden" ng-model="new_general.id" />
 				<label> Function Name: </label>
-				<input type="text" name="field_name" ng-model="new_field.field_name" />
+				<input type="text" name="function_name" ng-model="new_general.function_name" />
 				<label> Function Description: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="function_description" ng-model="new_general.function_description" />
 				<label> Formula: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="function_formula" ng-model="new_general.function_formula" />
 				<label> Analytical Head: </label>
-				<select>
-						{% for entry in an_heads %}
-			   			 <option value="{{ entry.id }}">{{ entry.title }}</option>
-						{% endfor %}	 	
+				<select name="general_select_head" ng-model="new_general.select_head">
+						 <option value="" disabled="True">Select</option>
+						 <option value="[[ entry.id ]]" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
 				</select>
 				<p class="error_msg"> [[msg]] </p>
-				<input type="submit" name="submit" value="Save" ng-click=""/>
+				<input type="submit" name="submit" value="Save" ng-click="save_new_general()"/>
 				<input type="submit" name="submit" value="Reset" ng-click=""/>
 		</div>		
 		<div class="function_set" ng-show="show_continuity">
 			<h3 class="sub_heading"> Continuity </h3>
-				<input type="hidden" ng-model="new_field.id" />
+				<input type="hidden" ng-model="new_continuity.id" />
 				<label> Function Name: </label>
-				<input type="text" name="field_name" ng-model="new_field.field_name" />
+				<input type="text" name="field_name" ng-model="new_continuity.function_name" />
 				<label> Function Description: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="field_description" ng-model="new_continuity.function_description" />
 				<label> No of Periods: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="field_description" ng-model="new_continuity.no_of_periods" />
 				<label> Minimum Value: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="field_description" ng-model="new_continuity.minimum_value" />
 				<label> Period 1: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="field_description" ng-model="new_continuity.period_1" />
 				<label> Period 2: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="field_description" ng-model="new_continuity.period_2" />
 				<label> Period 3: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="field_description" ng-model="new_continuity.period_3" />
+				<label> Analytical Head: </label>
+				<select name="general_select_head" ng-model="new_continuity.select_head">
+						 <option value="" disabled="True">Select</option>
+						 <option value="[[ entry.id ]]" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
+				</select>
 				<p class="error_msg"> [[msg]] </p>
-				<input type="submit" name="submit" value="Save" ng-click=""/>
+				<input type="submit" name="submit" value="Save" ng-click="save_new_continuity()"/>
 				<input type="submit" name="submit" value="Reset" ng-click=""/>
 		</div>
 		<div class="function_set" ng-show="show_consistency">
 			<h3 class="sub_heading"> Consistency </h3>
-				<input type="hidden" ng-model="new_field.id" />
+				<input type="hidden" ng-model="new_consistency.id" />
 				<label> Function Name: </label>
-				<input type="text" name="field_name" ng-model="new_field.field_name" />
+				<input type="text" name="function_name" ng-model="new_consistency.function_name" />
 				<label> Function Description: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="function_description" ng-model="new_consistency.function_description" />
 				<label> No of Periods: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="no_of_periods" ng-model="new_consistency.no_of_periods" />
 				<label> Mean: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="mean" ng-model="new_consistency.mean" />
 				<label> Period 1: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="period_1" ng-model="new_consistency.period_1" />
 				<label> Period 2: </label>
-				<input type="text" name="field_description" ng-model="new_field.field_description" />
+				<input type="text" name="period_2" ng-model="new_consistency.period_2" />
+				<label> Analytical Head: </label>
+				<select name="general_select_head" ng-model="new_consistency.select_head">
+						 <option value="" disabled="True">Select</option>
+						 <option value="[[ entry.id ]]" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
+				</select>
 				<p class="error_msg"> [[msg]] </p>
-				<input type="submit" name="submit" value="Save" ng-click=""/>
+				<input type="submit" name="submit" value="Save" ng-click="save_new_consistency()"/>
 				<input type="submit" name="submit" value="Reset" ng-click=""/>
 		</div>
+		<div class="tab_list">
+		<h3 class="sub_heading"> Functions List </h3>
+		<table class="table table-stripped">
+			<tr> 
+				<th> Function Name </th>
+				<th> Objective </th>
+				<th> Category</th>
+				<th> Created </th>
+				<th> Modified </th>
+				<th> Action </th>
+			</tr>
+			<tr ng-repeat="">
+				<td>  </td>
+				<td>  </td>
+				<td>  </td>
+				<td>  </td>
+				<td>  </td>
+				<td> <a href="" ng-click="edit_field(field)"> Modify </a> / <a href=""> Delete </a>
+			</tr>
+		</table>
+	</div>
 	</div>
 {% endblock content %}
 
