@@ -87,7 +87,7 @@ class Function(Date):
 
     category = models.ForeignKey(FunctionCategory)
     analytical_head = models.ForeignKey(AnalyticalHead)
-    function_name = models.CharField('Name', max_length=200)
+    function_name = models.CharField('Name', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
     function_type = models.CharField('Type', choices=FUNCTION_TYPES, max_length=11)
     formula = models.ForeignKey(Formula, null=True, blank=True)

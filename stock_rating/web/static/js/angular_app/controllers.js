@@ -349,29 +349,86 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.change_type();
         $scope.get_category();
         $scope.get_anly_head();
+        $scope.get_functions();
         $scope.show_general = true;
         $scope.show_consistency = false;
         $scope.show_continuity = false;    
         $scope.select_type = 1;  
      }
     $scope.change_type = function(type){
-        if(type==1)
+        if(type == 1)
         {
          $scope.show_general = true;
          $scope.show_continuity = false;
          $scope.show_consistency = false;
+         $scope.new_continuity = {
+        'function_name': '',
+        'function_description': '',
+        'no_of_periods': '',
+        'minimum_value': '',
+        'period_1': '',
+        'period_2': '',
+        'period_3': '',
+        'select_head': '',
+         }
+         $scope.new_consistency = {
+        'function_name': '',
+        'function_description': '',
+        'no_of_periods': '',
+        'mean': '',
+        'period_1': '',
+        'period_2': '',
+        'select_head': '',
+         }
+         $scope.select_category = ''
+         $scope.msg = '';
         }
-       if(type==2)
+       if(type == 2)
         {
          $scope.show_general = false;
          $scope.show_continuity = true;
          $scope.show_consistency = false;
+         $scope.new_general = {
+        'function_name': '',
+        'function_description': '',
+        'function_formula': '',
+        'select_head': '',
+         }
+         $scope.new_consistency = {
+        'function_name': '',
+        'function_description': '',
+        'no_of_periods': '',
+        'mean': '',
+        'period_1': '',
+        'period_2': '',
+        'select_head': '',
+         }
+         $scope.select_category = ''
+         $scope.msg = '';
         }       
-       if(type==3)
+       if(type == 3)
         {
          $scope.show_general = false;
          $scope.show_continuity = false;
          $scope.show_consistency = true;
+         $scope.new_general = {
+        'function_name': '',
+        'function_description': '',
+        'function_formula': '',
+        'select_head': '',
+         }
+         $scope.new_continuity = {
+        'function_name': '',
+        'function_description': '',
+        'no_of_periods': '',
+        'minimum_value': '',
+        'period_1': '',
+        'period_2': '',
+        'period_3': '',
+        'select_head': '',
+         }
+         $scope.select_category = ''
+         $scope.msg = '';
         }       
     }
     $scope.show_dropdown = function(){
@@ -412,17 +469,32 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_continuity.no_of_periods == '' ) {
             $scope.msg = "Please enter Number of periods";
             return false;
+        } else if(!Number($scope.new_continuity.no_of_periods) ) {
+            $scope.msg = "Invalid entry in field No of Periods";
+            return false;
         } else if($scope.new_continuity.minimum_value == '' ) {
             $scope.msg = "Please enter Minimum Value";
+            return false;
+        } else if(!Number($scope.new_continuity.minimum_value) ) {
+            $scope.msg = "Invalid entry in field Minimum Value";
             return false;
         } else if($scope.new_continuity.period_1 == '' ) {
             $scope.msg = "Please enter Period 1";
             return false;
+        } else if(!Number($scope.new_continuity.period_1) ) {
+            $scope.msg = "Invalid entry in field Period 1";
+            return false;
         } else if($scope.new_continuity.period_2 == '' ) {
             $scope.msg = "Please enter Period 2";
             return false;
+        } else if(!Number($scope.new_continuity.period_2) ) {
+            $scope.msg = "Invalid entry in field Period 2";
+            return false;
         } else if($scope.new_continuity.period_3 == '' ) {
             $scope.msg = "Please enter Period 3";
+            return false;
+        } else if(!Number($scope.new_continuity.period_3) ) {
+            $scope.msg = "Invalid entry in field Period 3";
             return false;
         } else if($scope.new_continuity.select_head == '' ) {
             $scope.msg = "Please select analytical head";
@@ -442,17 +514,29 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_consistency.function_description == '' ) {
             $scope.msg = "Please enter Function Description";
             return false;
-        }else if($scope.new_consistency.no_of_periods == '' ) {
+        } else if($scope.new_consistency.no_of_periods == '' ) {
             $scope.msg = "Please enter Number of periods";
             return false;
-        }else if($scope.new_consistency.mean == '' ) {
+        } else if(!Number($scope.new_consistency.no_of_periods) ) {
+            $scope.msg = "Invalid entry in field No of Periods";
+            return false;
+        } else if($scope.new_consistency.mean == '' ) {
             $scope.msg = "Please enter Mean";
+            return false;
+        } else if(!Number($scope.new_consistency.mean) ) {
+            $scope.msg = "Invalid entry in field mean";
             return false;
         } else if($scope.new_consistency.period_1 == '' ) {
             $scope.msg = "Please enter Period 1";
             return false;
+        } else if(!Number($scope.new_consistency.period_1) ) {
+            $scope.msg = "Invalid entry in field Period 1";
+            return false;
         } else if($scope.new_consistency.period_2 == '' ) {
             $scope.msg = "Please enter Period 2";
+            return false;
+        } else if(!Number($scope.new_consistency.period_2) ) {
+            $scope.msg = "Invalid entry in field Period 2";
             return false;
         } else if($scope.new_consistency.select_head == '' ) {
             $scope.msg = "Please select analytical head";
@@ -494,6 +578,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                      'select_head': '',
                      }   
                     }       
+            $scope.get_functions(); 
             }).error(function(data, status){
                 $scope.message = data.message;
             });
@@ -532,7 +617,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                      'period_3': '',
                      'select_head': '',
                      }   
-                    }       
+                    }    
+                $scope.get_functions();    
             }).error(function(data, status){
                 $scope.message = data.message;
             });
@@ -570,11 +656,56 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                      'period_2': '',
                      'select_head': '',
                      }   
-                    }       
+                    }    
+                $scope.get_functions();   
             }).error(function(data, status){
                 $scope.message = data.message;
             });
         }        
+    }
+    $scope.edit_function = function(field){
+        if(field.function_type == 'general'){
+            $scope.change_type('1');
+            $scope.edit_general(field.id);          
+        }
+        else if(field.function_type == 'continuity'){
+            $scope.change_type('2');
+            $scope.edit_continuity(field.id);          
+        }
+        else if(field.function_type == 'consistency'){
+            $scope.change_type('3');
+        }   
+    }
+    $scope.edit_general = function(id){
+        var url = '/get_general/?id='+id;
+        $http.get(url).success(function(data) {
+            $scope.general_list = data.item_list;
+            $scope.select_type = 1;
+            $scope.new_general.id = $scope.general_list[0].id;
+            $scope.new_general.function_name = $scope.general_list[0].name;
+            $scope.new_general.function_description = $scope.general_list[0].description;
+            $scope.new_general.function_formula = $scope.general_list[0].formula;
+            $scope.select_category = $scope.general_list[0].category;
+            $scope.new_general.select_head = $scope.general_list[0].head;
+        })
+    }
+    $scope.edit_continuity = function(id){
+        var url = '/get_continuity/?id='+id;
+        $http.get(url).success(function(data) {
+            $scope.continuity_list = data.item_list;
+            console.log($scope.continuity_list);
+            $scope.select_type = 2;
+            $scope.new_continuity.id = $scope.continuity_list[0].id;
+            $scope.new_continuity.function_name = $scope.continuity_list[0].name;
+            $scope.new_continuity.function_description = $scope.continuity_list[0].description;
+            $scope.new_continuity.no_of_periods = $scope.continuity_list[0].no_of_periods;
+            $scope.new_continuity.minimum_value = $scope.continuity_list[0].minimum_value;
+            $scope.new_continuity.period_1 = $scope.continuity_list[0].period_1;
+            $scope.new_continuity.period_2 = $scope.continuity_list[0].period_2;
+            $scope.new_continuity.period_3 = $scope.continuity_list[0].period_3;
+            $scope.select_category = $scope.continuity_list[0].category;
+            $scope.new_continuity.select_head = $scope.continuity_list[0].head;
+        })
     }
    $scope.get_category = function(){
         var url = '/category/';
@@ -586,6 +717,12 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/anly_head/';
         $http.get(url).success(function(data) {
             $scope.cat_list = data.item_list;
+        })
+    }
+    $scope.get_functions = function(){
+        var url = '/functions/';
+        $http.get(url).success(function(data) {
+            $scope.functions = data.functions;
         })
     }
 

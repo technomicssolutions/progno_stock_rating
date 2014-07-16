@@ -12,7 +12,7 @@
 					<label>Select Type</label>
 				</div>
 				<div class="function_input">
-					<select name="function_type" ng-model="select_type" ng-change="change_type(select_type)">
+					<select name="function_type" ng-selected="value == select_type"  ng-model="select_type" ng-change="change_type(select_type)">
 				   	<option value="1" selected="selected">General</option>
 				    <option value="2">Continuity</option>
 				    <option value="3">Consistency</option>
@@ -26,7 +26,7 @@
 				<div class="function_input">
 					<select name="select_category" ng-model="select_category" >
 						 <option value="" disabled="True">Select</option>
-						 <option value="[[entry.id]]" ng-repeat="entry in item_list">[[entry.category]]</option>
+						 <option ng-repeat="entry in item_list" ng-selected="entry.id == select_category" value="[[entry.id]]">[[entry.category]]</option>
 				   	</select>
 				</div>
 			</div>
@@ -42,7 +42,7 @@
 				<label> Analytical Head: </label>
 				<select name="general_select_head" ng-model="new_general.select_head">
 						 <option value="" disabled="True">Select</option>
-						 <option value="[[ entry.id ]]" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
+						 <option value="[[ entry.id ]]" ng-selected="entry.id == new_general.select_head" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
 				</select>
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_general()"/>
@@ -66,9 +66,9 @@
 				<label> Period 3: </label>
 				<input type="text" name="field_description" ng-model="new_continuity.period_3" />
 				<label> Analytical Head: </label>
-				<select name="general_select_head" ng-model="new_continuity.select_head">
+		        <select name="continuity_select_head" ng-model="new_continuity.select_head">
 						 <option value="" disabled="True">Select</option>
-						 <option value="[[ entry.id ]]" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
+						 <option value="[[ entry.id ]]" ng-selected="entry.id == new_continuity.select_head" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
 				</select>
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_continuity()"/>
@@ -109,13 +109,13 @@
 				<th> Modified </th>
 				<th> Action </th>
 			</tr>
-			<tr ng-repeat="">
-				<td>  </td>
-				<td>  </td>
-				<td>  </td>
-				<td>  </td>
-				<td>  </td>
-				<td> <a href="" ng-click="edit_field(field)"> Modify </a> / <a href=""> Delete </a>
+			<tr ng-repeat="function in functions">
+				<td>[[ function.name ]]</td>
+				<td>[[ function.head ]]</td>
+				<td>[[ function.category ]]</td>
+				<td>[[ function.created_date ]]</td>
+				<td>[[ function.modified_date ]]</td>
+				<td> <a href="" ng-click="edit_function(function)"> Modify </a> / <a href=""> Delete </a>
 			</tr>
 		</table>
 	</div>

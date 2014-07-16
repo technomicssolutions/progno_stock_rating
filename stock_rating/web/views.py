@@ -151,6 +151,33 @@ class Fields(View):
         })
 
 
+class Functions(View):
+
+    def get(self, request, *args, **kwargs):
+        function_objects = Function.objects.all()
+        functions = []
+        category_list = []
+        for function in function_objects:
+            functions.append({
+                    'id': function.id,
+                    'name': function.function_name,
+                    'head': function.analytical_head.title,
+                    'category': function.category.category_name,
+                    'created_date': function.created_date.strftime("%d/%m/%Y"),
+                    'modified_date': function.updated_date.strftime("%d/%m/%Y"),
+                    'function_type': function.function_type,
+                })
+        if request.is_ajax():
+            response = simplejson.dumps({
+                'result': 'OK',
+                'functions': functions
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'function_settings.html', {
+           
+        })
+
+
 class SaveUser(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -212,12 +239,11 @@ class SaveField(View):
 class SaveFunction(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-
             function_details = ast.literal_eval(request.POST['function_details'])
             function_type = ast.literal_eval(request.POST['function_type'])
             function_category = ast.literal_eval(request.POST['function_category'])
             category=FunctionCategory.objects.get(id=function_category)
-            if function_type == 1:
+            if int(function_type) == 1:
                 try:
                     general_function = Function.objects.get(id=function_details['id'])
                 except:
@@ -250,7 +276,7 @@ class SaveFunction(View):
                 continuity_function.category = category
                 continuity_function.function_name = function_details['function_name']
                 continuity_function.description = function_details['function_description']
-                continuity_function.function_type = 'consistency'
+                continuity_function.function_type = 'continuity'
                 continuity_function.analytical_head = anly_head
                 continuity_function.number_of_periods = function_details['no_of_periods']
                 continuity_function.minimum_value = function_details['minimum_value']
@@ -277,7 +303,7 @@ class SaveFunction(View):
                 consistency_function.category = category
                 consistency_function.function_name = function_details['function_name']
                 consistency_function.description = function_details['function_description']
-                consistency_function.function_type = 'continuity'
+                consistency_function.function_type = 'consistency'
                 consistency_function.analytical_head = anly_head
                 consistency_function.number_of_periods = function_details['no_of_periods']
                 consistency_function.mean = function_details['mean']
@@ -296,8 +322,53 @@ class SaveFunction(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'function_settings.html', {})
 
+class General(View):
+
+    def get(self, request, *args, **kwargs):
+        general = Function.objects.get(id=request.GET.get('id'))
+        items = []
+        items.append({
+                'id':general.id,
+                'name': general.function_name,
+                'description': general.description,
+                'head': general.analytical_head.id,
+                'formula': general.formula,
+                'category': general.category.id,
+            })
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'item_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class Continuity(View):
+
+    def get(self, request, *args, **kwargs):
+        continuity_function = ContinuityFunction.objects.get(id=request.GET.get('id'))
+        print continuity_function.analytical_head.title
+        items = []
+        items.append({
+                'id':continuity_function.id,
+                'name': continuity_function.function_name,
+                'description': continuity_function.description,
+                'head': continuity_function.analytical_head.id,
+                'no_of_periods': continuity_function.number_of_periods,
+                'minimum_value': continuity_function.minimum_value,
+                'period_1': continuity_function.period_1,
+                'period_2': continuity_function.period_2,
+                'period_3': continuity_function.period_3,
+                'category': continuity_function.category.id,
+            })
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'item_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
 
 class ResetPassword(View):
+
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
 
