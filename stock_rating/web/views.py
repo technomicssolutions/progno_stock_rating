@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction
+from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction, Industry
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -33,6 +33,12 @@ class FunctionSettings(View):
     def get(self, request, *args, **kwargs):
         context = {}
         return render(request, 'function_settings.html', context)
+
+
+class Model(View):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, 'models.html', context)
 
 
 class Login(View):
@@ -174,6 +180,26 @@ class Functions(View):
             })
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'function_settings.html', {
+           
+        })
+
+class IndustryDetails(View):
+
+    def get(self, request, *args, **kwargs):
+        industry_objects = Industry.objects.all()
+        industry_list = []
+        for industry in industry_objects:
+            industry_list.append({
+                    'id': industry.id,
+                    'name': industry.industry_name,
+                })
+        if request.is_ajax():
+            response = simplejson.dumps({
+                'result': 'OK',
+                'industry_list': industry_list
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'models.html', {
            
         })
 
@@ -346,7 +372,6 @@ class Continuity(View):
 
     def get(self, request, *args, **kwargs):
         continuity_function = ContinuityFunction.objects.get(id=request.GET.get('id'))
-        print continuity_function.analytical_head.title
         items = []
         items.append({
                 'id':continuity_function.id,
@@ -365,6 +390,46 @@ class Continuity(View):
                'item_list': items
             })
             return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class Consistency(View):
+
+    def get(self, request, *args, **kwargs):
+        consistency_function = ConsistencyFunction.objects.get(id=request.GET.get('id'))
+        items = []
+        items.append({
+                'id':consistency_function.id,
+                'name': consistency_function.function_name,
+                'description': consistency_function.description,
+                'head': consistency_function.analytical_head.id,
+                'no_of_periods': consistency_function.number_of_periods,
+                'minimum_value': consistency_function.minimum_value,
+                'period_1': consistency_function.period_1,
+                'period_2': consistency_function.period_2,
+                'mean': consistency_function.mean,
+                'category': consistency_function.category.id,
+            })
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'item_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class DeleteField(View):
+    def get(self, request, *args, **kwargs):
+        field = DataField.objects.get(id=request.GET.get('id')) 
+        if field.formula_set.all().count() == 0:
+                field.delete()
+                res = {
+                  'result': 'ok',
+                }
+        else:
+                res = {
+                   'result': 'error',  
+                }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 
 class ResetPassword(View):

@@ -292,3 +292,79 @@ header {
 
 
 /******************* End Function_Settings Style ***************/
+
+/******************* Models Style ***************/
+.model_settings {
+	float: left;	
+	width: 100%;
+}
+
+.model_heading {
+	color: #12569A;
+	padding: 0px 0px 10px 0px;
+	border-bottom: 1px solid #12569A;
+	margin-top: 20%;
+}
+.model_set {
+	display: block;
+    margin-left: 5%;
+    margin-top: -9%;
+    margin-right: 5%;
+    width: 85%;	
+}
+
+.model_set label {
+	width: 20%;
+	height: 30px;
+}
+
+.model_set input {
+	width: 25%;
+	height: 30px;
+}
+
+.model_set textarea {
+	margin-bottom: 15px;
+	width: 25%;
+}
+
+.model_set select {
+	margin-bottom: -25px;
+	width: 25%;
+}
+
+
+.model_menu input[type="submit"] {
+	border: none;
+	background-color: #12569A;
+	width: 20%;
+	float: left;
+	padding: 5px;
+	margin-top: 2%;
+	margin-left: 2%;
+	border: 1px solid #D6D4D2;
+}
+
+.model_set input[type="submit"] {
+	border: none;
+	background-color: #12569A;
+	width: 10%;
+	float: left;
+	margin-top: 4%;
+	margin-left: 3%;
+	padding: 2px;
+	border: 1px solid #D6D4D2;
+}
+.model_set input[type="button"] {
+	width: 5%;	
+}
+.model_select input[type="button"] {
+	margin-left: 21%;
+	margin-right: 7%;
+	margin-top: 2%;
+	width: 8%;	
+}
+.model_row {
+	margin-left: 30%;
+}
+/******************* End Models Style ***************/

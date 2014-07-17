@@ -224,11 +224,25 @@ function FieldController($scope, $element, $http, $timeout, $location)
         $scope.csrf_token = csrf_token;
         $scope.get_fields();    
         $scope.hide_dropdown();
+        $scope.show_popup = false;
     }
     $scope.edit_field = function(field){
         $scope.new_field.field_name = field.name;
         $scope.new_field.field_description = field.description;
         $scope.new_field.id = field.id;
+    }
+    $scope.delete_field = function(field){
+        console.log(field.id);
+        var url = '/delete_field/?id='+field.id;
+        $http.get(url).success(function(data){
+            if(data.result == 'ok'){
+                $scope.msg = "Field deleted";
+               }
+            else if(data.result == 'error'){
+                $scope.msg = "Field is used by another function";
+               }
+            $scope.get_fields();                    
+        })
     }
     $scope.get_fields = function(){
         var url = '/fields/';
@@ -312,6 +326,10 @@ function FieldController($scope, $element, $http, $timeout, $location)
         $scope.current_ques_page = ques_page;
         $scope.visible_questionairs = $scope.questionairs.slice(start, end);
     }
+    $scope.hide_popup_divs = function(){
+        $('#assign_mentee_mentor').css('display', 'none');
+        $('#assign_mentee_saq').css('display', 'none');
+    }
 }
 
 
@@ -354,7 +372,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.show_consistency = false;
         $scope.show_continuity = false;    
         $scope.select_type = 1;  
-     }
+    }
     $scope.change_type = function(type){
         if(type == 1)
         {
@@ -674,6 +692,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }
         else if(field.function_type == 'consistency'){
             $scope.change_type('3');
+            $scope.edit_consistency(field.id);             
         }   
     }
     $scope.edit_general = function(id){
@@ -707,6 +726,24 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.new_continuity.select_head = $scope.continuity_list[0].head;
         })
     }
+    $scope.edit_consistency = function(id){
+        var url = '/get_consistency/?id='+id;
+        $http.get(url).success(function(data) {
+            $scope.consistency_list = data.item_list;
+            console.log($scope.consistency_list);
+            $scope.select_type = 3;
+            $scope.new_consistency.id = $scope.consistency_list[0].id;
+            $scope.new_consistency.function_name = $scope.consistency_list[0].name;
+            $scope.new_consistency.function_description = $scope.consistency_list[0].description;
+            $scope.new_consistency.no_of_periods = $scope.consistency_list[0].no_of_periods;
+            $scope.new_consistency.minimum_value = $scope.consistency_list[0].minimum_value;
+            $scope.new_consistency.period_1 = $scope.consistency_list[0].period_1;
+            $scope.new_consistency.period_2 = $scope.consistency_list[0].period_2;
+            $scope.new_consistency.mean = $scope.consistency_list[0].mean;
+            $scope.select_category = $scope.consistency_list[0].category;
+            $scope.new_consistency.select_head = $scope.consistency_list[0].head;
+        })
+    }
    $scope.get_category = function(){
         var url = '/category/';
         $http.get(url).success(function(data) {
@@ -725,5 +762,54 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.functions = data.functions;
         })
     }
-
 }
+
+function ModelController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.hide_dropdown();
+        $scope.get_industries();
+        $scope.create_model = true; 
+        $scope.rightSelect = [];   
+    }
+    $scope.show_create_model = function(){
+        $scope.create_model = true; 
+        $scope.define_model = false; 
+    }
+    $scope.show_define_model = function(){
+        $scope.create_model = false; 
+        $scope.define_model = true; 
+    }
+    $scope.get_industries = function(){
+        var url = '/industry/';
+        $http.get(url).success(function(data) {
+            $scope.industry_list = data.industry_list;
+            console.log($scope.industry_list);
+        })
+    }
+    $scope.moveRight = function(){
+        $scope.flag = 1;
+        
+        for(var i = 0; i < $scope.industry_list.length; i++)
+            console.log($scope.industry_list[i].id);
+            console.log($scope.new_model.industry_list[0]);
+            for(var j = 0; j < $scope.new_model.industry_list.length; i++)
+               if($scope.industry_list[i].id == $scope.new_model.industry_list[j])
+                if($scope.industry_select.length == 0)
+                    rightSelect.push($scope.industry_list[i]);
+                else
+                    for(var k = 0; k < $scope.industry_select.length; i++)
+                        if($scope.industry_select[i] == $scope.new_model.industry_list[k])
+                            $scope.flag = 0;
+                    if($scope.flag == 1)
+                        rightSelect.push($scope.industry_list[i]);
+    }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+}
+

@@ -90,9 +90,9 @@
 				<label> Period 2: </label>
 				<input type="text" name="period_2" ng-model="new_consistency.period_2" />
 				<label> Analytical Head: </label>
-				<select name="general_select_head" ng-model="new_consistency.select_head">
+				<select name="consistency_select_head" ng-model="new_consistency.select_head">
 						 <option value="" disabled="True">Select</option>
-						 <option value="[[ entry.id ]]" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
+						 <option value="[[ entry.id ]]" ng-selected="entry.id == new_consistency.select_head" ng-repeat="entry in cat_list">[[ entry.title ]]</option>	
 				</select>
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_consistency()"/>
