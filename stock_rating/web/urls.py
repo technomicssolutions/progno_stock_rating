@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 
-from views import Login, Dashboard, Administration, Users, SaveUser, ResetPassword, FieldSettings, Fields, SaveField, FunctionSettings, SaveFunction, Category, Analyt_Heads, Functions, General, Continuity, Consistency, DeleteField, Model, IndustryDetails
+from views import Login, Dashboard, Administration, Users, SaveUser, ResetPassword, FieldSettings, Fields, SaveField, FunctionSettings, SaveFunction, Category, Analyt_Heads, Functions, General, Continuity, Consistency, DeleteField, Model, IndustryDetails, SaveModel, ModelDetails, DeleteModel
 
 urlpatterns = patterns('',
     url(r'login/$', Login.as_view(), name="login"),
@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     url(r'users/$', login_required(Users.as_view()), name="users"),
     url(r'fields/$', login_required(Fields.as_view()), name="fields"),
     url(r'category/$', login_required(Category.as_view()), name="category"),
+    url(r'models_list/$', login_required(ModelDetails.as_view()), name="models_list"),
     url(r'industry/$', login_required(IndustryDetails.as_view()), name="industry"),
     url(r'anly_head/$', login_required(Analyt_Heads.as_view()), name="anly_head"),
     url(r'functions/$', login_required(Functions.as_view()), name="functions"),
@@ -25,8 +26,10 @@ urlpatterns = patterns('',
     url(r'get_continuity/$', login_required(Continuity.as_view()), name="get_continuity"),
     url(r'get_consistency/$', login_required(Consistency.as_view()), name="get_consistency"),
     url(r'delete_field/$', login_required(DeleteField.as_view()), name="delete_field"),
+    url(r'delete_model/$', login_required(DeleteModel.as_view()), name="delete_model"),
     url(r'save_user/$', login_required(SaveUser.as_view()), name="save_user"),
     url(r'save_field/$', login_required(SaveField.as_view()), name="save_field"),
+    url(r'save_model/$', login_required(SaveModel.as_view()), name="save_model"),
     url(r'save_function/$', login_required(SaveFunction.as_view()), name="save_function"),
     url(r'reset_password/$', login_required(ResetPassword.as_view()), name="reset_password"),
 )

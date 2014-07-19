@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% block title %} Model Settings {% endblock title%}
+{% block body_id %}field{% endblock %}
+{% block controller %}
+	ng-controller="ModelController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+
+<div class="model_settings">
+	<div class="model_menu">
+		<input type="submit" name="submit" value="Create Model" ng-click="show_create_model()"/>
+		<input type="submit" name="submit" value="Define Model" ng-click="show_define_model()"/>
+	</div>
+	<div class="model_set" ng-show="create_model">
+		<h3 class="model_heading"> Create Model </h3>
+		<input type="hidden" ng-model="new_model.id" />
+		<label> Model Name: </label>
+		<input type="text" name="model_name" ng-model="new_model.model_name" /><br>
+		<label> Model Description: </label>
+		<textarea rows="3" cols="25" name="model_description" ng-model="new_model.model_description" ></textarea><br>
+		<label> Select Industries: </label>
+		<select size="5" name="industry_list" ng-model="new_model.industry_list" multiple>
+		    <option ng-repeat="entry in industry_list" ng-selected="entry.selected" value="[[entry.id]]">[[entry.name]]</option>
+		</select>
+		<input type="button" ng-click="moveRight()" value=">>">
+		<input type="button" ng-click="moveLeft()" value="<<">
+		<select size="5" name="industry_select" ng-model="new_model.industry_select" multiple>
+		    <option ng-repeat="el in rightSelect" ng-selected="el.selected" value="[[el.id]]">[[el.name]]</option>
+		</select>
+		<div class="model_select">
+			<input type="button" ng-click="selectallLeft()" value="Select All">
+			<input type="button" ng-click="selectallRight()" value="Select All">
+		</div>
+		<p class="error_msg"> [[msg]] </p>
+		<div class="model_row">
+			<input type="submit" name="submit" value="Reset" ng-click="reset_model()"/>
+			<input type="submit" name="submit" value="Save" ng-click="save_model()"/>
+		</div>
+	</div>
+	<div class="model_set" ng-show="define_model">
+		<h3 class="model_heading"> Define Model </h3>
+		<label> Select Model: </label>
+		<select name="select_model" ng-model="select_model" >
+			 <option value="" disabled="True">Select</option>
+			 <option ng-repeat="entry in model_list" value="[[entry.id]]">[[entry.name]]</option>
+		</select>
+		<div class="tab_def_model" ng-show="define_model">
+		<h3 class="sub_heading"> Scoring </h3>
+		<table class="table table-stripped">
+			<tr>
+			<th class="three">Anaytic Head</th>
+			<th class="three">Description</th>
+			<th class="three">Function</th>
+			<th class="four" colspan="3">Strong</th>
+			<th class="four"colspan="3">Neutral</th>
+			<th class="four"colspan="3">Weak</th></tr>
+			<tr>
+			<td class="three"></td>
+			<td class="three"></td>
+			<td class="three"></td>
+			<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+			<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+			<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+			</tr>
+			<tr>
+			<td>Analytic Head</td>
+			<td class="three">Description</td>
+			<td class="three">Function</td>
+			<td class="five" contenteditable='true'></td><td class="five"></td><td class="five"></td>
+			<td class="five"></td><td class="five"></td><td class="five"></td>
+			<td class="five"></td><td class="five"></td><td class="five"></td>
+			</tr>
+		</table>
+		</div>
+	</div>
+	<div class="tab_list" ng-show="create_model">
+	<h3 class="sub_heading"> Model List </h3>
+	<table class="table table-stripped">
+		<tr> 
+			<th> Model Name </th>
+			<th> Model Description </th>
+			<th> Industries </th>
+			<th> Created </th>
+			<th> Modified </th>
+			<th> Action </th>
+		</tr>
+		<tr ng-repeat="model in model_list">
+			<td>[[ model.name ]]</td>
+			<td>[[ model.description ]]</td>
+			<td><div class="model_industry" ng-repeat="item in model.industry">[[ item.name ]]</div></td>
+			<td>[[ model.created_date ]]</td>
+			<td>[[ model.modified_date ]]</td>
+			<td> <a href="" ng-click="edit_field(model)"> Modify </a> / <a href="" ng-click="delete_model(model)"> Delete </a>
+		</tr>
+	</table>
+	</div>
+</div>
+
+
+{% endblock content %}

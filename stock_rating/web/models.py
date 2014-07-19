@@ -135,13 +135,13 @@ class ScoreRating(Date):
 
 class AnalysisModel(Date):
 
-    name = models.CharField('Model name', max_length=100)
+    name = models.CharField('Model name', max_length=200, unique=True, null=True)
     description = models.TextField('Description')
-    insdustries = models.ManyToManyField(Industry)
+    industries = models.ManyToManyField(Industry)
     analytical_heads = models.ManyToManyField(AnalyticalHead)
 
     def __unicode__(self):
-        return name
+        return self.name
 
 class ParameterLimit(models.Model):
 

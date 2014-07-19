@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction, Industry
+from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -111,6 +111,37 @@ class Category(View):
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
+
+class ModelDetails(View):
+
+    def get(self, request, *args, **kwargs):
+        item_list = AnalysisModel.objects.all()
+        items = []
+        industry_set = []
+        for item in item_list:
+            industries = item.industries.all()
+            for industry in industries:
+                industry_set.append({
+                    'id': industry.id,
+                    'name': industry.industry_name,
+                })
+            #print industry_set
+            items.append({
+                'id':item.id,
+                'name': item.name,
+                'description': item.description,
+                'industry': industry_set,
+                'created_date': item.created_date.strftime("%d/%m/%Y"),
+                'modified_date': item.updated_date.strftime("%d/%m/%Y"),
+            })
+            industry_set = []
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'model_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+
 class Analyt_Heads(View):
 
     def get(self, request, *args, **kwargs):
@@ -209,7 +240,6 @@ class SaveUser(View):
         if request.is_ajax():
 
             user_details = ast.literal_eval(request.POST['user_details'])
-            print request.POST['user_details']
             if user_details['id'] != '':
                 user = User.objects.get(id=user_details['id'])
                 permission = UserPermission.objects.get(user=user)
@@ -260,6 +290,38 @@ class SaveField(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'field_settings.html', {})
+
+
+class SaveModel(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            model_details = ast.literal_eval(request.POST['model_details'])
+            industry_selected = ast.literal_eval(request.POST['industry_selected'])
+            try:
+                model = AnalysisModel.objects.get(id=model_details['id'])
+            except:
+                model = AnalysisModel()
+            model.name = model_details['model_name']
+            model.description = model_details['model_description']
+            try:
+                model.save()
+                industry_remove =  model.industries.all()
+                print industry_remove
+                for industry in industry_remove:
+                    model.industries.remove(industry.id)
+                for industry in industry_selected:
+                    model.industries.add(industry)
+                res = {
+                  'result': 'ok',
+                }
+            except:
+                res = {
+                  'result': 'error',  
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'models.html', {})
 
 
 class SaveFunction(View):
@@ -425,6 +487,22 @@ class DeleteField(View):
                   'result': 'ok',
                 }
         else:
+                res = {
+                   'result': 'error',  
+                }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class DeleteModel(View):
+    def get(self, request, *args, **kwargs):
+        model = AnalysisModel.objects.get(id=request.GET.get('id')) 
+        try:
+                model.delete()
+                res = {
+                  'result': 'ok',
+                }
+        except:
                 res = {
                    'result': 'error',  
                 }

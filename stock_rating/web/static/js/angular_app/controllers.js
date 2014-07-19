@@ -232,7 +232,6 @@ function FieldController($scope, $element, $http, $timeout, $location)
         $scope.new_field.id = field.id;
     }
     $scope.delete_field = function(field){
-        console.log(field.id);
         var url = '/delete_field/?id='+field.id;
         $http.get(url).success(function(data){
             if(data.result == 'ok'){
@@ -264,7 +263,6 @@ function FieldController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_new_field = function(){
         if($scope.validate_field()){
-           /* $scope.new_user.analytical_heads = String($scope.new_user.analytical_heads)*/
             params = { 
                 'field_details': angular.toJson($scope.new_field),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -712,7 +710,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/get_continuity/?id='+id;
         $http.get(url).success(function(data) {
             $scope.continuity_list = data.item_list;
-            console.log($scope.continuity_list);
             $scope.select_type = 2;
             $scope.new_continuity.id = $scope.continuity_list[0].id;
             $scope.new_continuity.function_name = $scope.continuity_list[0].name;
@@ -730,8 +727,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/get_consistency/?id='+id;
         $http.get(url).success(function(data) {
             $scope.consistency_list = data.item_list;
-            console.log($scope.consistency_list);
-            $scope.select_type = 3;
+             $scope.select_type = 3;
             $scope.new_consistency.id = $scope.consistency_list[0].id;
             $scope.new_consistency.function_name = $scope.consistency_list[0].name;
             $scope.new_consistency.function_description = $scope.consistency_list[0].description;
@@ -766,12 +762,22 @@ function FunctionController($scope, $element, $http, $timeout, $location)
 
 function ModelController($scope, $element, $http, $timeout, $location)
 {
+    $scope.new_model = {
+        'model_name': '',
+        'model_description': '',
+        'industry_select': '',
+        'industry_list': '',
+        'id': '',
+    }
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
         $scope.get_industries();
+        $scope.get_models();
+        $scope.get_anly_head();
         $scope.create_model = true; 
-        $scope.rightSelect = [];   
+        $scope.rightSelect = [];
+        $scope.industry_selected = [];    
     }
     $scope.show_create_model = function(){
         $scope.create_model = true; 
@@ -785,25 +791,151 @@ function ModelController($scope, $element, $http, $timeout, $location)
         var url = '/industry/';
         $http.get(url).success(function(data) {
             $scope.industry_list = data.industry_list;
-            console.log($scope.industry_list);
+            $scope.industry_select = '';
         })
     }
+    $scope.get_models = function(){
+        var url = '/models_list/';
+        $http.get(url).success(function(data) {
+            $scope.model_list = data.model_list;
+        })
+    }
+    
     $scope.moveRight = function(){
         $scope.flag = 1;
-        
         for(var i = 0; i < $scope.industry_list.length; i++)
-            console.log($scope.industry_list[i].id);
-            console.log($scope.new_model.industry_list[0]);
-            for(var j = 0; j < $scope.new_model.industry_list.length; i++)
-               if($scope.industry_list[i].id == $scope.new_model.industry_list[j])
-                if($scope.industry_select.length == 0)
-                    rightSelect.push($scope.industry_list[i]);
+            $scope.industry_list[i].selected = false;
+        for(var i = 0; i < $scope.industry_list.length; i++){
+            for(var j = 0; j < $scope.new_model.industry_list.length; j++) {
+                if($scope.industry_list[i].id == $scope.new_model.industry_list[j])
+                {
+                    if($scope.rightSelect.length == 0)
+                    {
+                        $scope.rightSelect.push($scope.industry_list[i]);
+                        $scope.flag = 0;
+                    }
                 else
-                    for(var k = 0; k < $scope.industry_select.length; i++)
-                        if($scope.industry_select[i] == $scope.new_model.industry_list[k])
+                    for(var k = 0; k < $scope.rightSelect.length; k++)
+                    {
+                        if($scope.rightSelect[k].id == $scope.new_model.industry_list[j])
                             $scope.flag = 0;
+                    }
                     if($scope.flag == 1)
-                        rightSelect.push($scope.industry_list[i]);
+                        $scope.rightSelect.push($scope.industry_list[i]);
+                    $scope.flag = 1;
+                }
+            }            
+        }$scope.flag = 1; 
+    }
+    $scope.moveLeft = function(){
+        for(var i = 0; i < $scope.new_model.industry_select.length; i++) 
+         {
+            for(var j = 0; j < $scope.rightSelect.length; j++)
+            {
+                if($scope.rightSelect[j].id == $scope.new_model.industry_select[i])
+                   $scope.rightSelect.splice($scope.rightSelect.indexOf($scope.rightSelect[j]), 1)
+            }
+         }
+         console.log($scope.rightSelect);
+    }
+    $scope.selectallLeft = function(){
+        for(var i = 0; i < $scope.industry_list.length; i++)
+            $scope.industry_list[i].selected = true;
+        $scope.select = [];
+        for(var i = 0; i < $scope.industry_list.length; i++)
+            $scope.select.push($scope.industry_list[i].id);
+        $scope.new_model.industry_list = $scope.select;     
+    }
+  /*  $scope.selectallRight = function(){
+        for(var i = 0; i < $scope.rightSelect.length; i++)
+            $scope.rightSelect[i].selected = true;
+        $scope.select = [];
+        for(var i = 0; i < $scope.industry_list.length; i++)
+            $scope.select.push($scope.industry_list[i].id);
+        $scope.new_model.industry_list = $scope.select;     
+    }*/
+    $scope.validate_model = function(){
+        $scope.msg = '';
+        if($scope.new_model.model_name == '') {
+            $scope.msg = "Please enter Model Name";
+            return false;
+        } else if($scope.new_model.model_description == '' ) {
+            $scope.msg = "Please enter Model Description";
+            return false;
+        } else if($scope.rightSelect.length == 0 ) {
+            $scope.msg = "Please select atleast one industry";
+            return false;
+        } else {
+            return true;
+        }  
+    }
+    $scope.save_model = function(){
+        if($scope.validate_model()){
+            console.log($scope.rightSelect)
+            for(var i = 0; i < $scope.rightSelect.length; i++)
+                $scope.industry_selected.push($scope.rightSelect[i].id);
+            params = { 
+                'model_details': angular.toJson($scope.new_model),
+                'industry_selected': angular.toJson($scope.industry_selected),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_model/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) { 
+                if(data.result == 'error'){
+                     $scope.msg = "Model already exists";
+                    }
+                else
+                    $scope.reset_model(); 
+                    $scope.get_models();        
+             
+              }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        } 
+
+    }
+    $scope.edit_field = function(model){
+        $scope.rightSelect = []
+        $scope.new_model.model_name = model.name;
+        $scope.new_model.model_description = model.description;
+        $scope.new_model.id = model.id;
+        for(var i=0; i < model.industry.length; i++){
+            $scope.rightSelect.push(model.industry[i])
+        }           
+    }
+    $scope.reset_model = function(){
+        $scope.msg = '';
+        $scope.new_model = {
+            'name': '',
+            'description': '',
+            'id': ''
+        }
+        $scope.rightSelect = [];
+        $scope.select = [];
+        $scope.industry_selected = [];
+        for(var i = 0; i < $scope.industry_list.length; i++)
+            $scope.industry_list[i].selected = false;
+    }
+    $scope.get_anly_head = function(){
+        var url = '/anly_head/';
+        $http.get(url).success(function(data) {
+            $scope.cat_list = data.item_list;
+        })
+    }
+    $scope.delete_model = function(field){
+        var url = '/delete_model/?id='+field.id;
+        $http.get(url).success(function(data){
+            if(data.result == 'ok'){
+                $scope.msg = "Model deleted";
+               }
+              $scope.get_models();                    
+        })
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
