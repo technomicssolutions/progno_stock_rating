@@ -20,12 +20,12 @@
 		<textarea rows="3" cols="25" name="model_description" ng-model="new_model.model_description" ></textarea><br>
 		<label> Select Industries: </label>
 		<select size="5" name="industry_list" ng-model="new_model.industry_list" multiple>
-		    <option ng-repeat="entry in industry_list" ng-selected="entry.selected" value="[[entry.id]]">[[entry.name]]</option>
+		    <option ng-repeat="entry in industry_list" ng-selected="entry.selected"  value="[[entry.id]]">[[entry.name]]</option>
 		</select>
 		<input type="button" ng-click="moveRight()" value=">>">
 		<input type="button" ng-click="moveLeft()" value="<<">
 		<select size="5" name="industry_select" ng-model="new_model.industry_select" multiple>
-		    <option ng-repeat="el in rightSelect" ng-selected="el.selected" value="[[el.id]]">[[el.name]]</option>
+		    <option ng-repeat="el in rightSelect" ng-selected="el.selected"  value="[[el.id]]" >[[el.name]]</option>
 		</select>
 		<div class="model_select">
 			<input type="button" ng-click="selectallLeft()" value="Select All">
@@ -40,37 +40,53 @@
 	<div class="model_set" ng-show="define_model">
 		<h3 class="model_heading"> Define Model </h3>
 		<label> Select Model: </label>
-		<select name="select_model" ng-model="select_model" >
+		<select class="one" name="select_model" ng-model="select_model" >
 			 <option value="" disabled="True">Select</option>
 			 <option ng-repeat="entry in model_list" value="[[entry.id]]">[[entry.name]]</option>
 		</select>
-		<div class="tab_def_model" ng-show="define_model">
-		<h3 class="sub_heading"> Scoring </h3>
-		<table class="table table-stripped">
-			<tr>
-			<th class="three">Anaytic Head</th>
-			<th class="three">Description</th>
-			<th class="three">Function</th>
-			<th class="four" colspan="3">Strong</th>
-			<th class="four"colspan="3">Neutral</th>
-			<th class="four"colspan="3">Weak</th></tr>
-			<tr>
-			<td class="three"></td>
-			<td class="three"></td>
-			<td class="three"></td>
-			<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
-			<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
-			<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+		<div class="tab_def_model">
+			<h3 class="sub_heading"> Scoring </h3>
+			<table class="table table-stripped">
+				<tr>
+				<th class="three">Anaytic Head</th>
+				<th class="three">Function</th>
+				<th class="four" colspan="3">Strong</th>
+				<th class="four" colspan="3">Neutral</th>
+				<th class="four" colspan="3">Weak</th>
+				<th class="four no_border" colspan="4"></th></tr>
+				<tr>
+				<td class="three"></td>
+				<td class="three"></td>
+				<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+				<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+				<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+				<td class="five no_border"></td>
+				<td class="five no_border"></td>
+				<td class="five no_border"></td>
+				<td class="five no_border"></td>
+				
 			</tr>
-			<tr>
-			<td>Analytic Head</td>
-			<td class="three">Description</td>
-			<td class="three">Function</td>
-			<td class="five" contenteditable='true'></td><td class="five"></td><td class="five"></td>
-			<td class="five"></td><td class="five"></td><td class="five"></td>
-			<td class="five"></td><td class="five"></td><td class="five"></td>
-			</tr>
-		</table>
+				<tr ng-repeat="entry in cat_list">
+				<td class="three">[[ entry.title ]]</td>
+				<td class="three">
+					<select>
+							<option value="[[ item.id ]]" ng-repeat="item in entry.function_set">[[ item.function_name ]]</option>	
+					</select>
+				</td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td>
+				<td class="five"><input type="text"></td><td class="five"></td>
+				<td class="five no_border"><input type="button" value="Edit"></td>
+				<td class="five no_border"><input type="button" value="Del"></td>
+				<td class="five no_border"><input type="button" value="Add"></td>
+				<td class="five no_border"><input type="button" value="Save"></td>
+				</tr>
+			</table>
 		</div>
 	</div>
 	<div class="tab_list" ng-show="create_model">

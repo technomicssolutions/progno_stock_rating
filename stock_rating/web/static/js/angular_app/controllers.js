@@ -98,9 +98,11 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         $scope.reset_password_flag = true;
         $scope.edit_flag = false;
         $scope.current_user.id = user.id;
+        $scope.current_user.password = '';
+        $scope.current_user.confirm_password = '';
     }
     $scope.save_password = function(){
-        if($scope.current_user.password != '' && $scope.current_user.password == $scope.current_user.confirm_password){
+        if($scope.validate_password()){
            params = { 
                 'id': $scope.current_user.id,
                 'password': $scope.current_user.password,
@@ -118,6 +120,18 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
             }).error(function(data, status){
                 $scope.message = data.message;
             }); 
+        }
+    }
+    $scope.validate_password = function(){
+        $scope.msg = '';
+        if($scope.current_user.password == '') {
+            $scope.msg = "Please enter Password";
+            return false;
+        } else if($scope.current_user.password != $scope.current_user.confirm_password) {
+            $scope.msg = "Password mismatch";
+            return false;
+        } else {
+            return true;
         }
     }
     $scope.validate_user = function(){
@@ -156,14 +170,30 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
-            }).success(function(data, status) {            
+            }).success(function(data, status) {   
+             if(data.result == 'ok'){
+                $scope.msg = "";
                 $scope.get_users();
                 $scope.reset_user();
                 $scope.edit_flag = false;
+             }         
+             else
+                $scope.msg = "Username already exists";
+                
             }).error(function(data, status){
                 $scope.message = data.message;
             });
         }        
+    }
+    $scope.delete_user = function(user){
+        var url = '/delete_user/?id='+user.id;
+        $http.get(url).success(function(data){
+        if(data.result == 'ok')
+            $scope.msg = "User deleted";
+        else 
+            $scope.msg = "Error";
+        $scope.get_users();                    
+        })
     }
     $scope.get_users = function(){
         var url = '/users/';
@@ -280,7 +310,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
                     }
                 else
                     {
-                        $scope.msg = "";
+                     $scope.msg = "";
                      $scope.new_field = {
                      'field_name': '',
                      'field_description': '',
@@ -584,16 +614,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                      $scope.msg = "Function already exists";
                     }
                 else
-                    {
-                     $scope.msg = "";
-                     $scope.new_general = {
-                     'id': '',
-                     'function_name': '',
-                     'function_description': '',
-                     'function_formula': '',            
-                     'select_head': '',
-                     }   
-                    }       
+                    $scope.reset_general();
             $scope.get_functions(); 
             }).error(function(data, status){
                 $scope.message = data.message;
@@ -620,20 +641,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                      $scope.msg = "Function already exists";
                     }
                 else
-                    {
-                     $scope.msg = "";
-                     $scope.new_continuity = {
-                     'id': '',
-                     'function_name': '',
-                     'function_description': '',
-                     'no_of_periods': '',
-                     'minimum_value': '',
-                     'period_1': '',
-                     'period_2': '',
-                     'period_3': '',
-                     'select_head': '',
-                     }   
-                    }    
+                    $scope.reset_continuity ();
                 $scope.get_functions();    
             }).error(function(data, status){
                 $scope.message = data.message;
@@ -660,24 +668,50 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                      $scope.msg = "Function already exists";
                     }
                 else
-                    {
-                     $scope.msg = "";
-                     $scope.new_consistency = {
-                     'id': '',
-                     'function_name': '',
-                     'function_description': '',
-                     'no_of_periods': '',
-                     'mean': '',
-                     'period_1': '',
-                     'period_2': '',
-                     'select_head': '',
-                     }   
-                    }    
+                    $scope.reset_consistency();
                 $scope.get_functions();   
             }).error(function(data, status){
                 $scope.message = data.message;
             });
         }        
+    }
+    $scope.reset_general = function(){
+        $scope.msg = "";
+        $scope.new_general = {
+            'id': '',
+            'function_name': '',
+            'function_description': '',
+            'function_formula': '',            
+            'select_head': '',
+        } 
+    }
+    $scope.reset_continuity = function(){
+        $scope.msg = "";
+        $scope.new_continuity = {
+            'id': '',
+            'function_name': '',
+            'function_description': '',
+            'no_of_periods': '',
+            'minimum_value': '',
+            'period_1': '',
+            'period_2': '',
+            'period_3': '',
+            'select_head': '',
+        }         
+
+    }
+    $scope.reset_consistency = function(){
+        $scope.msg = "";
+        $scope.new_consistency = {
+            'id': '',
+            'function_name': '',
+            'function_description': '',
+            'no_of_periods': '',
+            'mean': '',
+            'period_1': '',
+            'period_2': '',
+            'select_head': '',
+        }  
     }
     $scope.edit_function = function(field){
         if(field.function_type == 'general'){
@@ -769,6 +803,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
         'industry_list': '',
         'id': '',
     }
+
+    $scope.selected_data = [];
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
@@ -806,12 +842,17 @@ function ModelController($scope, $element, $http, $timeout, $location)
         for(var i = 0; i < $scope.industry_list.length; i++)
             $scope.industry_list[i].selected = false;
         for(var i = 0; i < $scope.industry_list.length; i++){
+            $scope.selected_data.push({
+                'id': $scope.industry_list[i].id,
+                'name': $scope.industry_list[i].name});
+        }
+        for(var i = 0; i < $scope.selected_data.length; i++){
             for(var j = 0; j < $scope.new_model.industry_list.length; j++) {
-                if($scope.industry_list[i].id == $scope.new_model.industry_list[j])
+                if($scope.selected_data[i].id == $scope.new_model.industry_list[j])
                 {
                     if($scope.rightSelect.length == 0)
                     {
-                        $scope.rightSelect.push($scope.industry_list[i]);
+                        $scope.rightSelect.push($scope.selected_data[i]);
                         $scope.flag = 0;
                     }
                 else
@@ -821,39 +862,66 @@ function ModelController($scope, $element, $http, $timeout, $location)
                             $scope.flag = 0;
                     }
                     if($scope.flag == 1)
-                        $scope.rightSelect.push($scope.industry_list[i]);
+                        $scope.rightSelect.push($scope.selected_data[i]);
                     $scope.flag = 1;
                 }
-            }            
-        }$scope.flag = 1; 
+            }
+        }$scope.flag = 1;
+        for(var i = 0; i < $scope.rightSelect.length; i++)
+            $scope.rightSelect[i].selected = false;
     }
     $scope.moveLeft = function(){
         for(var i = 0; i < $scope.new_model.industry_select.length; i++) 
-         {
+        {   
             for(var j = 0; j < $scope.rightSelect.length; j++)
             {
-                if($scope.rightSelect[j].id == $scope.new_model.industry_select[i])
+                console.log($scope.rightSelect[j].id, $scope.new_model.industry_select[i]);
+                if(($scope.rightSelect[j].id == $scope.new_model.industry_select[i]))
                    $scope.rightSelect.splice($scope.rightSelect.indexOf($scope.rightSelect[j]), 1)
             }
-         }
-         console.log($scope.rightSelect);
+        }
+
+       
     }
-    $scope.selectallLeft = function(){
-        for(var i = 0; i < $scope.industry_list.length; i++)
-            $scope.industry_list[i].selected = true;
-        $scope.select = [];
-        for(var i = 0; i < $scope.industry_list.length; i++)
-            $scope.select.push($scope.industry_list[i].id);
-        $scope.new_model.industry_list = $scope.select;     
+/*    $scope.rightBox = function(entry){
+        console.log(entry);
+        if(entry.selected == false)
+            entry.selected = true;
+        else
+            entry.selected = false;
+        
     }
-  /*  $scope.selectallRight = function(){
-        for(var i = 0; i < $scope.rightSelect.length; i++)
-            $scope.rightSelect[i].selected = true;
-        $scope.select = [];
-        for(var i = 0; i < $scope.industry_list.length; i++)
-            $scope.select.push($scope.industry_list[i].id);
-        $scope.new_model.industry_list = $scope.select;     
+    $scope.leftBox = function(entry){
+        console.log(entry);
+        if(entry.selected == false)
+            entry.selected = true;
+        else
+            entry.selected = false;
+        
     }*/
+    $scope.selectallLeft = function(){
+        for(var i = 0; i < $scope.industry_list.length; i++){
+            if($scope.industry_list[i].selected == true)
+                $scope.industry_list[i].selected = false;
+            else
+                $scope.industry_list[i].selected = true;
+        }
+        $scope.select = [];
+        for(var i = 0; i < $scope.industry_list.length; i++)
+            $scope.select.push($scope.industry_list[i].id);
+        $scope.new_model.industry_list = $scope.select; 
+    }
+    $scope.selectallRight = function(){
+        for(var i = 0; i < $scope.rightSelect.length; i++)
+            if($scope.rightSelect[i].selected == true)
+                $scope.rightSelect[i].selected = false;
+            else
+                $scope.rightSelect[i].selected = true;
+        $scope.select = [];
+        for(var i = 0; i < $scope.rightSelect.length; i++)
+            $scope.select.push($scope.rightSelect[i].id)
+        $scope.new_model.industry_select = $scope.select;     
+    }
     $scope.validate_model = function(){
         $scope.msg = '';
         if($scope.new_model.model_name == '') {
@@ -871,7 +939,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_model = function(){
         if($scope.validate_model()){
-            console.log($scope.rightSelect)
             for(var i = 0; i < $scope.rightSelect.length; i++)
                 $scope.industry_selected.push($scope.rightSelect[i].id);
             params = { 
@@ -912,8 +979,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.reset_model = function(){
         $scope.msg = '';
         $scope.new_model = {
-            'name': '',
-            'description': '',
+            'model_name': '',
+            'model_description': '',
             'id': ''
         }
         $scope.rightSelect = [];

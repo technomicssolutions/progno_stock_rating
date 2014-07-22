@@ -187,6 +187,7 @@ header {
 .no-border {
 	border: none !important;
 }
+
 /*************** Menu style end ************/
 
 
@@ -253,7 +254,6 @@ header {
 	float: left;
     width: 150px;
     margin-left: 5%;
-
 }
 
 .function_input {
@@ -308,7 +308,7 @@ header {
 	display: block;
     margin-left: 5%;
     margin-right: 5%;
-    width: 85%;	
+    width: 93%;	
 }
 
 .model_set label {
@@ -330,7 +330,12 @@ header {
 	margin-bottom: -3%;
 	width: 25%;
 }
-
+select.one{
+	width: auto;
+}
+.model_set input[type="button"] {
+	width: 100%;	
+}
 
 .model_menu input[type="submit"] {
 	border: none;
@@ -380,7 +385,17 @@ header {
 	border-left: 1px solid #DDDDDD;
 	border-right: 1px solid #DDDDDD;
 }
-/******************* End Models Style ***************/
+
+.tab_def_model select{
+	width: auto;
+}
+.tab_def_model input[type="text"] {
+	width: 100%;	
+	border: none;
+}
+.tab_def_model input[type="button"] {
+	width: 100%;	
+}
 td.one{
 	width:7%; height:16px; text-align:left;
 }
@@ -388,7 +403,7 @@ td.two{
 	 width:7%; height:43px; text-align:left;
 	}
 td.three{
-	 width:15%; text-align:left;
+	 width:12%; text-align:left;
 	}
 td.four{
 	 width:26%; text-align:center;
@@ -397,8 +412,15 @@ th.four{
 	 width:26%; text-align:center;
 	}
 th.three{
-	 width:16%; text-align:center;
+	 width:12%; text-align:center;
 	}
 td.five{
-	width:6.6%; text-align:center;
+	width:5.6%; text-align:center;
 }
+.no_border{
+	border-right: none !important;
+	border-left: none !important;
+	border-top: none !important;
+	border-bottom: none !important;
+}
+/******************* End Models Style ***************/

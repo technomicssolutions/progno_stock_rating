@@ -147,11 +147,20 @@ class Analyt_Heads(View):
     def get(self, request, *args, **kwargs):
         item_list = AnalyticalHead.objects.all()
         items = []
+        function_set = []
         for item in item_list:
+            function_list = item.function_set.all()
+            for function in function_list:
+                function_set.append({
+                    'function_name': function.function_name,
+                    })
             items.append({
                 'id':item.id,
-                'title': item.title
+                'title': item.title,
+                'description': item.description,
+                'function_set': function_set,
             })
+            function_set = []
         if request.is_ajax():
             response = simplejson.dumps({
                'item_list': items
@@ -248,19 +257,24 @@ class SaveUser(View):
                 user = User()
             user.username = user_details['username']
             user.first_name = user_details['first_name']
-            user.save()
             user.set_password(user_details['password'])
-            user.save()            
-            permission.user = user
-            permission.data_upload = True if user_details['data_upload'] == "true" else False
-            permission.field_settings = True if user_details['field_settings'] == "true" else False
-            permission.score_settings = True if user_details['score_settings'] == "true" else False
-            permission.function_settings = True if user_details['function_settings'] == "true" else False
-            permission.analytical_heads = True if user_details['analytical_heads'] == "true" else False
-            permission.save()
-            res = {
-                'result': 'ok',
-            }
+            try:
+                user.save()            
+                permission.user = user
+                permission.data_upload = True if user_details['data_upload'] == "true" else False
+                permission.field_settings = True if user_details['field_settings'] == "true" else False
+                permission.score_settings = True if user_details['score_settings'] == "true" else False
+                permission.function_settings = True if user_details['function_settings'] == "true" else False
+                permission.analytical_heads = True if user_details['analytical_heads'] == "true" else False
+                permission.save()
+                res = {
+                    'result': 'ok',
+                }
+            except:
+                res = {
+                    'result': 'error',
+                }
+
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'administration.html', {})
@@ -499,6 +513,23 @@ class DeleteModel(View):
         model = AnalysisModel.objects.get(id=request.GET.get('id')) 
         try:
                 model.delete()
+                res = {
+                  'result': 'ok',
+                }
+        except:
+                res = {
+                   'result': 'error',  
+                }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class DeleteUser(View):
+    def get(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.GET.get('id')) 
+        print user
+        try:
+                user.delete()
                 res = {
                   'result': 'ok',
                 }

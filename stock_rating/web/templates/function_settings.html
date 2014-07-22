@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %} Field Settings {% endblock title%}
+{% block title %} Function Settings {% endblock title%}
 {% block body_id %}field{% endblock %}
 {% block controller %}
 	ng-controller="FunctionController" ng-init="init('{{csrf_token}}')"
@@ -46,7 +46,7 @@
 				</select>
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_general()"/>
-				<input type="submit" name="submit" value="Reset" ng-click=""/>
+				<input type="submit" name="submit" value="Reset" ng-click="reset_general()"/>
 		</div>		
 		<div class="function_set" ng-show="show_continuity">
 			<h3 class="sub_heading"> Continuity </h3>
@@ -72,7 +72,7 @@
 				</select>
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_continuity()"/>
-				<input type="submit" name="submit" value="Reset" ng-click=""/>
+				<input type="submit" name="submit" value="Reset" ng-click="reset_continuity()"/>
 		</div>
 		<div class="function_set" ng-show="show_consistency">
 			<h3 class="sub_heading"> Consistency </h3>
@@ -96,7 +96,7 @@
 				</select>
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_consistency()"/>
-				<input type="submit" name="submit" value="Reset" ng-click=""/>
+				<input type="submit" name="submit" value="Reset" ng-click="reset_consistency()"/>
 		</div>
 		<div class="tab_list">
 		<h3 class="sub_heading"> Functions List </h3>
