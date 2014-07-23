@@ -130,7 +130,7 @@ class Company(models.Model):
 class ScoreRating(Date):
     strong_score = models.IntegerField('Strong', max_length=1, default=0)
     neutral_score = models.IntegerField('Neutral', max_length=1, default=0)
-    week_score = models.IntegerField('Week', max_length=1, default=0)
+    weak_score = models.IntegerField('weak', max_length=1, default=0)
 
 
 class AnalysisModel(Date):
@@ -146,16 +146,20 @@ class AnalysisModel(Date):
 class ParameterLimit(models.Model):
 
     analysis_model = models.ForeignKey('AnalysisModel')
+    analytical_head = models.ForeignKey(AnalyticalHead, null=True)
     function = models.ForeignKey(Function)
     strong_min = models.FloatField('Strong Min', max_length=5)
     strong_max = models.FloatField('Strong Max', max_length=5)
+    strong_points = models.FloatField('Strong Points', max_length=5, default=0)
     neutral_min = models.FloatField('Neutral Min', max_length=5)
     neutral_max = models.FloatField('Neutral Max', max_length=5)
-    week_min = models.FloatField('Week Min', max_length=5)
-    week_max = models.FloatField('Week Max', max_length=5)
+    neutral_points = models.FloatField('Neutral Points', max_length=5, default=0)
+    weak_min = models.FloatField('weak Min', max_length=5, default=0)
+    weak_max = models.FloatField('weak Max', max_length=5, default=0)
+    weak_points = models.FloatField('weak Points', max_length=5, default=0)
     strong_comment = models.CharField('Strong Comment', max_length=200)
     neutral_comment = models.CharField('Neutral Comment', max_length=200)
-    week_comment = models.CharField('Week Comment', max_length=200)
+    weak_comment = models.CharField('weak Comment', max_length=200, null=True)
         
 class StarRating(models.Model):
 

@@ -147,20 +147,12 @@ class Analyt_Heads(View):
     def get(self, request, *args, **kwargs):
         item_list = AnalyticalHead.objects.all()
         items = []
-        function_set = []
         for item in item_list:
-            function_list = item.function_set.all()
-            for function in function_list:
-                function_set.append({
-                    'function_name': function.function_name,
-                    })
             items.append({
                 'id':item.id,
                 'title': item.title,
                 'description': item.description,
-                'function_set': function_set,
             })
-            function_set = []
         if request.is_ajax():
             response = simplejson.dumps({
                'item_list': items
@@ -423,6 +415,50 @@ class SaveFunction(View):
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'function_settings.html', {})
+
+
+class ModelView(View):
+    def get(self, request, *args, **kwargs):
+        model = AnalysisModel.objects.get(id=request.GET.get('id'))
+        item_list = AnalyticalHead.objects.all()
+        items = []
+        function_set = []
+        parameter_set = []
+        for item in item_list:
+            function_list = item.function_set.all()
+            for function in function_list:
+                parameterlimit_list =  function.parameterlimit_set.filter(analysis_model_id=model.id)
+                for parameter in parameterlimit_list:
+                    parameter_set.append({
+                        'strong_min': parameter.strong_min,
+                        'strong_max': parameter.strong_max,
+                        'strong_points': parameter.strong_points,
+                        'neutral_min': parameter.neutral_min,
+                        'neutral_max': parameter.neutral_max,
+                        'neutral_points': parameter.neutral_points,
+                        'weak_min': parameter.weak_min,
+                        'weak_max': parameter.weak_max,
+                        'weak_points': parameter.weak_points,
+                        })
+                    print function
+                    print parameter_set
+                function_set.append({
+                    'function_name': function.function_name,
+                    'parameter_set': parameter_set,
+                    })
+                parameter_set = []      
+            items.append({
+                'id':item.id,
+                'title': item.title,
+                'function_set': function_set,
+            })
+            function_set = []
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'item_list': items
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
 
 class General(View):
 

@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 
-from views import Login, Dashboard, Administration, Users, SaveUser, ResetPassword, FieldSettings, Fields, SaveField, FunctionSettings, SaveFunction, Category, Analyt_Heads, Functions, General, Continuity, Consistency, DeleteField, Model, IndustryDetails, SaveModel, ModelDetails, DeleteModel, DeleteUser
+from views import Login, Dashboard, Administration, Users, SaveUser, ResetPassword, FieldSettings, Fields, SaveField, FunctionSettings, SaveFunction, Category, Analyt_Heads, Functions, General, Continuity, Consistency, DeleteField, Model, IndustryDetails, SaveModel, ModelDetails, DeleteModel, DeleteUser, ModelView
 
 urlpatterns = patterns('',
     url(r'login/$', Login.as_view(), name="login"),
@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'get_general/$', login_required(General.as_view()), name="get_general"),
     url(r'get_continuity/$', login_required(Continuity.as_view()), name="get_continuity"),
     url(r'get_consistency/$', login_required(Consistency.as_view()), name="get_consistency"),
+    url(r'get_model_details/$', login_required(ModelView.as_view()), name="get_model_details"),
     url(r'delete_field/$', login_required(DeleteField.as_view()), name="delete_field"),
     url(r'delete_model/$', login_required(DeleteModel.as_view()), name="delete_model"),
     url(r'delete_user/$', login_required(DeleteUser.as_view()), name="delete_user"),
