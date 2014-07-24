@@ -31,6 +31,14 @@
 			<input type="button" ng-click="selectallLeft()" value="Select All">
 			<input type="button" ng-click="selectallRight()" value="Select All">
 		</div>
+		<label> Select Analytic Heads: </label>
+			<div class="model_set checkbox_head">
+				<div ng-repeat="analyt_head in anly_heads">
+					<input id="{{analyt_head.id}}" type="checkbox" ng-model="analyt_head.selected" value="{{analyt_head.id}}" ng-checked="selection.indexOf(analyt_head.title) > -1" />
+					<p class="check" for="{{analyt_head.title}}">[[ analyt_head.title ]]</p>
+				</div>
+			</div>
+
 		<p class="error_msg"> [[msg]] </p>
 		<div class="model_row">
 			<input type="submit" name="submit" value="Reset" ng-click="reset_model()"/>
@@ -66,11 +74,11 @@
 					<td class="five no_border"></td>
 					<td class="five no_border"></td>
 				</tr>
-				<tr ng-repeat="analyt_head in model_details">
+				<tr ng-repeat="analyt_head in anly_heads">
 					<td class="three">[[ analyt_head.title ]]</td>
 					<td colspan="14">
 						<table class="table table-stripped">
-							<tr ng-repeat="function in analyt_head.function_set">
+							<tr ng-repeat="function in analyt_head.function_set"">
 								<td class="three">
 									<select>
 											<option value="[[ function.id ]]" ng-repeat="function in analyt_head.function_set">[[ function.function_name ]]</option>	

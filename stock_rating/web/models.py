@@ -146,7 +146,6 @@ class AnalysisModel(Date):
 class ParameterLimit(models.Model):
 
     analysis_model = models.ForeignKey('AnalysisModel')
-    analytical_head = models.ForeignKey(AnalyticalHead, null=True)
     function = models.ForeignKey(Function)
     strong_min = models.FloatField('Strong Min', max_length=5)
     strong_max = models.FloatField('Strong Max', max_length=5)

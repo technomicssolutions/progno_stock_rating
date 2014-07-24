@@ -325,7 +325,16 @@ header {
 	margin-bottom: 1.5%;
 	width: 25%;
 }
-
+.model_set.checkbox_head{
+	width: 61%;
+	margin-left: 21%;
+	height: auto;
+}
+.check{
+	width: 20%;
+	display: inline-block;
+	height: 15px;
+}
 .model_set select {
 	margin-bottom: -3%;
 	width: 25%;
@@ -333,10 +342,15 @@ header {
 select.one{
 	width: auto;
 }
+
 .model_set input[type="button"] {
 	width: 100%;	
 }
 
+.model_set input[type="checkbox"] {
+	width: 4%;	
+	height: 10px;
+}
 .model_menu input[type="submit"] {
 	border: none;
 	background-color: #12569A;
@@ -360,6 +374,9 @@ select.one{
 }
 .model_set input[type="button"] {
 	width: 5%;	
+}
+.model_select{
+	margin-bottom: 3%;
 }
 .model_select input[type="button"] {
 	margin-left: 21%;

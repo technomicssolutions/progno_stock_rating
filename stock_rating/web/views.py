@@ -118,23 +118,31 @@ class ModelDetails(View):
         item_list = AnalysisModel.objects.all()
         items = []
         industry_set = []
+        analytical_head_set = []
         for item in item_list:
             industries = item.industries.all()
+            analytical_heads = item.analytical_heads.all()
+            for analytical_head in analytical_heads:
+                analytical_head_set.append({
+                    'id': analytical_head.id,
+                    'head': analytical_head.title,
+                })
             for industry in industries:
                 industry_set.append({
                     'id': industry.id,
                     'name': industry.industry_name,
                 })
-            #print industry_set
             items.append({
                 'id':item.id,
                 'name': item.name,
                 'description': item.description,
                 'industry': industry_set,
+                'analytical_heads': analytical_head_set,
                 'created_date': item.created_date.strftime("%d/%m/%Y"),
                 'modified_date': item.updated_date.strftime("%d/%m/%Y"),
             })
             industry_set = []
+            analytical_head_set = []
         if request.is_ajax():
             response = simplejson.dumps({
                'model_list': items
@@ -147,17 +155,25 @@ class Analyt_Heads(View):
     def get(self, request, *args, **kwargs):
         item_list = AnalyticalHead.objects.all()
         items = []
+        function_set = []
         for item in item_list:
+            function_list = item.function_set.all()
+            for function in function_list:
+                function_set.append({
+                    'function_id': function.id,
+                    'function_name': function.function_name,
+                     })
             items.append({
                 'id':item.id,
                 'title': item.title,
-                'description': item.description,
+                'function_set': function_set,
             })
+            function_set = []
         if request.is_ajax():
             response = simplejson.dumps({
                'item_list': items
             })
-            return HttpResponse(response, status=200, mimetype='application/json')
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 class Fields(View):
 
@@ -301,8 +317,8 @@ class SaveField(View):
 class SaveModel(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-
             model_details = ast.literal_eval(request.POST['model_details'])
+            analytical_heads = ast.literal_eval(request.POST['analytical_heads'])
             industry_selected = ast.literal_eval(request.POST['industry_selected'])
             try:
                 model = AnalysisModel.objects.get(id=model_details['id'])
@@ -313,11 +329,17 @@ class SaveModel(View):
             try:
                 model.save()
                 industry_remove =  model.industries.all()
-                print industry_remove
+                analytical_head_remove = model.analytical_heads.all()
                 for industry in industry_remove:
                     model.industries.remove(industry.id)
+                for analytical_head in analytical_head_remove:
+                    model.analytical_heads.remove(analytical_head.id)
                 for industry in industry_selected:
                     model.industries.add(industry)
+                for head in analytical_heads:
+                    if head['selected'] == "true":
+                        model.analytical_heads.add(head['id'])
+          
                 res = {
                   'result': 'ok',
                 }
@@ -420,44 +442,31 @@ class SaveFunction(View):
 class ModelView(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=request.GET.get('id'))
-        item_list = AnalyticalHead.objects.all()
-        items = []
-        function_set = []
         parameter_set = []
-        for item in item_list:
-            function_list = item.function_set.all()
-            for function in function_list:
-                parameterlimit_list =  function.parameterlimit_set.filter(analysis_model_id=model.id)
-                for parameter in parameterlimit_list:
-                    parameter_set.append({
-                        'strong_min': parameter.strong_min,
-                        'strong_max': parameter.strong_max,
-                        'strong_points': parameter.strong_points,
-                        'neutral_min': parameter.neutral_min,
-                        'neutral_max': parameter.neutral_max,
-                        'neutral_points': parameter.neutral_points,
-                        'weak_min': parameter.weak_min,
-                        'weak_max': parameter.weak_max,
-                        'weak_points': parameter.weak_points,
-                        })
-                    print function
-                    print parameter_set
-                function_set.append({
-                    'function_name': function.function_name,
-                    'parameter_set': parameter_set,
-                    })
-                parameter_set = []      
-            items.append({
-                'id':item.id,
-                'title': item.title,
-                'function_set': function_set,
-            })
-            function_set = []
+        function_set = []
+        parameterlimit_list =  model.parameterlimit_set.all()
+        for parameter in parameterlimit_list:
+            parameter_set.append({
+                'id': parameter.id,
+                'analytical_head_id': parameter.function.analytical_head.id,
+                'analytical_head': parameter.function.analytical_head.title,
+                'function_id': parameter.function.function_name,
+                'function_name': parameter.function.id,
+                'strong_min': parameter.strong_min,
+                'strong_max': parameter.strong_max,
+                'strong_points': parameter.strong_points,
+                'neutral_min': parameter.neutral_min,
+                'neutral_max': parameter.neutral_max,
+                'neutral_points': parameter.neutral_points,
+                'weak_min': parameter.weak_min,
+                'weak_max': parameter.weak_max,
+                'weak_points': parameter.weak_points,
+                })
         if request.is_ajax():
-            response = simplejson.dumps({
-               'item_list': items
+         response = simplejson.dumps({
+            'parameter_set': parameter_set
             })
-            return HttpResponse(response, status=200, mimetype='application/json')
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 
 class General(View):
@@ -563,7 +572,6 @@ class DeleteModel(View):
 class DeleteUser(View):
     def get(self, request, *args, **kwargs):
         user = User.objects.get(id=request.GET.get('id')) 
-        print user
         try:
                 user.delete()
                 res = {
