@@ -24,6 +24,12 @@ html, body {
 footer p{
 	text-align: center;
 }
+footer {
+	bottom: 0;
+    position: fixed;
+    text-align: center;
+    width: 100%;
+}
 .content {
 	float: right;
 	width: 83%;
