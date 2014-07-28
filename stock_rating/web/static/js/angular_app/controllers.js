@@ -407,25 +407,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_general = true;
          $scope.show_continuity = false;
          $scope.show_consistency = false;
-         $scope.new_continuity = {
-        'function_name': '',
-        'function_description': '',
-        'no_of_periods': '',
-        'minimum_value': '',
-        'period_1': '',
-        'period_2': '',
-        'period_3': '',
-        'select_head': '',
-         }
-         $scope.new_consistency = {
-        'function_name': '',
-        'function_description': '',
-        'no_of_periods': '',
-        'mean': '',
-        'period_1': '',
-        'period_2': '',
-        'select_head': '',
-         }
+         $scope.reset_continuity();
+         $scope.reset_consistency();
          $scope.select_category = ''
          $scope.msg = '';
         }
@@ -434,21 +417,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_general = false;
          $scope.show_continuity = true;
          $scope.show_consistency = false;
-         $scope.new_general = {
-        'function_name': '',
-        'function_description': '',
-        'function_formula': '',
-        'select_head': '',
-         }
-         $scope.new_consistency = {
-        'function_name': '',
-        'function_description': '',
-        'no_of_periods': '',
-        'mean': '',
-        'period_1': '',
-        'period_2': '',
-        'select_head': '',
-         }
+         $scope.reset_general();
+         $scope.reset_consistency();
          $scope.select_category = ''
          $scope.msg = '';
         }       
@@ -457,22 +427,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_general = false;
          $scope.show_continuity = false;
          $scope.show_consistency = true;
-         $scope.new_general = {
-        'function_name': '',
-        'function_description': '',
-        'function_formula': '',
-        'select_head': '',
-         }
-         $scope.new_continuity = {
-        'function_name': '',
-        'function_description': '',
-        'no_of_periods': '',
-        'minimum_value': '',
-        'period_1': '',
-        'period_2': '',
-        'period_3': '',
-        'select_head': '',
-         }
+         $scope.reset_general();
+         $scope.reset_continuity();
          $scope.select_category = ''
          $scope.msg = '';
         }       
@@ -836,7 +792,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
         var url = '/models_list/';
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
-            console.log($scope.model_list);
         })
     }
     $scope.get_anly_head = function(){
@@ -845,6 +800,58 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $scope.anly_heads = data.item_list;
         })
     }
+    $scope.get_model_details = function(id){
+        $scope.show_table = true;
+        $scope.function_row = [];
+        $scope.parameter_set = [];
+        $scope.function_set = [];
+        $scope.flag = 0;
+        var url = '/get_model_details/?id='+id;
+        $http.get(url).success(function(data) {
+            $scope.model_details = data.parameter_set;
+            for(var i = 0; i < $scope.model_details.length; i++){
+                for(var j = 0; j < $scope.model_details[i].function_set.length; j++){
+                    if($scope.model_details[i].function_set[j].parameter_set != ''){
+                        $scope.function_set.push({
+                            'function_id':$scope.model_details[i].function_set[j].function_id,
+                            'function_name': $scope.model_details[i].function_set[j].function_name,     
+                            'parameter_set': $scope.model_details[i].function_set[j].parameter_set,
+                       
+                        })
+                        $scope.flag = 1;                    
+                    }
+                }
+                if($scope.flag == 1){
+                    $scope.function_row.push({
+                        'head_id': $scope.model_details[i].analytical_head_id,
+                        'head_name': $scope.model_details[i].analytical_head_name,
+                        'function_set':  $scope.function_set,
+                        })   
+                }
+                else
+                {
+                    for(var j1 = 0; j1 < $scope.anly_heads.length; j1++){
+                        if($scope.model_details[i].analytical_head_id == $scope.anly_heads[j1].id){
+                            $scope.function_set.push({
+                                'function_id':$scope.model_details[i].function_set[0].function_id,
+                                'function_name': $scope.model_details[i].function_set[0].function_name,     
+                                'parameter_set': $scope.model_details[i].function_set[0].parameter_set,
+                                })
+                             $scope.function_row.push({
+                                'head_id': $scope.model_details[i].analytical_head_id,
+                                'head_name': $scope.model_details[i].analytical_head_name,
+                                'function_set':  $scope.function_set,
+                                })
+                            }
+                        }
+                    }
+            $scope.flag = 0;
+            $scope.function_set = [];
+            }            
+        console.log( $scope.function_row);
+        })
+    }
+
     
     $scope.moveRight = function(){
         $scope.flag = 1;
@@ -884,7 +891,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
         {   
             for(var j = 0; j < $scope.rightSelect.length; j++)
             {
-                console.log($scope.rightSelect[j].id, $scope.new_model.industry_select[i]);
                 if(($scope.rightSelect[j].id == $scope.new_model.industry_select[i]))
                    $scope.rightSelect.splice($scope.rightSelect.indexOf($scope.rightSelect[j]), 1)
             }
@@ -958,7 +964,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
         if($scope.validate_model()){
             for(var i = 0; i < $scope.anly_heads.length; i++)
                 $scope.anly_heads[i].selected = String($scope.anly_heads[i].selected);
-            console.log($scope.anly_heads);
             for(var i = 0; i < $scope.rightSelect.length; i++)
                 $scope.industry_selected.push($scope.rightSelect[i].id);
             params = { 
@@ -1019,14 +1024,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
         for(var i = 0; i < $scope.anly_heads.length; i++){
             $scope.anly_heads[i].selected = false;
         }
-    }
-    $scope.get_model_details = function(id){
-        $scope.show_table = true;
-        $scope.function_row = [];
-        var url = '/get_model_details/?id='+id;
-        $http.get(url).success(function(data) {
-            $scope.model_details = data.parameter_set;
-        })
     }
     $scope.delete_model = function(field){
         var url = '/delete_model/?id='+field.id;

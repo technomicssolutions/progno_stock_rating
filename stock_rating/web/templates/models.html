@@ -22,8 +22,8 @@
 		<select size="5" name="industry_list" ng-model="new_model.industry_list" multiple>
 		    <option ng-repeat="entry in industry_list" ng-selected="entry.selected"  value="[[entry.id]]">[[entry.name]]</option>
 		</select>
-		<input type="button" ng-click="moveRight()" value=">>">
-		<input type="button" ng-click="moveLeft()" value="<<">
+		<input type="button" ng-click="moveRight()" value="+">
+		<input type="button" ng-click="moveLeft()" value="-">
 		<select size="5" name="industry_select" ng-model="new_model.industry_select" multiple>
 		    <option ng-repeat="entry in rightSelect" ng-selected="entry.selected"  value="[[entry.id]]" >[[entry.name]]</option>
 		</select>
@@ -74,17 +74,19 @@
 					<td class="five no_border"></td>
 					<td class="five no_border"></td>
 				</tr>
-				<tr ng-repeat="analyt_head in anly_heads">
-					<td class="three">[[ analyt_head.title ]]</td>
+				<tr ng-repeat="analyt_head in function_row">
+					<td class="three">[[ analyt_head.head_name ]]</td>
 					<td colspan="14">
 						<table class="table table-stripped">
-							<tr ng-repeat="function in analyt_head.function_set"">
+							<tr ng-repeat="function in analyt_head.function_set">
 								<td class="three">
-									<select>
+									<p>[[ function.function_name ]]</p>
+	<!-- 								<select>
 											<option value="[[ function.id ]]" ng-repeat="function in analyt_head.function_set">[[ function.function_name ]]</option>	
-									</select>
+									</select> -->
 								</td>
-								<td class="five"><input type="text" ng-model="min_strong" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
+								<div ng-repeat="parameter in function.parameter_set">
+								<td class="five"><input type="text" ng-model="min_strong" ng-show="editorEnabled">[[ parameter.neutral_min]]<span ng-hide="editorEnabled"></span></td>
 								<td class="five"><input type="text" ng-model="max_strong" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
 								<td class="five"><input type="text" ng-model="points_strong" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
 								<td class="five"><input type="text" ng-model="min_neutral" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
@@ -97,6 +99,7 @@
 								<td class="five no_border"><input type="button" value="Del"></td>
 								<td class="five no_border"><input type="button" value="Add" ng-click="addRow(analyt_head)"></td>
 								<td class="five no_border"><input type="button" value="Save" ng-click="saveRow()"></td>
+							</div>
 							</tr>
 						</table>
 					</td>

@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel
+from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -444,27 +444,41 @@ class ModelView(View):
         model = AnalysisModel.objects.get(id=request.GET.get('id'))
         parameter_set = []
         function_set = []
-        parameterlimit_list =  model.parameterlimit_set.all()
-        for parameter in parameterlimit_list:
-            parameter_set.append({
-                'id': parameter.id,
-                'analytical_head_id': parameter.function.analytical_head.id,
-                'analytical_head': parameter.function.analytical_head.title,
-                'function_id': parameter.function.function_name,
-                'function_name': parameter.function.id,
-                'strong_min': parameter.strong_min,
-                'strong_max': parameter.strong_max,
-                'strong_points': parameter.strong_points,
-                'neutral_min': parameter.neutral_min,
-                'neutral_max': parameter.neutral_max,
-                'neutral_points': parameter.neutral_points,
-                'weak_min': parameter.weak_min,
-                'weak_max': parameter.weak_max,
-                'weak_points': parameter.weak_points,
+        analytical_head_set = []
+        analytical_heads_list =  model.analytical_heads.all()
+        for analytical_head in analytical_heads_list:
+            function_list = analytical_head.function_set.all()
+            for function in function_list:
+                parameter_list = ParameterLimit.objects.filter(analysis_model_id=model.id,function_id=function.id)
+                for parameter in parameter_list:
+                    print parameter.function
+                    parameter_set.append({
+                        'parameter_id': parameter.id,
+                        'strong_min': parameter.strong_min,
+                        'strong_max': parameter.strong_max,
+                        'strong_points': parameter.strong_points,
+                        'neutral_min': parameter.neutral_min,
+                        'neutral_max': parameter.neutral_max,
+                        'neutral_points': parameter.neutral_points,
+                        'weak_min': parameter.weak_min,
+                        'weak_max': parameter.weak_max,
+                        'weak_points': parameter.weak_points,
+                        })
+                function_set.append({
+                    'function_id':function.id,
+                    'function_name': function.function_name,     
+                    'parameter_set': parameter_set,
+                    })
+                parameter_set = []
+            analytical_head_set.append({
+                'analytical_head_id': analytical_head.id,
+                'analytical_head_name': analytical_head.title,
+                'function_set':function_set,
                 })
+            function_set = []
         if request.is_ajax():
          response = simplejson.dumps({
-            'parameter_set': parameter_set
+            'parameter_set': analytical_head_set
             })
         return HttpResponse(response, status=200, mimetype='application/json')
 
