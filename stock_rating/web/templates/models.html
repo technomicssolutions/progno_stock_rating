@@ -80,25 +80,35 @@
 						<table class="table table-stripped">
 							<tr ng-repeat="function in analyt_head.function_set">
 								<td class="three">
-									<p>[[ function.function_name ]]</p>
-	<!-- 								<select>
-											<option value="[[ function.id ]]" ng-repeat="function in analyt_head.function_set">[[ function.function_name ]]</option>	
-									</select> -->
+									<p ng-hide="function.editorEnabled">[[ function.function_name ]]</p>
+									<select ng-show="function.editorEnabled" ng-model="select_function">
+											<option value="" disabled="True">Select</option>
+											<option value="[[ function.function_id ]]" ng-repeat="function in analyt_head.function_view">[[ function.function_name ]]</option>	
+									</select>
 								</td>
-								<div ng-repeat="parameter in function.parameter_set">
-								<td class="five"><input type="text" ng-model="min_strong" ng-show="editorEnabled">[[ parameter.neutral_min]]<span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="max_strong" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="points_strong" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="min_neutral" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="max_neutral" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="points_neutral" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="min_weak" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="max_weak" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>
-								<td class="five"><input type="text" ng-model="points_weak" ng-show="editorEnabled"><span ng-hide="editorEnabled"></span></td>	
+								<div >
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.min_strong" ng-show="function.editorEnabled">[[ function.parameter_set.strong_min]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.max_strong" ng-show="function.editorEnabled">[[ function.parameter_set.strong_max]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.points_strong" ng-show="function.editorEnabled">[[ function.parameter_set.strong_points]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.min_neutral" ng-show="function.editorEnabled">[[ function.parameter_set.neutral_min]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.max_neutral" ng-show="function.editorEnabled">[[ function.parameter_set.neutral_max]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.points_neutral" ng-show="function.editorEnabled">[[ function.parameter_set.neutral_points]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.min_weak" ng-show="function.editorEnabled">[[ function.parameter_set.weak_min]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.max_weak" ng-show="function.editorEnabled">[[ function.parameter_set.weak_max]]<span ng-hide="function.editorEnabled"></span></td>
+								<td class="five"><input type="text" ng-model="
+									function.parameter_set.points_weak" ng-show="function.editorEnabled">[[ function.parameter_set.weak_points]]<span ng-hide="function.editorEnabled"></span></td>	
 								<td class="five no_border"><input type="button" value="Edit" ng-click="editRow()"></td>
 								<td class="five no_border"><input type="button" value="Del"></td>
-								<td class="five no_border"><input type="button" value="Add" ng-click="addRow(analyt_head)"></td>
-								<td class="five no_border"><input type="button" value="Save" ng-click="saveRow()"></td>
+								<td class="five no_border"><input type="button" value="Add" ng-click="add_function(analyt_head)"></td>
+								<td class="five no_border"><input type="button" value="Save" ng-click="save_function(select_model,select_function,function.parameter_set)"></td>
 							</div>
 							</tr>
 						</table>
@@ -106,6 +116,7 @@
 				</tr>
 			</table>
 		</div>
+		<p class="error_msg"> [[msg]] </p>
 	</div>
 	<div class="tab_list" ng-show="create_model">
 	<h3 class="sub_heading"> Model List </h3>

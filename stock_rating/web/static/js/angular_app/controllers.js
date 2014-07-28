@@ -759,6 +759,21 @@ function ModelController($scope, $element, $http, $timeout, $location)
         'industry_list': '',
         'id': '',
     }
+    $scope.model = {
+        'parameter_set': [
+            {
+                "analytical_head_name": "Profitability", 
+                "function_set": [
+                    {
+                        "function_id": '', 
+                        "parameter_set": {}, 
+                        "function_name": "NP Growth"
+                    }
+                ]
+            }
+        ],
+       
+    }
     $scope.selected_data = [];
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
@@ -805,20 +820,39 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.function_row = [];
         $scope.parameter_set = [];
         $scope.function_set = [];
+        $scope.function_view = [];
         $scope.flag = 0;
         var url = '/get_model_details/?id='+id;
         $http.get(url).success(function(data) {
-            $scope.model_details = data.parameter_set;
+            $scope.model_details = data.analytical_heads;
+            //console.log($scope.model_details);
             for(var i = 0; i < $scope.model_details.length; i++){
                 for(var j = 0; j < $scope.model_details[i].function_set.length; j++){
-                    if($scope.model_details[i].function_set[j].parameter_set != ''){
+                    if($scope.model_details[i].function_set[j].parameter_set.strong_points){
                         $scope.function_set.push({
-                            'function_id':$scope.model_details[i].function_set[j].function_id,
+                            'function_id': $scope.model_details[i].function_set[j].function_id,
                             'function_name': $scope.model_details[i].function_set[j].function_name,     
                             'parameter_set': $scope.model_details[i].function_set[j].parameter_set,
-                       
-                        })
+                            'editorEnabled': false,       
+                        });
                         $scope.flag = 1;                    
+                    } else {                    
+                        $scope.function_view.push({
+                            'function_id': $scope.model_details[i].function_set[j].function_id,
+                            'function_name': $scope.model_details[i].function_set[j].function_name,
+                            "parameter_set": {
+                                'neutral_max': '',    
+                                'neutral_min': '',                                    
+                                'neutral_points': '',                                    
+                                'parameter_id': '',                                    
+                                'strong_max': '',                                    
+                                'strong_min': '',                                    
+                                'strong_points': '',                                    
+                                'weak_max': '',                                    
+                                'weak_min': '',                                    
+                                'weak_points': '',
+                            },                            
+                        })                   
                     }
                 }
                 if($scope.flag == 1){
@@ -826,32 +860,65 @@ function ModelController($scope, $element, $http, $timeout, $location)
                         'head_id': $scope.model_details[i].analytical_head_id,
                         'head_name': $scope.model_details[i].analytical_head_name,
                         'function_set':  $scope.function_set,
-                        })   
+                        'function_view': $scope.function_view,
+                    })   
+                    $scope.function_view = [];
                 }
                 else
                 {
-                    for(var j1 = 0; j1 < $scope.anly_heads.length; j1++){
-                        if($scope.model_details[i].analytical_head_id == $scope.anly_heads[j1].id){
-                            $scope.function_set.push({
-                                'function_id':$scope.model_details[i].function_set[0].function_id,
-                                'function_name': $scope.model_details[i].function_set[0].function_name,     
-                                'parameter_set': $scope.model_details[i].function_set[0].parameter_set,
-                                })
-                             $scope.function_row.push({
-                                'head_id': $scope.model_details[i].analytical_head_id,
-                                'head_name': $scope.model_details[i].analytical_head_name,
-                                'function_set':  $scope.function_set,
-                                })
-                            }
-                        }
-                    }
+                   $scope.function_set.push({
+                    'editorEnabled': true,
+                   })
+                   $scope.function_row.push({
+                    'head_id': $scope.model_details[i].analytical_head_id,
+                    'head_name': $scope.model_details[i].analytical_head_name,
+                    'function_set':  $scope.function_set,
+                    'function_view': $scope.function_view,
+                    })
+                   $scope.function_view = []
+                }
             $scope.flag = 0;
             $scope.function_set = [];
             }            
         console.log( $scope.function_row);
         })
     }
+    $scope.add_function = function(entry){ 
+        var count = 0;
+        console.log(entry);
+        for(var i = 0; i < $scope.model_details.length; i++ ){
+            if($scope.model_details[i].analytical_head_id == entry.head_id)
+                var count = $scope.model_details[i].function_set.length;
+        }
+        if(count > entry.function_set.length)
+            entry.function_set.push({
+                'editorEnabled': true,
+            });            
+    }
 
+    $scope.save_function = function(model_id, function_id, parameters){ 
+        console.log(model_id, function_id, parameters)
+        if($scope.validate_parameters(function_id, parameters)){
+            params = { 
+                'model_id': angular.toJson(model_id),
+                'function_id': angular.toJson(function_id),
+                'parameters' : angular.toJson(parameters),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_parameters/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }  
+       
+    }
     
     $scope.moveRight = function(){
         $scope.flag = 1;
@@ -898,22 +965,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
 
        
     }
-/*    $scope.rightBox = function(entry){
-        console.log(entry);
-        if(entry.selected == false)
-            entry.selected = true;
-        else
-            entry.selected = false;
-        
-    }
-    $scope.leftBox = function(entry){
-        console.log(entry);
-        if(entry.selected == false)
-            entry.selected = true;
-        else
-            entry.selected = false;
-        
-    }*/
     $scope.selectallLeft = function(){
         for(var i = 0; i < $scope.industry_list.length; i++){
             if($scope.industry_list[i].selected == true)
@@ -959,6 +1010,43 @@ function ModelController($scope, $element, $http, $timeout, $location)
         } else {
             return true;
         }  
+    }
+    $scope.validate_parameters = function(function_id, parameters){
+        $scope.msg = '';
+        if(!function_id) {
+            $scope.msg = "Please select a function";
+            return false;
+        } else if(angular.isUndefined(parameters)){
+            $scope.msg = "Please enter Strong Minimum";
+            return false;
+        } else if(angular.isUndefined(parameters.max_strong)){
+            $scope.msg = "Please enter Strong Maximum";
+            return false;
+        } else if(angular.isUndefined(parameters.points_strong)){
+            $scope.msg = "Please enter Strong Points";
+            return false;
+        } else if(angular.isUndefined(parameters.min_neutral)){
+            $scope.msg = "Please enter Neutral Minimum";
+            return false;
+        } else if(angular.isUndefined(parameters.max_neutral)){
+            $scope.msg = "Please enter Neutral Maximum";
+            return false;
+        } else if(angular.isUndefined(parameters.points_neutral)){
+            $scope.msg = "Please enter Neutral Points";
+            return false;
+        } else if(angular.isUndefined(parameters.min_weak)){
+            $scope.msg = "Please enter Weak Minimum";
+            return false;
+        } else if(angular.isUndefined(parameters.max_weak )){
+            $scope.msg = "Please enter Weak Maximum";
+            return false;
+        } else if(angular.isUndefined(parameters.points_weak)){
+            $scope.msg = "Please enter Weak Points";
+            return false;
+        } else {
+            return true;
+        }
+
     }
     $scope.save_model = function(){
         if($scope.validate_model()){
@@ -1033,18 +1121,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
                }
               $scope.get_models();                    
         })
-    }
-    $scope.addRow = function(entry) { 
-        console.log(entry);
-        console.log($scope.model_details.length);
-      /*  var count = 0;
-        for(var i = 0; i < $scope.model_details.length; i++ ){
-            if($scope.model_details[i].id == entry.id)
-                count++;
-        }
-        if(count < entry.function_set.length)
-            $scope.model_details.push({'id': entry.id, 'title': entry.title, 'function_set': entry.function_set
-            });*/
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');

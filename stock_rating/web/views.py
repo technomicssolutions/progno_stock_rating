@@ -439,10 +439,23 @@ class SaveFunction(View):
         return render(request, 'function_settings.html', {})
 
 
+class SaveParameters(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            model_id = ast.literal_eval(request.POST['model_id'])
+            function_id = ast.literal_eval(request.POST['function_id'])
+            parameters = ast.literal_eval(request.POST['parameters'])
+            print model_id
+            print function_id
+            print parameters
+        return render(request, 'function_settings.html', {})
+
+
+
 class ModelView(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=request.GET.get('id'))
-        parameter_set = []
+        parameter_set = {}
         function_set = []
         analytical_head_set = []
         analytical_heads_list =  model.analytical_heads.all()
@@ -451,8 +464,7 @@ class ModelView(View):
             for function in function_list:
                 parameter_list = ParameterLimit.objects.filter(analysis_model_id=model.id,function_id=function.id)
                 for parameter in parameter_list:
-                    print parameter.function
-                    parameter_set.append({
+                    parameter_set = {
                         'parameter_id': parameter.id,
                         'strong_min': parameter.strong_min,
                         'strong_max': parameter.strong_max,
@@ -463,13 +475,13 @@ class ModelView(View):
                         'weak_min': parameter.weak_min,
                         'weak_max': parameter.weak_max,
                         'weak_points': parameter.weak_points,
-                        })
+                        }
                 function_set.append({
                     'function_id':function.id,
                     'function_name': function.function_name,     
                     'parameter_set': parameter_set,
                     })
-                parameter_set = []
+                parameter_set = {}
             analytical_head_set.append({
                 'analytical_head_id': analytical_head.id,
                 'analytical_head_name': analytical_head.title,
@@ -478,7 +490,7 @@ class ModelView(View):
             function_set = []
         if request.is_ajax():
          response = simplejson.dumps({
-            'parameter_set': analytical_head_set
+            'analytical_heads': analytical_head_set
             })
         return HttpResponse(response, status=200, mimetype='application/json')
 
