@@ -7,7 +7,7 @@ from django.views.generic import RedirectView
 from views import Login,Logout, Dashboard, Administration, Users, SaveUser, ResetPassword, \
     FieldSettings, Fields, SaveField, FunctionSettings, SaveFunction, Category, Analyt_Heads, \
     Functions, General, Continuity, Consistency, DeleteField, Model, IndustryDetails, SaveModel, \
-    ModelDetails, DeleteModel, DeleteUser, ModelView, SaveParameters
+    ModelDetails, DeleteModel, DeleteUser, ModelView, SaveParameters, DeleteParameter
 
 urlpatterns = patterns('',
     url(r'login/$', Login.as_view(), name="login"),
@@ -32,6 +32,7 @@ urlpatterns = patterns('',
     url(r'delete_field/$', login_required(DeleteField.as_view()), name="delete_field"),
     url(r'delete_model/$', login_required(DeleteModel.as_view()), name="delete_model"),
     url(r'delete_user/$', login_required(DeleteUser.as_view()), name="delete_user"),
+    url(r'delete_parameters/$', login_required(DeleteParameter.as_view()), name="delete_parameters"),
     url(r'save_user/$', login_required(SaveUser.as_view()), name="save_user"),
     url(r'save_field/$', login_required(SaveField.as_view()), name="save_field"),
     url(r'save_model/$', login_required(SaveModel.as_view()), name="save_model"),

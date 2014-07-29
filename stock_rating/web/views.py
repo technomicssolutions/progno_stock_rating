@@ -443,12 +443,37 @@ class SaveParameters(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             model_id = ast.literal_eval(request.POST['model_id'])
-            function_id = ast.literal_eval(request.POST['function_id'])
             parameters = ast.literal_eval(request.POST['parameters'])
-            print model_id
-            print function_id
-            print parameters
-        return render(request, 'function_settings.html', {})
+            try:
+                parameterlimit = ParameterLimit.objects.get(id=parameters['parameter_id'])
+            except:
+                parameterlimit = ParameterLimit()
+                function_id = ast.literal_eval(request.POST['function_id'])
+                analysis_model = AnalysisModel.objects.get(id=model_id)
+                function = Function.objects.get(id=function_id)
+                parameterlimit.analysis_model = analysis_model
+                parameterlimit.function = function
+            parameterlimit.strong_min = parameters['strong_min']
+            parameterlimit.strong_max = parameters['strong_max']
+            parameterlimit.strong_points = parameters['strong_points']
+            parameterlimit.neutral_min = parameters['neutral_min']
+            parameterlimit.neutral_max = parameters['neutral_max']
+            parameterlimit.neutral_points = parameters['neutral_points']
+            parameterlimit.weak_min = parameters['weak_min']
+            parameterlimit.weak_max = parameters['weak_max']
+            parameterlimit.weak_points = parameters['weak_points']
+            try:
+                parameterlimit.save()
+                res = {
+                  'result': 'ok',
+                }
+            except:
+                res = {
+                  'result': 'error',  
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'models.html', {})
 
 
 
@@ -610,6 +635,20 @@ class DeleteUser(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 
+class DeleteParameter(View):
+    def get(self, request, *args, **kwargs):
+        parameterlimit = ParameterLimit.objects.get(id=request.GET.get('id'))
+        try:
+                parameterlimit.delete()
+                res = {
+                  'result': 'ok',
+                }
+        except:
+                res = {
+                   'result': 'error',  
+                }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 class ResetPassword(View):
 

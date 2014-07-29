@@ -787,6 +787,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.show_table = false;
         $scope.editorEnabled = true;
         $scope.function_row = [];
+        $scope.edit_parameters = false;
     }
     $scope.show_create_model = function(){
         $scope.create_model = true; 
@@ -816,6 +817,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_model_details = function(id){
+        $scope.msg = "";
         $scope.show_table = true;
         $scope.function_row = [];
         $scope.parameter_set = [];
@@ -833,7 +835,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
                             'function_id': $scope.model_details[i].function_set[j].function_id,
                             'function_name': $scope.model_details[i].function_set[j].function_name,     
                             'parameter_set': $scope.model_details[i].function_set[j].parameter_set,
-                            'editorEnabled': false,       
+                            'editorEnabled': false,   
+                            'dropdown_enabled': false,    
                         });
                         $scope.flag = 1;                    
                     } else {                    
@@ -868,6 +871,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                 {
                    $scope.function_set.push({
                     'editorEnabled': true,
+                    'dropdown_enabled': true,
                    })
                    $scope.function_row.push({
                     'head_id': $scope.model_details[i].analytical_head_id,
@@ -880,12 +884,27 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $scope.flag = 0;
             $scope.function_set = [];
             }            
-        console.log( $scope.function_row);
-        })
+            console.log($scope.function_row);
+            for(var x = 0; x < $scope.function_row.length; x++){
+                    var count = 0;
+                    for(var i = 0; i < $scope.model_details.length; i++ ){
+                        if($scope.model_details[i].analytical_head_id == $scope.function_row[x].head_id)
+                            var count = $scope.model_details[i].function_set.length;
+                    }
+                    if(count > $scope.function_row[x].function_set.length)
+                        $scope.function_row[x].function_set.push({
+                            'editorEnabled': true,
+                            'dropdown_enabled': true,
+
+                        });  
+            }
+         })
     }
-    $scope.add_function = function(entry){ 
-        var count = 0;
+    $scope.add_function = function(model_id, function_id, parameters,entry){ 
         console.log(entry);
+        $scope.edit_parameters = false;
+        $scope.save_parameters(model_id, function_id, parameters);
+        var count = 0;
         for(var i = 0; i < $scope.model_details.length; i++ ){
             if($scope.model_details[i].analytical_head_id == entry.head_id)
                 var count = $scope.model_details[i].function_set.length;
@@ -893,11 +912,13 @@ function ModelController($scope, $element, $http, $timeout, $location)
         if(count > entry.function_set.length)
             entry.function_set.push({
                 'editorEnabled': true,
+                'dropdown_enabled': true,
+
             });            
     }
 
-    $scope.save_function = function(model_id, function_id, parameters){ 
-        console.log(model_id, function_id, parameters)
+    $scope.save_parameters = function(model_id, function_id, parameters){ 
+        console.log(parameters);
         if($scope.validate_parameters(function_id, parameters)){
             params = { 
                 'model_id': angular.toJson(model_id),
@@ -913,6 +934,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
+                $scope.edit_parameters = true;
+                $scope.get_model_details(model_id);
                 }).error(function(data, status){
                 $scope.message = data.message;
             });
@@ -920,6 +943,22 @@ function ModelController($scope, $element, $http, $timeout, $location)
        
     }
     
+    $scope.edit_function = function(model_function){
+        console.log(model_function);
+        $scope.edit_parameters = true;
+        model_function.editorEnabled = true;
+     }
+     $scope.delete_parameters = function(model_id, parameters){
+        console.log(parameters.parameter_id);
+        var url = '/delete_parameters/?id='+parameters.parameter_id;
+        $http.get(url).success(function(data){
+        if(data.result == 'ok')
+            $scope.msg = "Parameters deleted";
+        else 
+            $scope.msg = "Error";
+        $scope.get_model_details(model_id);              
+        })
+     }
     $scope.moveRight = function(){
         $scope.flag = 1;
         for(var i = 0; i < $scope.industry_list.length; i++)
@@ -1013,34 +1052,34 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.validate_parameters = function(function_id, parameters){
         $scope.msg = '';
-        if(!function_id) {
+        if(angular.isUndefined(function_id) && !$scope.edit_parameters) {
             $scope.msg = "Please select a function";
             return false;
-        } else if(angular.isUndefined(parameters)){
+        } else if(angular.isUndefined(parameters) || parameters.strong_min == ''){
             $scope.msg = "Please enter Strong Minimum";
             return false;
-        } else if(angular.isUndefined(parameters.max_strong)){
+        } else if(angular.isUndefined(parameters.strong_max) || parameters.strong_max == ''){
             $scope.msg = "Please enter Strong Maximum";
             return false;
-        } else if(angular.isUndefined(parameters.points_strong)){
+        } else if(angular.isUndefined(parameters.strong_points) || parameters.strong_points == ''){
             $scope.msg = "Please enter Strong Points";
             return false;
-        } else if(angular.isUndefined(parameters.min_neutral)){
+        } else if(angular.isUndefined(parameters.neutral_min) || parameters.neutral_min == ''){
             $scope.msg = "Please enter Neutral Minimum";
             return false;
-        } else if(angular.isUndefined(parameters.max_neutral)){
+        } else if(angular.isUndefined(parameters.neutral_max) || parameters.neutral_max == ''){
             $scope.msg = "Please enter Neutral Maximum";
             return false;
-        } else if(angular.isUndefined(parameters.points_neutral)){
+        } else if(angular.isUndefined(parameters.neutral_points) || parameters.neutral_points == ''){
             $scope.msg = "Please enter Neutral Points";
             return false;
-        } else if(angular.isUndefined(parameters.min_weak)){
+        } else if(angular.isUndefined(parameters.weak_min) || parameters.weak_min == ''){
             $scope.msg = "Please enter Weak Minimum";
             return false;
-        } else if(angular.isUndefined(parameters.max_weak )){
+        } else if(angular.isUndefined(parameters.weak_max) || parameters.weak_max == ''){
             $scope.msg = "Please enter Weak Maximum";
             return false;
-        } else if(angular.isUndefined(parameters.points_weak)){
+        } else if(angular.isUndefined(parameters.weak_points) || parameters.weak_points == ''){
             $scope.msg = "Please enter Weak Points";
             return false;
         } else {
