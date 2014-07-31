@@ -62,11 +62,7 @@ footer {
 	width: 95%;
 	float: right;
 }
-.function_set {
-	display: block;
-	width: 150%;
-	float: left;
-}
+
 .login label, .create_user label {
 	width: 39%;
 	height: 30px;
@@ -211,6 +207,7 @@ header {
 }
 
 /******************* End Table Display Style ***************/
+
 
 /******************* Administration Style ***************/
 
