@@ -8,11 +8,13 @@
 <div class="data_upload">
 	<h3 class="data_upload_heading"> Data Upload </h3>
 	<div class="data_upload_content">
-		<label> Upload Field: </label>
-		<input type="file" />
-		<label> Map Field: </label>
-		<input type="text" />
-		<input type="submit" name="upload" value="Upload"/>
+		<label> Upload File: </label>
+		<input type="file" fileread="data_file.src"/>
+		<input type="hidden" ng-model="data_file.src">
+		<!-- <label> Map Field: </label>
+		<input type="text" /> -->
+		<p class='error_msg'>[[error_msg]]</p>
+		<input type="submit" name="upload" value="Upload" ng-click="submit_file();"/>
 	</div>
 </div>
 {% endblock content %}

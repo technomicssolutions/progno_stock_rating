@@ -10,7 +10,24 @@ html, body {
 #dialogue_popup_container {
 	display: none;
 }
-#ovelay {
+#overlay {
+	display: none;
+	z-index: 1;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: #FFFFFF;
+	opacity: 0.5;
+}
+.spinner {
+	background: url('../images/ajax-loader.gif') no-repeat;
+	width: 16px;
+	height: 16px;
+	z-index: 2;
+	margin: auto;
+	position: absolute;
+	left: 50%;
+	top: 50%;
 	display: none;
 }
 .container {

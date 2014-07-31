@@ -4,7 +4,14 @@ function validateEmail(email) {
     return re.test(email);
 }
 
-
+function show_loader(){
+    $('#overlay').css('display', 'block');
+    $('.spinner').css('display', 'block');
+}
+function hide_loader(){
+    $('#overlay').css('display', 'none');
+    $('.spinner').css('display', 'none');
+}
 function DashboardController($scope, $element, $http, $timeout, $location)
 {
     $scope.init = function(user){
@@ -1199,7 +1206,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             if(data.result == 'ok'){
                 $scope.msg = "Model deleted";
                }
-              $scope.get_models();                    
+            $scope.get_models();                    
         })
     }
     $scope.show_dropdown = function(){
@@ -1215,12 +1222,46 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
-       }
+        $scope.data_file = {};
+        $scope.data_file.src = "";
+    }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.submit_file = function(){
+        $scope.error_msg = '';
+        if($scope.data_file.src){
+            var split_name = $scope.data_file.src.name.split('.');
+            split_name = split_name[split_name.length - 1];
+            var extensions = ['xlsx', 'xlsm', 'xlsb', 'xltm', 'xlam', 'xls', 'xla', 'xlb', 'xlc', 'xld', 'xlk', 'xll', 'xlm', 'xlt', 'xlv', 'xlw']
+            var index = extensions.indexOf(split_name);
+            if(index == -1){
+                $scope.error_msg = "Please upload an excel file";
+                return false;
+            }
+            console.log(split_name, index);
+            var fd = new FormData();
+            fd.append('data_file', $scope.data_file.src);
+            fd.append('csrfmiddlewaretoken', $scope.csrf_token);
+            show_loader();
+
+            var url = '/data_upload/';
+            $http.post(url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined
+                }
+            }).success(function(data, status){ 
+                hide_loader();          
+            }).error(function(data, status){           
+
+            });
+        } else {
+            $scope.error_msg = "Please upload an excel file";
+        }
+        
     }
 }
 

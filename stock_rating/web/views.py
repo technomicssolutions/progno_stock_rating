@@ -10,7 +10,8 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import UserPermission, DataField, FunctionCategory, AnalyticalHead, Function, ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit
+from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
+ ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile)
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -37,6 +38,17 @@ class FunctionSettings(View):
 
 class DataUpload(View):
     def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, 'data_upload.html', context)
+
+    def post(self, request, *args, **kwargs):
+        data_files = DataFile.objects.all()
+        if data_files.count() > 0:
+            DataFile.objects.all().delete()       
+        data_file = DataFile()
+        data_file.uploaded_file = request.FILES['data_file']
+        data_file.uploaded_by = request.user
+        data_file.save()
         context = {}
         return render(request, 'data_upload.html', context)
 

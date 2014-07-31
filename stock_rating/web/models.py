@@ -46,7 +46,7 @@ class DataFile(Date):
     uploaded_file = models.FileField(upload_to='uploads/data_file/')
 
     def __unicode__(self):
-        return self.user.first_name + ' - ' + self.uploaded_file.name
+        return self.uploaded_by.first_name + ' - ' + self.uploaded_file.name
 
 class FieldMap(models.Model):
 
