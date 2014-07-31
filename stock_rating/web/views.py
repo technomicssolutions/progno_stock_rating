@@ -26,302 +26,32 @@ class Administration(View):
 
 class FieldSettings(View):
     def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            field_objects = DataField.objects.all()
+            fields = []
+            for field in field_objects:
+                if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
+                    status = "Modified"
+                    date = field.updated_date
+                else:
+                    status = "Created"
+                    date = field.created_date
+                fields.append({
+                        'id': field.id,
+                        'name': field.name,
+                        'description': field.description,
+                        'status': status,
+                        'date': date.strftime("%d/%m/%Y"),
+                    })
+            if request.is_ajax():
+                response = simplejson.dumps({
+                    'result': 'OK',
+                    'fields': fields
+                })
+                return HttpResponse(response, status=200, mimetype='application/json')
         context = {}
         return render(request, 'field_settings.html', context)
 
-
-class FunctionSettings(View):
-    def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, 'function_settings.html', context)
-
-
-class DataUpload(View):
-    def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, 'data_upload.html', context)
-
-    def post(self, request, *args, **kwargs):
-        data_files = DataFile.objects.all()
-        if data_files.count() > 0:
-            DataFile.objects.all().delete()       
-        data_file = DataFile()
-        data_file.uploaded_file = request.FILES['data_file']
-        data_file.uploaded_by = request.user
-        data_file.save()
-        context = {}
-        return render(request, 'data_upload.html', context)
-
-
-class AnalyticalHeads(View):
-    def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, 'analytical_heads.html', context)
-
-
-class Model(View):
-    def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, 'models.html', context)
-
-
-class Login(View):
-    def get(self, request, *args, **kwargs):
-        return render(request, 'login.html', {})
-
-    def post(self, request, *args, **kwargs):
-
-        user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        if user and user.is_active:
-            login(request, user)
-            return HttpResponseRedirect(reverse('dashboard'))
-        else:
-            context = {
-                'message' : 'Username or password is incorrect'
-            }
-            return render(request, 'login.html', context)     
-
-class Logout(View):
-    def get(self, request, *args, **kwargs):
-        logout(request)
-        return HttpResponseRedirect(reverse('login'))
-
-
-class Users(View):
-
-    def get(self, request, *args, **kwargs):
-        user_objects = User.objects.all()
-        users = []
-        for user in user_objects:
-            if user.userpermission_set.all().count():
-                permission = user.userpermission_set.all()[0]
-            else:
-                permission = None
-            if not user.is_superuser:
-                users.append({
-                    'id': user.id,
-                    'username': user.username,
-                    'first_name': user.first_name,
-                    'password': user.password,
-                    'data_upload': permission.data_upload if permission else False,
-                    'field_settings': permission.field_settings if permission else False,
-                    'score_settings': permission.score_settings if permission else False,
-                    'function_settings': permission.function_settings if permission else False,
-                    'analytical_heads': permission.analytical_heads if permission else False
-                })
-        if request.is_ajax():
-            response = simplejson.dumps({
-                'result': 'OK',
-                'users': users
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'administration.html', {
-            'users': user_objects
-        })
-
-class Category(View):
-
-    def get(self, request, *args, **kwargs):
-        category_objects = FunctionCategory.objects.all()
-        category_set = []
-        for category in category_objects:
-            category_set.append({
-                'id':category.id,
-                'category': category.category_name
-            })
-        if request.is_ajax():
-            response = simplejson.dumps({
-               'category_objects': category_set
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
-
-
-class ModelDetails(View):
-
-    def get(self, request, *args, **kwargs):
-        analysis_model_objects = AnalysisModel.objects.all()
-        analysis_models = []
-        industry_set = []
-        analytical_head_set = []
-        for model in analysis_model_objects:
-            industries = model.industries.all()
-            analytical_heads = model.analytical_heads.all()
-            for analytical_head in analytical_heads:
-                analytical_head_set.append({
-                    'id': analytical_head.id,
-                    'head': analytical_head.title,
-                })
-            for industry in industries:
-                industry_set.append({
-                    'id': industry.id,
-                    'name': industry.industry_name,
-                })
-            analysis_models.append({
-                'id':model.id,
-                'name': model.name,
-                'description': model.description,
-                'industry': industry_set,
-                'analytical_heads': analytical_head_set,
-                'created_date': model.created_date.strftime("%d/%m/%Y"),
-                'modified_date': model.updated_date.strftime("%d/%m/%Y"),
-            })
-            industry_set = []
-            analytical_head_set = []
-        if request.is_ajax():
-            response = simplejson.dumps({
-               'model_list': analysis_models
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
-
-
-class Analyt_Heads(View):
-
-    def get(self, request, *args, **kwargs):
-        head_objects = AnalyticalHead.objects.all()
-        heads = []
-        function_set = []
-        for head in head_objects:
-            if head.created_date.strftime("%d/%m/%Y") < head.updated_date.strftime("%d/%m/%Y"):
-                status = "Modified"
-                date = head.updated_date
-            else:
-                status = "Created"
-                date = head.created_date
-            function_list = head.function_set.all()
-            for function in function_list:
-                function_set.append({
-                    'function_id': function.id,
-                    'function_name': function.function_name,
-                     })
-            heads.append({
-                'id':head.id,
-                'title': head.title,
-                'description': head.description,
-                'status': status,
-                'date': date.strftime("%d/%m/%Y"),
-                'function_set': function_set,
-            })
-            print heads
-            function_set = []
-        if request.is_ajax():
-            response = simplejson.dumps({
-               'head_objects': heads
-            })
-        return HttpResponse(response, status=200, mimetype='application/json')
-
-class Fields(View):
-
-    def get(self, request, *args, **kwargs):
-        field_objects = DataField.objects.all()
-        fields = []
-        for field in field_objects:
-            if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
-                status = "Modified"
-                date = field.updated_date
-            else:
-                status = "Created"
-                date = field.created_date
-            fields.append({
-                    'id': field.id,
-                    'name': field.name,
-                    'description': field.description,
-                    'status': status,
-                    'date': date.strftime("%d/%m/%Y"),
-                })
-        if request.is_ajax():
-            response = simplejson.dumps({
-                'result': 'OK',
-                'fields': fields
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'field_settings.html', {
-            'fields': field_objects
-        })
-
-
-class Functions(View):
-
-    def get(self, request, *args, **kwargs):
-        function_objects = Function.objects.all()
-        functions = []
-        for function in function_objects:
-            functions.append({
-                    'id': function.id,
-                    'name': function.function_name,
-                    'head': function.analytical_head.title,
-                    'category': function.category.category_name,
-                    'created_date': function.created_date.strftime("%d/%m/%Y"),
-                    'modified_date': function.updated_date.strftime("%d/%m/%Y"),
-                    'function_type': function.function_type,
-                })
-        if request.is_ajax():
-            response = simplejson.dumps({
-                'result': 'OK',
-                'functions': functions
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'function_settings.html', {
-           
-        })
-
-class IndustryDetails(View):
-
-    def get(self, request, *args, **kwargs):
-        industry_objects = Industry.objects.all()
-        industry_list = []
-        for industry in industry_objects:
-            industry_list.append({
-                    'id': industry.id,
-                    'name': industry.industry_name,
-                })
-        if request.is_ajax():
-            response = simplejson.dumps({
-                'result': 'OK',
-                'industry_list': industry_list
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'models.html', {
-           
-        })
-
-
-class SaveUser(View):
-    def post(self, request, *args, **kwargs):
-        if request.is_ajax():
-
-            user_details = ast.literal_eval(request.POST['user_details'])
-            if user_details['id'] != '':
-                user = User.objects.get(id=user_details['id'])
-                permission = UserPermission.objects.get(user=user)
-            else:
-                permission = UserPermission()
-                user = User()
-            user.username = user_details['username']
-            user.first_name = user_details['first_name']
-            user.set_password(user_details['password'])
-            try:
-                user.save()            
-                permission.user = user
-                permission.data_upload = True if user_details['data_upload'] == "true" else False
-                permission.field_settings = True if user_details['field_settings'] == "true" else False
-                permission.score_settings = True if user_details['score_settings'] == "true" else False
-                permission.function_settings = True if user_details['function_settings'] == "true" else False
-                permission.analytical_heads = True if user_details['analytical_heads'] == "true" else False
-                permission.save()
-                res = {
-                    'result': 'ok',
-                }
-            except:
-                res = {
-                    'result': 'error',
-                }
-
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'administration.html', {})
-
-
-class SaveField(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
 
@@ -347,72 +77,30 @@ class SaveField(View):
         return render(request, 'field_settings.html', {})
 
 
-class SaveAnalyticalHead(View):
-    def post(self, request, *args, **kwargs):
+class FunctionSettings(View):
+    def get(self, request, *args, **kwargs):
         if request.is_ajax():
+            function_objects = Function.objects.all()
+            functions = []
+            for function in function_objects:
+                functions.append({
+                        'id': function.id,
+                        'name': function.function_name,
+                        'head': function.analytical_head.title,
+                        'category': function.category.category_name,
+                        'created_date': function.created_date.strftime("%d/%m/%Y"),
+                        'modified_date': function.updated_date.strftime("%d/%m/%Y"),
+                        'function_type': function.function_type,
+                    })
+            if request.is_ajax():
+                response = simplejson.dumps({
+                    'result': 'OK',
+                    'functions': functions
+                })
+                return HttpResponse(response, status=200, mimetype='application/json')
+        context = {}
+        return render(request, 'function_settings.html', context)
 
-            head_details = ast.literal_eval(request.POST['head_details'])
-            try:
-                head = AnalyticalHead.objects.get(id=head_details['id'])
-            except:
-                head = AnalyticalHead()
-            head.title = head_details['head_name']
-            head.description = head_details['head_description']
-            head.created_by = request.user
-            try:
-                head.save()
-                res = {
-                  'result': 'ok',
-                }
-            except:
-                res = {
-                  'result': 'error',  
-                }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'analytical_heads.html', {})
-
-
-class SaveModel(View):
-    def post(self, request, *args, **kwargs):
-        if request.is_ajax():
-
-            model_details = ast.literal_eval(request.POST['model_details'])
-            analytical_heads = ast.literal_eval(request.POST['analytical_heads'])
-            industry_selected = ast.literal_eval(request.POST['industry_selected'])
-            try:
-                model = AnalysisModel.objects.get(id=model_details['id'])
-            except:
-                model = AnalysisModel()
-            model.name = model_details['model_name']
-            model.description = model_details['model_description']
-            try:
-                model.save()
-                industry_remove =  model.industries.all()
-                analytical_head_remove = model.analytical_heads.all()
-                for industry in industry_remove:
-                    model.industries.remove(industry.id)
-                for analytical_head in analytical_head_remove:
-                    model.analytical_heads.remove(analytical_head.id)
-                for industry in industry_selected:
-                    model.industries.add(industry)
-                for head in analytical_heads:
-                    if head['selected'] == "true":
-                        model.analytical_heads.add(head['id'])
-          
-                res = {
-                  'result': 'ok',
-                }
-            except:
-                res = {
-                  'result': 'error',  
-                }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'models.html', {})
-
-
-class SaveFunction(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             function_details = ast.literal_eval(request.POST['function_details'])
@@ -497,31 +185,150 @@ class SaveFunction(View):
         return render(request, 'function_settings.html', {})
 
 
-class SaveParameters(View):
+class DataUpload(View):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, 'data_upload.html', context)
+
+    def post(self, request, *args, **kwargs):
+        data_files = DataFile.objects.all()
+        if data_files.count() > 0:
+            DataFile.objects.all().delete()       
+        data_file = DataFile()
+        data_file.uploaded_file = request.FILES['data_file']
+        data_file.uploaded_by = request.user
+        data_file.save()
+        context = {}
+        return render(request, 'data_upload.html', context)
+
+
+class AnalyticalHeads(View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            head_objects = AnalyticalHead.objects.all()
+            heads = []
+            function_set = []
+            for head in head_objects:
+                if head.created_date.strftime("%d/%m/%Y") < head.updated_date.strftime("%d/%m/%Y"):
+                    status = "Modified"
+                    date = head.updated_date
+                else:
+                    status = "Created"
+                    date = head.created_date
+                function_list = head.function_set.all()
+                for function in function_list:
+                    function_set.append({
+                        'function_id': function.id,
+                        'function_name': function.function_name,
+                         })
+                heads.append({
+                    'id':head.id,
+                    'title': head.title,
+                    'description': head.description,
+                    'status': status,
+                    'date': date.strftime("%d/%m/%Y"),
+                    'function_set': function_set,
+                })
+                print heads
+                function_set = []
+            if request.is_ajax():
+                response = simplejson.dumps({
+                   'head_objects': heads
+                })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        context = {}
+        return render(request, 'analytical_heads.html', context)
+
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-            model_id = ast.literal_eval(request.POST['model_id'])
-            parameters = ast.literal_eval(request.POST['parameters'])
+
+            head_details = ast.literal_eval(request.POST['head_details'])
             try:
-                parameterlimit = ParameterLimit.objects.get(id=parameters['parameter_id'])
+                head = AnalyticalHead.objects.get(id=head_details['id'])
             except:
-                parameterlimit = ParameterLimit()
-                function_id = ast.literal_eval(request.POST['function_id'])
-                analysis_model = AnalysisModel.objects.get(id=model_id)
-                function = Function.objects.get(id=function_id)
-                parameterlimit.analysis_model = analysis_model
-                parameterlimit.function = function
-            parameterlimit.strong_min = parameters['strong_min']
-            parameterlimit.strong_max = parameters['strong_max']
-            parameterlimit.strong_points = parameters['strong_points']
-            parameterlimit.neutral_min = parameters['neutral_min']
-            parameterlimit.neutral_max = parameters['neutral_max']
-            parameterlimit.neutral_points = parameters['neutral_points']
-            parameterlimit.weak_min = parameters['weak_min']
-            parameterlimit.weak_max = parameters['weak_max']
-            parameterlimit.weak_points = parameters['weak_points']
+                head = AnalyticalHead()
+            head.title = head_details['head_name']
+            head.description = head_details['head_description']
+            head.created_by = request.user
             try:
-                parameterlimit.save()
+                head.save()
+                res = {
+                  'result': 'ok',
+                }
+            except:
+                res = {
+                  'result': 'error',  
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'analytical_heads.html', {})
+
+
+class Model(View):
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            analysis_model_objects = AnalysisModel.objects.all()
+            analysis_models = []
+            industry_set = []
+            analytical_head_set = []
+            for model in analysis_model_objects:
+                industries = model.industries.all()
+                analytical_heads = model.analytical_heads.all()
+                for analytical_head in analytical_heads:
+                    analytical_head_set.append({
+                        'id': analytical_head.id,
+                        'head': analytical_head.title,
+                    })
+                for industry in industries:
+                    industry_set.append({
+                        'id': industry.id,
+                        'name': industry.industry_name,
+                    })
+                analysis_models.append({
+                    'id':model.id,
+                    'name': model.name,
+                    'description': model.description,
+                    'industry': industry_set,
+                    'analytical_heads': analytical_head_set,
+                    'created_date': model.created_date.strftime("%d/%m/%Y"),
+                    'modified_date': model.updated_date.strftime("%d/%m/%Y"),
+                })
+                industry_set = []
+                analytical_head_set = []
+            if request.is_ajax():
+                response = simplejson.dumps({
+                   'model_list': analysis_models
+                })
+                return HttpResponse(response, status=200, mimetype='application/json')
+        context = {}
+        return render(request, 'models.html', context)
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            model_details = ast.literal_eval(request.POST['model_details'])
+            analytical_heads = ast.literal_eval(request.POST['analytical_heads'])
+            industry_selected = ast.literal_eval(request.POST['industry_selected'])
+            try:
+                model = AnalysisModel.objects.get(id=model_details['id'])
+            except:
+                model = AnalysisModel()
+            model.name = model_details['model_name']
+            model.description = model_details['model_description']
+            try:
+                model.save()
+                industry_remove =  model.industries.all()
+                analytical_head_remove = model.analytical_heads.all()
+                for industry in industry_remove:
+                    model.industries.remove(industry.id)
+                for analytical_head in analytical_head_remove:
+                    model.analytical_heads.remove(analytical_head.id)
+                for industry in industry_selected:
+                    model.industries.add(industry)
+                for head in analytical_heads:
+                    if head['selected'] == "true":
+                        model.analytical_heads.add(head['id'])
+          
                 res = {
                   'result': 'ok',
                 }
@@ -534,7 +341,135 @@ class SaveParameters(View):
         return render(request, 'models.html', {})
 
 
-class ModelView(View):
+class Login(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'login.html', {})
+
+    def post(self, request, *args, **kwargs):
+
+        user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        if user and user.is_active:
+            login(request, user)
+            return HttpResponseRedirect(reverse('dashboard'))
+        else:
+            context = {
+                'message' : 'Username or password is incorrect'
+            }
+            return render(request, 'login.html', context)     
+
+class Logout(View):
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return HttpResponseRedirect(reverse('login'))
+
+
+class Users(View):
+
+    def get(self, request, *args, **kwargs):
+        user_objects = User.objects.all()
+        users = []
+        for user in user_objects:
+            if user.userpermission_set.all().count():
+                permission = user.userpermission_set.all()[0]
+            else:
+                permission = None
+            if not user.is_superuser:
+                users.append({
+                    'id': user.id,
+                    'username': user.username,
+                    'first_name': user.first_name,
+                    'password': user.password,
+                    'data_upload': permission.data_upload if permission else False,
+                    'field_settings': permission.field_settings if permission else False,
+                    'score_settings': permission.score_settings if permission else False,
+                    'function_settings': permission.function_settings if permission else False,
+                    'analytical_heads': permission.analytical_heads if permission else False
+                })
+        if request.is_ajax():
+            response = simplejson.dumps({
+                'result': 'OK',
+                'users': users
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'administration.html', {
+            'users': user_objects
+        })
+
+class Category(View):
+
+    def get(self, request, *args, **kwargs):
+        category_objects = FunctionCategory.objects.all()
+        category_set = []
+        for category in category_objects:
+            category_set.append({
+                'id':category.id,
+                'category': category.category_name
+            })
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'category_objects': category_set
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class IndustryDetails(View):
+
+    def get(self, request, *args, **kwargs):
+        industry_objects = Industry.objects.all()
+        industry_list = []
+        for industry in industry_objects:
+            industry_list.append({
+                    'id': industry.id,
+                    'name': industry.industry_name,
+                })
+        if request.is_ajax():
+            response = simplejson.dumps({
+                'result': 'OK',
+                'industry_list': industry_list
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'models.html', {
+           
+        })
+
+
+class SaveUser(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            user_details = ast.literal_eval(request.POST['user_details'])
+            if user_details['id'] != '':
+                user = User.objects.get(id=user_details['id'])
+                permission = UserPermission.objects.get(user=user)
+            else:
+                permission = UserPermission()
+                user = User()
+            user.username = user_details['username']
+            user.first_name = user_details['first_name']
+            user.set_password(user_details['password'])
+            try:
+                user.save()            
+                permission.user = user
+                permission.data_upload = True if user_details['data_upload'] == "true" else False
+                permission.field_settings = True if user_details['field_settings'] == "true" else False
+                permission.score_settings = True if user_details['score_settings'] == "true" else False
+                permission.function_settings = True if user_details['function_settings'] == "true" else False
+                permission.analytical_heads = True if user_details['analytical_heads'] == "true" else False
+                permission.save()
+                res = {
+                    'result': 'ok',
+                }
+            except:
+                res = {
+                    'result': 'error',
+                }
+
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'administration.html', {})
+
+
+class ModelDetails(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=request.GET.get('id'))
         parameter_set = {}
@@ -575,6 +510,42 @@ class ModelView(View):
             'analytical_heads': analytical_head_set
             })
         return HttpResponse(response, status=200, mimetype='application/json')
+
+    def post(self, request, *args, **kwargs):
+        print request.POST['model_id']
+        if request.is_ajax():
+            model_id = ast.literal_eval(request.POST['model_id'])
+            parameters = ast.literal_eval(request.POST['parameters'])
+            try:
+                parameterlimit = ParameterLimit.objects.get(id=parameters['parameter_id'])
+            except:
+                parameterlimit = ParameterLimit()
+                function_id = ast.literal_eval(request.POST['function_id'])
+                analysis_model = AnalysisModel.objects.get(id=model_id)
+                function = Function.objects.get(id=function_id)
+                parameterlimit.analysis_model = analysis_model
+                parameterlimit.function = function
+            parameterlimit.strong_min = parameters['strong_min']
+            parameterlimit.strong_max = parameters['strong_max']
+            parameterlimit.strong_points = parameters['strong_points']
+            parameterlimit.neutral_min = parameters['neutral_min']
+            parameterlimit.neutral_max = parameters['neutral_max']
+            parameterlimit.neutral_points = parameters['neutral_points']
+            parameterlimit.weak_min = parameters['weak_min']
+            parameterlimit.weak_max = parameters['weak_max']
+            parameterlimit.weak_points = parameters['weak_points']
+            try:
+                parameterlimit.save()
+                res = {
+                  'result': 'ok',
+                }
+            except:
+                res = {
+                  'result': 'error',  
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'models.html', {})
 
 
 class General(View):

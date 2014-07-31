@@ -277,11 +277,12 @@ function FieldController($scope, $element, $http, $timeout, $location)
             else if(data.result == 'error'){
                 $scope.msg = "Field is used by another function";
                }
-            $scope.get_fields();                    
+            $scope.get_fields(); 
+            $scope.reset_field();                   
         })
     }
     $scope.get_fields = function(){
-        var url = '/fields/';
+        var url = '/field_settings/';
         $http.get(url).success(function(data) {
             $scope.fields = data.fields;
         })
@@ -306,7 +307,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_field/",
+                url : "/field_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -567,7 +568,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_function/",
+                url : "/function_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -594,7 +595,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_function/",
+                url : "/function_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -621,7 +622,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_function/",
+                url : "/function_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -744,13 +745,13 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_anly_head = function(){
-        var url = '/anly_head/';
+        var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
         })
     }
     $scope.get_functions = function(){
-        var url = '/functions/';
+        var url = '/function_settings/';
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
         })
@@ -814,13 +815,13 @@ function ModelController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_models = function(){
-        var url = '/models_list/';
+        var url = '/models/';
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
         })
     }
     $scope.get_anly_head = function(){
-        var url = '/anly_head/';
+        var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
         })
@@ -834,7 +835,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.function_view = [];
         $scope.edit_parameters = false;
         $scope.flag = 0;
-        var url = '/get_model_details/?id='+id;
+        var url = '/model_details/?id='+id;
         $http.get(url).success(function(data) {
             $scope.model_details = data.analytical_heads;
             for(var i = 0; i < $scope.model_details.length; i++){
@@ -936,7 +937,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_parameters/",
+                url : "/model_details/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1149,7 +1150,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_model/",
+                url : "/models/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1284,7 +1285,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         $('#dropdown_menu').css('display', 'none');
     }
     $scope.get_anly_head = function(){
-        var url = '/anly_head/';
+        var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
         })
@@ -1309,7 +1310,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_head/",
+                url : "/analytical_heads/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'

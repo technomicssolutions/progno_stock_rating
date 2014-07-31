@@ -9,6 +9,9 @@
 			<label> Password: </label>
 			<input type="password" name="password" />
 			<input type="submit" name="submit" value="Login" />
+			{% if message %}
+				<font color="red">{{ message }}
+			{% endif %}
 		</form>
 	</div>
 {% endblock body %}
