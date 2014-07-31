@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %} Analytical Heads {% endblock title%}
+{% block body_id %}analytical_head{% endblock %}
+{% block controller %}
+	ng-controller="AnalyticalHeadController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+	<div class="create_head">
+		<h3 class="sub_heading"> Add Analytical Head </h3>
+		<div class="field_set">
+			<input type="hidden" ng-model="new_head.id" />
+			<label> Name: </label>
+			<input type="text" name="head_name" ng-model="new_head.head_name" />
+			<label> Description: </label>
+			<input type="text" name="head_description" ng-model="new_head.head_description" />
+			<p class="error_msg"> [[msg]] </p>
+			<input type="submit" name="submit" value="Save" ng-click="save_new_head()"/>
+		</div>
+	</div>
+	<div class="tab_list">
+		<h3 class="sub_heading"> Analytical Head List </h3>
+		<table class="table table-stripped">
+			<tr> 
+				<th> Name </th>
+				<th> Description </th>
+				<th> Created/Last Modified</th>
+				<th> Actions </th>
+			</tr>
+			<tr ng-repeat="head in anly_heads">
+				<td> [[head.title]] </td>
+				<td> [[head.description]] </td>
+				<td> [[head.status]] - [[head.date]]  </td>
+				<td> <a href="" ng-click="edit_head(head)"> Modify </a> / <a href="" ng-click="delete_head(head)"> Delete </a>
+			</tr>
+		</table>
+	</div>
+
+{% endblock content %}

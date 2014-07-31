@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %} Data Upload {% endblock title%}
+{% block body_id %}data_upload{% endblock %}
+{% block controller %}
+	ng-controller="DataUploadController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+<div class="data_upload">
+	<h3 class="data_upload_heading"> Data Upload </h3>
+	<div class="data_upload_content">
+		<label> Upload Field: </label>
+		<input type="file" />
+		<label> Map Field: </label>
+		<input type="text" />
+		<input type="submit" name="upload" value="Upload"/>
+	</div>
+</div>
+{% endblock content %}
