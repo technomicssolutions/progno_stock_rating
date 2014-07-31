@@ -217,7 +217,6 @@ header {
 #administration .administration {
 	display: block !important;
 }
-
 .user_list {
 	width: 90%;
 	float: left;
@@ -231,8 +230,93 @@ header {
 
 /******************* End Administration Style ***************/
 
+/******************* Field_Settings Style ***************/
+
+#field .field_settings {
+	display: block !important;
+}
+.create_field {
+	width: 35%;
+	float: left;
+	margin: 10% 10% 0 0;
+	margin-left: 5%;
+    margin-top: 3%;
+}
+.create_field .field_set {
+	display: block;
+	width: 95%;
+	float: right;
+}
+.login label, .create_field label {
+	width: 39%;
+	height: 30px;
+}
+.login input, .create_field input {
+	width: 58%;
+	height: 30px;
+}
+.create_field input[type="submit"] {
+	border: none;
+	background-color: #12569A;
+	width: 20%;
+	float: right;
+	padding: 2px;
+	border: 1px solid #D6D4D2;
+}
+.create_field input[type="checkbox"] {
+	margin-right: 20px;
+	width: 4%;
+}
+
+/******************* End Field_Settings Style ***************/
+
+/******************* Analytical Head Style ***************/
+
+#analytical_head .analytical_heads{
+	display: block !important;
+}
+
+.create_head {
+	width: 35%;
+	float: left;
+	margin: 10% 10% 0 0;
+	margin-left: 5%;
+    margin-top: 3%;
+}
+.create_head .field_set {
+	display: block;
+	width: 95%;
+	float: right;
+}
+.create_head label {
+	width: 39%;
+	height: 30px;
+}
+.create_head input {
+	width: 58%;
+	height: 30px;
+}
+.create_head input[type="submit"] {
+	border: none;
+	background-color: #12569A;
+	width: 20%;
+	float: right;
+	padding: 2px;
+	border: 1px solid #D6D4D2;
+}
+.create_head input[type="checkbox"] {
+	margin-right: 20px;
+	width: 4%;
+}
+
+/******************* End Analytical Head Style ***************/
+
 
 /******************* Function_Settings Style ***************/
+
+#function_settings .functionsettings{
+	display: block !important;
+}
 
 .function_settings {
 	float: left;	
@@ -299,6 +383,10 @@ header {
 /******************* End Function_Settings Style ***************/
 
 /******************* Models Style ***************/
+
+#models .model{
+	display: block !important;
+}
 .model_settings {
 	float: left;	
 	width: 100%;
@@ -407,7 +495,7 @@ select.one{
 	border-bottom: 1px solid #DDDDDD;
 	border-left: 1px solid #DDDDDD;
 	border-right: 1px solid #DDDDDD;
-	padding: 6px;
+	padding: 5px;
 }
 
 .tab_def_model select{
@@ -426,21 +514,24 @@ td.one{
 }
 td.two{
 	 width:7%; height:43px; text-align:left;
-	}
+}
 td.three{
 	 width:12%; text-align:left;
-	}
+}
+td.six{
+	 width:10%; text-align:left;
+}
 td.four{
 	 width:26%; text-align:center;
-	}
-th.four{
-	 width:26%; text-align:center;
-	}
-th.three{
-	 width:12%; text-align:center;
-	}
+}
 td.five{
 	width:5.6%; text-align:center;
+}
+th.four{
+	 width:26%; text-align:center;
+}
+th.three{
+	 width:12%; text-align:center;
 }
 .no_border{
 	border-right: none !important;
@@ -448,4 +539,52 @@ td.five{
 	border-top: none !important;
 	border-bottom: none !important;
 }
+.no_border_left{
+	border-left: none !important;
+}
 /******************* End Models Style ***************/
+
+/******************* Data Upload Style ***************/
+
+#data_upload .dataupload{
+	display: block !important;
+}
+.data_upload {
+	float: left;
+    margin-left: 5%;
+    margin-top: 3%;
+    width: 41%;
+}
+.data_upload_content {
+	display: block;
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 93%;	
+}
+.data_upload_heading {
+	color: #12569A;
+	padding: 0px 0px 10px 0px;
+	border-bottom: 1px solid #12569A;
+	margin-top: 5%;
+}
+.data_upload label {
+	width: 39%;
+	height: 30px;
+}
+.data_upload input[type="file"] {
+	display: inline-block;	
+}
+.data_upload input[type="text"] {
+	width: 50%;	
+}
+.data_upload input[type="submit"] {
+	border: none;
+	background-color: #12569A;
+	width: 15%;
+	float: right;
+	margin-top: 2%;
+	padding: 4px;
+	border: 1px solid #D6D4D2;
+}
+
+/******************* End Data Upload Style ***************/

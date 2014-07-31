@@ -10,24 +10,29 @@
 			</li>
 		{% endif %}
 		<li> 
-			<a href =""> Data Upload </a>
-			<span class="data_upload"> > </span> 
+			<a href ="{% url 'data_upload' %}"> Data Upload </a>
+			<span class="dataupload"> > </span> 
 		</li> 
 		<li> 
 			<a href ="{% url 'field_settings' %}"> Field Settings </a>
 			<span class="field_settings"> > </span> 
 		</li>
 		<li> 
-			<a href =""> Analytical Heads </a>
+			<a href ="{% url 'analytical_heads' %}"> Analytical Heads </a>
 			<span class="analytical_heads"> > </span> 
 		</li>
 		<li> 
-			<a href ="{% url 'function_settings' %}"> Function settings </a>
-			<span class="function_settings"> > </span> 
+			<a href ="{% url 'function_settings' %}"> Function Settings </a>
+			<span class="functionsettings"> > </span> 
 		</li>
 		<li class="no-border"> 
 			<a href ="{% url 'models' %}"> Models </a> 
-			<span class="scoring"> > </span>
+			<span class="model"> > </span>
 		</li>
 	</ul>
 </div>
+<!-- 
+		<li> 
+			<a href ="{% url 'field_settings' %}"> Field Settings </a>
+			<span class="field_settings"> > </span> 
+		</li> -->

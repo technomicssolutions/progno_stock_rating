@@ -305,23 +305,23 @@ function FieldController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
-                if(data.result == 'error'){
+                if(data.result == 'error')
                      $scope.msg = "Field already exists";
-                    }
                 else
-                    {
-                     $scope.msg = "";
-                     $scope.new_field = {
-                     'field_name': '',
-                     'field_description': '',
-                     'id': '',
-                     }   
-                    }       
+                    $scope.reset_field();       
                 $scope.get_fields();                    
             }).error(function(data, status){
                 $scope.message = data.message;
             });
         }        
+    }
+    $scope.reset_field = function(){
+        $scope.msg = "";
+        $scope.new_field = {
+         'field_name': '',
+         'field_description': '',
+         'id': '',
+         } 
     }
     $scope.getClass = function(page) {
         if(page == $scope.current_page)
@@ -686,7 +686,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.edit_general = function(id){
         var url = '/get_general/?id='+id;
         $http.get(url).success(function(data) {
-            $scope.general_list = data.item_list;
+            $scope.general_list = data.general_set;
             $scope.select_type = 1;
             $scope.new_general.id = $scope.general_list[0].id;
             $scope.new_general.function_name = $scope.general_list[0].name;
@@ -699,7 +699,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.edit_continuity = function(id){
         var url = '/get_continuity/?id='+id;
         $http.get(url).success(function(data) {
-            $scope.continuity_list = data.item_list;
+            $scope.continuity_list = data.continuity_objects;
             $scope.select_type = 2;
             $scope.new_continuity.id = $scope.continuity_list[0].id;
             $scope.new_continuity.function_name = $scope.continuity_list[0].name;
@@ -716,8 +716,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.edit_consistency = function(id){
         var url = '/get_consistency/?id='+id;
         $http.get(url).success(function(data) {
-            $scope.consistency_list = data.item_list;
-             $scope.select_type = 3;
+            $scope.consistency_list = data.consistency_objects;
+            $scope.select_type = 3;
             $scope.new_consistency.id = $scope.consistency_list[0].id;
             $scope.new_consistency.function_name = $scope.consistency_list[0].name;
             $scope.new_consistency.function_description = $scope.consistency_list[0].description;
@@ -733,13 +733,13 @@ function FunctionController($scope, $element, $http, $timeout, $location)
    $scope.get_category = function(){
         var url = '/category/';
         $http.get(url).success(function(data) {
-            $scope.item_list = data.item_list;
+            $scope.category_set = data.category_objects;
         })
     }
     $scope.get_anly_head = function(){
         var url = '/anly_head/';
         $http.get(url).success(function(data) {
-            $scope.cat_list = data.item_list;
+            $scope.anly_heads = data.head_objects;
         })
     }
     $scope.get_functions = function(){
@@ -792,10 +792,12 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.show_create_model = function(){
         $scope.create_model = true; 
         $scope.define_model = false; 
+        $scope.msg = "";
     }
     $scope.show_define_model = function(){
         $scope.create_model = false; 
         $scope.define_model = true; 
+        $scope.msg = "";
     }
     $scope.get_industries = function(){
         var url = '/industry/';
@@ -813,7 +815,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.get_anly_head = function(){
         var url = '/anly_head/';
         $http.get(url).success(function(data) {
-            $scope.anly_heads = data.item_list;
+            $scope.anly_heads = data.head_objects;
         })
     }
     $scope.get_model_details = function(id){
@@ -823,11 +825,11 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.parameter_set = [];
         $scope.function_set = [];
         $scope.function_view = [];
+        $scope.edit_parameters = false;
         $scope.flag = 0;
         var url = '/get_model_details/?id='+id;
         $http.get(url).success(function(data) {
             $scope.model_details = data.analytical_heads;
-            //console.log($scope.model_details);
             for(var i = 0; i < $scope.model_details.length; i++){
                 for(var j = 0; j < $scope.model_details[i].function_set.length; j++){
                     if($scope.model_details[i].function_set[j].parameter_set.strong_points){
@@ -884,24 +886,24 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $scope.flag = 0;
             $scope.function_set = [];
             }            
-            console.log($scope.function_row);
             for(var x = 0; x < $scope.function_row.length; x++){
                     var count = 0;
                     for(var i = 0; i < $scope.model_details.length; i++ ){
                         if($scope.model_details[i].analytical_head_id == $scope.function_row[x].head_id)
                             var count = $scope.model_details[i].function_set.length;
                     }
-                    if(count > $scope.function_row[x].function_set.length)
+                    if(count > $scope.function_row[x].function_set.length && $scope.function_row[x].function_set[0].editorEnabled == false){
                         $scope.function_row[x].function_set.push({
                             'editorEnabled': true,
                             'dropdown_enabled': true,
 
                         });  
+                    }
+                        
             }
          })
     }
     $scope.add_function = function(model_id, function_id, parameters,entry){ 
-        console.log(entry);
         $scope.edit_parameters = false;
         $scope.save_parameters(model_id, function_id, parameters);
         var count = 0;
@@ -918,7 +920,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
 
     $scope.save_parameters = function(model_id, function_id, parameters){ 
-        console.log(parameters);
         if($scope.validate_parameters(function_id, parameters)){
             params = { 
                 'model_id': angular.toJson(model_id),
@@ -934,7 +935,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
-                $scope.edit_parameters = true;
+                $scope.edit_parameters = false;
                 $scope.get_model_details(model_id);
                 }).error(function(data, status){
                 $scope.message = data.message;
@@ -944,12 +945,12 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     
     $scope.edit_function = function(model_function){
-        console.log(model_function);
-        $scope.edit_parameters = true;
-        model_function.editorEnabled = true;
-     }
+       if(model_function.parameter_set){
+            $scope.edit_parameters = true;
+            model_function.editorEnabled = true;
+       }
+    }
      $scope.delete_parameters = function(model_id, parameters){
-        console.log(parameters.parameter_id);
         var url = '/delete_parameters/?id='+parameters.parameter_id;
         $http.get(url).success(function(data){
         if(data.result == 'ok')
@@ -1052,35 +1053,75 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.validate_parameters = function(function_id, parameters){
         $scope.msg = '';
+        console.log("validate",function_id, parameters);
         if(angular.isUndefined(function_id) && !$scope.edit_parameters) {
             $scope.msg = "Please select a function";
             return false;
         } else if(angular.isUndefined(parameters) || parameters.strong_min == ''){
             $scope.msg = "Please enter Strong Minimum";
             return false;
+        } else if(!Number(parameters.strong_min) ) {
+            $scope.msg = "Invalid entry in Strong Minimum";
+            return false;
         } else if(angular.isUndefined(parameters.strong_max) || parameters.strong_max == ''){
             $scope.msg = "Please enter Strong Maximum";
+            return false;
+        } else if(!Number(parameters.strong_max) ) {
+            $scope.msg = "Invalid entry in Strong Maximum";
             return false;
         } else if(angular.isUndefined(parameters.strong_points) || parameters.strong_points == ''){
             $scope.msg = "Please enter Strong Points";
             return false;
+        } else if(!Number(parameters.strong_points) ) {
+            $scope.msg = "Invalid entry in Strong Points";
+            return false;
         } else if(angular.isUndefined(parameters.neutral_min) || parameters.neutral_min == ''){
             $scope.msg = "Please enter Neutral Minimum";
+            return false;
+        } else if(!Number(parameters.neutral_min) ) {
+            $scope.msg = "Invalid entry in Neutral Minimum";
             return false;
         } else if(angular.isUndefined(parameters.neutral_max) || parameters.neutral_max == ''){
             $scope.msg = "Please enter Neutral Maximum";
             return false;
+        } else if(!Number(parameters.neutral_max) ) {
+            $scope.msg = "Invalid entry in Neutral Maximum";
+            return false;
         } else if(angular.isUndefined(parameters.neutral_points) || parameters.neutral_points == ''){
             $scope.msg = "Please enter Neutral Points";
+            return false;
+        } else if(!Number(parameters.neutral_points) ) {
+            $scope.msg = "Invalid entry in Neutral Points";
             return false;
         } else if(angular.isUndefined(parameters.weak_min) || parameters.weak_min == ''){
             $scope.msg = "Please enter Weak Minimum";
             return false;
+        }  else if(!Number(parameters.weak_min) ) {
+            $scope.msg = "Invalid entry in Weak Minimum";
+            return false;
         } else if(angular.isUndefined(parameters.weak_max) || parameters.weak_max == ''){
             $scope.msg = "Please enter Weak Maximum";
             return false;
+        } else if(!Number(parameters.weak_max) ) {
+            $scope.msg = "Invalid entry in Weak Maximum";
+            return false;
         } else if(angular.isUndefined(parameters.weak_points) || parameters.weak_points == ''){
             $scope.msg = "Please enter Weak Points";
+            return false;
+        } else if(!Number(parameters.weak_points) ) {
+            $scope.msg = "Invalid entry in Weak Points";
+            return false;
+        } else if(parameters.strong_min >= parameters.strong_max) {
+            $scope.msg = "Strong Minimum should be less than Strong Maximum";
+            return false;
+        } else if(parameters.neutral_min >= parameters.neutral_max) {
+            $scope.msg = "Neutral Minimum should be less than Neutral Maximum";
+            return false;
+        } else if(parameters.weak_min >= parameters.weak_max) {
+            $scope.msg = "Weak Minimum should be less than Weak Maximum";
+            return false;
+        } if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
+            $scope.msg = "Please select a function";
             return false;
         } else {
             return true;
@@ -1169,3 +1210,100 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
 }
 
+function DataUploadController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.hide_dropdown();
+       }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+}
+
+function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
+{
+    $scope.new_head = {
+        'head_name': '',
+        'head_description': '',
+        'id': '',
+    }
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.hide_dropdown();
+        $scope.get_anly_head();
+       }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.get_anly_head = function(){
+        var url = '/anly_head/';
+        $http.get(url).success(function(data) {
+            $scope.anly_heads = data.head_objects;
+        })
+    }
+    $scope.validate_head = function(){
+        $scope.msg = '';
+        if($scope.new_head.head_name == '') {
+            $scope.msg = "Please enter Analytical Head Name";
+            return false;
+        } else if($scope.new_head.head_description == '' ) {
+            $scope.msg = "Please enter Analytical Head Description";
+            return false;
+        } else {
+            return true;
+        }
+    }
+    $scope.save_new_head = function(){
+        if($scope.validate_head()){
+            params = { 
+                'head_details': angular.toJson($scope.new_head),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/save_head/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                if(data.result == 'error')
+                     $scope.msg = "Head already exists";
+                else
+                    $scope.reset_head();
+                $scope.get_anly_head();                    
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }        
+    }
+    $scope.edit_head = function(head){
+        console.log(head);
+        $scope.new_head.head_name = head.title;
+        $scope.new_head.head_description = head.description;
+        $scope.new_head.id = head.id;
+    }
+    $scope.delete_head = function(head){
+        var url = '/delete_head/?id='+head.id;
+        $http.get(url).success(function(data){
+            if(data.result == 'ok')
+                $scope.msg = "Analytical Head deleted";
+            $scope.get_anly_head();                    
+        })
+    }
+    $scope.reset_head = function(){
+        $scope.msg = '';
+        $scope.new_head = {
+         'head_name': '',
+         'head_description': '',
+         'id': '',
+         }         
+    }
+}

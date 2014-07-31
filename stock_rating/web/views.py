@@ -35,6 +35,18 @@ class FunctionSettings(View):
         return render(request, 'function_settings.html', context)
 
 
+class DataUpload(View):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, 'data_upload.html', context)
+
+
+class AnalyticalHeads(View):
+    def get(self, request, *args, **kwargs):
+        context = {}
+        return render(request, 'analytical_heads.html', context)
+
+
 class Model(View):
     def get(self, request, *args, **kwargs):
         context = {}
@@ -98,16 +110,16 @@ class Users(View):
 class Category(View):
 
     def get(self, request, *args, **kwargs):
-        item_list = FunctionCategory.objects.all()
-        items = []
-        for item in item_list:
-            items.append({
-                'id':item.id,
-                'category': item.category_name
+        category_objects = FunctionCategory.objects.all()
+        category_set = []
+        for category in category_objects:
+            category_set.append({
+                'id':category.id,
+                'category': category.category_name
             })
         if request.is_ajax():
             response = simplejson.dumps({
-               'item_list': items
+               'category_objects': category_set
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -115,13 +127,13 @@ class Category(View):
 class ModelDetails(View):
 
     def get(self, request, *args, **kwargs):
-        item_list = AnalysisModel.objects.all()
-        items = []
+        analysis_model_objects = AnalysisModel.objects.all()
+        analysis_models = []
         industry_set = []
         analytical_head_set = []
-        for item in item_list:
-            industries = item.industries.all()
-            analytical_heads = item.analytical_heads.all()
+        for model in analysis_model_objects:
+            industries = model.industries.all()
+            analytical_heads = model.analytical_heads.all()
             for analytical_head in analytical_heads:
                 analytical_head_set.append({
                     'id': analytical_head.id,
@@ -132,20 +144,20 @@ class ModelDetails(View):
                     'id': industry.id,
                     'name': industry.industry_name,
                 })
-            items.append({
-                'id':item.id,
-                'name': item.name,
-                'description': item.description,
+            analysis_models.append({
+                'id':model.id,
+                'name': model.name,
+                'description': model.description,
                 'industry': industry_set,
                 'analytical_heads': analytical_head_set,
-                'created_date': item.created_date.strftime("%d/%m/%Y"),
-                'modified_date': item.updated_date.strftime("%d/%m/%Y"),
+                'created_date': model.created_date.strftime("%d/%m/%Y"),
+                'modified_date': model.updated_date.strftime("%d/%m/%Y"),
             })
             industry_set = []
             analytical_head_set = []
         if request.is_ajax():
             response = simplejson.dumps({
-               'model_list': items
+               'model_list': analysis_models
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -153,25 +165,35 @@ class ModelDetails(View):
 class Analyt_Heads(View):
 
     def get(self, request, *args, **kwargs):
-        item_list = AnalyticalHead.objects.all()
-        items = []
+        head_objects = AnalyticalHead.objects.all()
+        heads = []
         function_set = []
-        for item in item_list:
-            function_list = item.function_set.all()
+        for head in head_objects:
+            if head.created_date.strftime("%d/%m/%Y") < head.updated_date.strftime("%d/%m/%Y"):
+                status = "Modified"
+                date = head.updated_date
+            else:
+                status = "Created"
+                date = head.created_date
+            function_list = head.function_set.all()
             for function in function_list:
                 function_set.append({
                     'function_id': function.id,
                     'function_name': function.function_name,
                      })
-            items.append({
-                'id':item.id,
-                'title': item.title,
+            heads.append({
+                'id':head.id,
+                'title': head.title,
+                'description': head.description,
+                'status': status,
+                'date': date.strftime("%d/%m/%Y"),
                 'function_set': function_set,
             })
+            print heads
             function_set = []
         if request.is_ajax():
             response = simplejson.dumps({
-               'item_list': items
+               'head_objects': heads
             })
         return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -210,7 +232,6 @@ class Functions(View):
     def get(self, request, *args, **kwargs):
         function_objects = Function.objects.all()
         functions = []
-        category_list = []
         for function in function_objects:
             functions.append({
                     'id': function.id,
@@ -314,9 +335,36 @@ class SaveField(View):
         return render(request, 'field_settings.html', {})
 
 
+class SaveAnalyticalHead(View):
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+
+            head_details = ast.literal_eval(request.POST['head_details'])
+            try:
+                head = AnalyticalHead.objects.get(id=head_details['id'])
+            except:
+                head = AnalyticalHead()
+            head.title = head_details['head_name']
+            head.description = head_details['head_description']
+            head.created_by = request.user
+            try:
+                head.save()
+                res = {
+                  'result': 'ok',
+                }
+            except:
+                res = {
+                  'result': 'error',  
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'analytical_heads.html', {})
+
+
 class SaveModel(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
+
             model_details = ast.literal_eval(request.POST['model_details'])
             analytical_heads = ast.literal_eval(request.POST['analytical_heads'])
             industry_selected = ast.literal_eval(request.POST['industry_selected'])
@@ -364,14 +412,12 @@ class SaveFunction(View):
                     general_function = Function.objects.get(id=function_details['id'])
                 except:
                     general_function = Function()
-                # general_function.category = function_category
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
                 general_function.category = category
                 general_function.function_name = function_details['function_name']
                 general_function.description = function_details['function_description']
                 general_function.function_type = 'general'
                 general_function.analytical_head = anly_head
-                # formula_list = [part for part in re.split("([-()+*/])", function_details['function_formula']) if part]
                 try:
                     general_function.save()
                     res = {
@@ -476,7 +522,6 @@ class SaveParameters(View):
         return render(request, 'models.html', {})
 
 
-
 class ModelView(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=request.GET.get('id'))
@@ -523,19 +568,19 @@ class ModelView(View):
 class General(View):
 
     def get(self, request, *args, **kwargs):
-        general = Function.objects.get(id=request.GET.get('id'))
-        items = []
-        items.append({
-                'id':general.id,
-                'name': general.function_name,
-                'description': general.description,
-                'head': general.analytical_head.id,
-                'formula': general.formula,
-                'category': general.category.id,
+        general_objects = Function.objects.get(id=request.GET.get('id'))
+        general_set = []
+        general_set.append({
+                'id':general_objects.id,
+                'name': general_objects.function_name,
+                'description': general_objects.description,
+                'head': general_objects.analytical_head.id,
+                'formula': general_objects.formula,
+                'category': general_objects.category.id,
             })
         if request.is_ajax():
             response = simplejson.dumps({
-               'item_list': items
+               'general_objects': general_set
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -543,23 +588,23 @@ class General(View):
 class Continuity(View):
 
     def get(self, request, *args, **kwargs):
-        continuity_function = ContinuityFunction.objects.get(id=request.GET.get('id'))
-        items = []
-        items.append({
-                'id':continuity_function.id,
-                'name': continuity_function.function_name,
-                'description': continuity_function.description,
-                'head': continuity_function.analytical_head.id,
-                'no_of_periods': continuity_function.number_of_periods,
-                'minimum_value': continuity_function.minimum_value,
-                'period_1': continuity_function.period_1,
-                'period_2': continuity_function.period_2,
-                'period_3': continuity_function.period_3,
-                'category': continuity_function.category.id,
+        continuity_objects = ContinuityFunction.objects.get(id=request.GET.get('id'))
+        continuity_set = []
+        continuity_set.append({
+                'id':continuity_objects.id,
+                'name': continuity_objects.function_name,
+                'description': continuity_objects.description,
+                'head': continuity_objects.analytical_head.id,
+                'no_of_periods': continuity_objects.number_of_periods,
+                'minimum_value': continuity_objects.minimum_value,
+                'period_1': continuity_objects.period_1,
+                'period_2': continuity_objects.period_2,
+                'period_3': continuity_objects.period_3,
+                'category': continuity_objects.category.id,
             })
         if request.is_ajax():
             response = simplejson.dumps({
-               'item_list': items
+               'continuity_objects': continuity_set
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -567,23 +612,23 @@ class Continuity(View):
 class Consistency(View):
 
     def get(self, request, *args, **kwargs):
-        consistency_function = ConsistencyFunction.objects.get(id=request.GET.get('id'))
-        items = []
-        items.append({
-                'id':consistency_function.id,
-                'name': consistency_function.function_name,
-                'description': consistency_function.description,
-                'head': consistency_function.analytical_head.id,
-                'no_of_periods': consistency_function.number_of_periods,
-                'minimum_value': consistency_function.minimum_value,
-                'period_1': consistency_function.period_1,
-                'period_2': consistency_function.period_2,
-                'mean': consistency_function.mean,
-                'category': consistency_function.category.id,
+        consistency_objects = ConsistencyFunction.objects.get(id=request.GET.get('id'))
+        consistency_set = []
+        consistency_set.append({
+                'id':consistency_objects.id,
+                'name': consistency_objects.function_name,
+                'description': consistency_objects.description,
+                'head': consistency_objects.analytical_head.id,
+                'no_of_periods': consistency_objects.number_of_periods,
+                'minimum_value': consistency_objects.minimum_value,
+                'period_1': consistency_objects.period_1,
+                'period_2': consistency_objects.period_2,
+                'mean': consistency_objects.mean,
+                'category': consistency_objects.category.id,
             })
         if request.is_ajax():
             response = simplejson.dumps({
-               'item_list': items
+               'consistency_objects': consistency_set
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -603,19 +648,33 @@ class DeleteField(View):
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 
+class DeleteHead(View):
+    def get(self, request, *args, **kwargs):
+        head = AnalyticalHead.objects.get(id=request.GET.get('id')) 
+        try:
+            head.delete()
+            res = {
+                'result': 'ok',
+            }
+        except:
+            res = {
+                'result': 'error',  
+            }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 class DeleteModel(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=request.GET.get('id')) 
         try:
-                model.delete()
-                res = {
-                  'result': 'ok',
-                }
+            model.delete()
+            res = {
+              'result': 'ok',
+            }
         except:
-                res = {
-                   'result': 'error',  
-                }
+            res = {
+               'result': 'error',  
+            }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -624,14 +683,14 @@ class DeleteUser(View):
     def get(self, request, *args, **kwargs):
         user = User.objects.get(id=request.GET.get('id')) 
         try:
-                user.delete()
-                res = {
-                  'result': 'ok',
-                }
+            user.delete()
+            res = {
+              'result': 'ok',
+            }
         except:
-                res = {
-                   'result': 'error',  
-                }
+            res = {
+               'result': 'error',  
+            }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -639,14 +698,14 @@ class DeleteParameter(View):
     def get(self, request, *args, **kwargs):
         parameterlimit = ParameterLimit.objects.get(id=request.GET.get('id'))
         try:
-                parameterlimit.delete()
-                res = {
-                  'result': 'ok',
-                }
+            parameterlimit.delete()
+            res = {
+              'result': 'ok',
+            }
         except:
-                res = {
-                   'result': 'error',  
-                }
+            res = {
+               'result': 'error',  
+            }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 

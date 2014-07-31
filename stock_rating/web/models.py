@@ -22,7 +22,7 @@ class UserPermission(Date):
 class AnalyticalHead(Date):
 
     created_by = models.ForeignKey(User)
-    title = models.CharField('Title', max_length=200)
+    title = models.CharField('Title', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
 
     def __unicode__(self):

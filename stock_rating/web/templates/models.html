@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block title %} Model Settings {% endblock title%}
-{% block body_id %}field{% endblock %}
+{% block body_id %}models{% endblock %}
 {% block controller %}
 	ng-controller="ModelController" ng-init="init('{{csrf_token}}')"
 {% endblock controller %}
@@ -56,7 +56,7 @@
 			<h3 class="sub_heading"> Scoring </h3>
 			<table class="table table-stripped">
 				<tr>
-					<th class="three">Analytic Head</th>
+					<th class="six">Analytic Head</th>
 					<th class="three">Function</th>
 					<th class="four" colspan="3">Strong</th>
 					<th class="four" colspan="3">Neutral</th>
@@ -64,7 +64,7 @@
 					<th class="four no_border" colspan="4"></th></tr>
 				</tr>
 				<tr>
-					<td class="three"></td>
+					<td class="six"></td>
 					<td class="three"></td>
 					<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
 					<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
@@ -75,11 +75,11 @@
 					<td class="five no_border"></td>
 				</tr>
 				<tr ng-repeat="analyt_head in function_row">
-					<td class="three">[[ analyt_head.head_name ]]</td>
+					<td class="six">[[ analyt_head.head_name ]]</td>
 					<td colspan="14">
 						<table class="table table-stripped">
 							<tr ng-repeat="function in analyt_head.function_set">
-								<td class="three">
+								<td class="three no_border_left">
 									<p ng-hide="function.dropdown_enabled">[[ function.function_name ]]</p>
 									<select ng-show="function.dropdown_enabled" ng-model="select_function">
 											<option value="" disabled="True">Select</option>
@@ -106,10 +106,12 @@
 								<td class="five"><input type="text" ng-model="
 									function.parameter_set.weak_points" ng-show="function.editorEnabled"><span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_points]]</span></td>	
 								<input type="hidden" ng-model="function.parameter_set.id" />
+								<td class="five no_border"></td>
 								<td class="five no_border"><input type="button" value="Edit" ng-click="edit_function(function)"></td>
 								<td class="five no_border"><input type="button" value="Del" ng-click="delete_parameters(select_model,function.parameter_set)"></td>
-								<td class="five no_border"><input type="button" value="Add" ng-click="add_function(select_model,select_function,function.parameter_set,analyt_head)"></td>
 								<td class="five no_border"><input type="button" value="Save" ng-click="save_parameters(select_model,select_function,function.parameter_set)"></td>
+								
+								
 							</div>
 							</tr>
 						</table>
