@@ -1,3 +1,6 @@
+
+from jsonfield import JSONField
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -44,6 +47,8 @@ class DataFile(Date):
 
     uploaded_by = models.ForeignKey(User)
     uploaded_file = models.FileField(upload_to='uploads/data_file/')
+    number_of_sheets = models.IntegerField('Number of sheets', null=True, blank=True)
+    sheets = JSONField('sheets', null=True, blank=True)
 
     def __unicode__(self):
         return self.uploaded_by.first_name + ' - ' + self.uploaded_file.name

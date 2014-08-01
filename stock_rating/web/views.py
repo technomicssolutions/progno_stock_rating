@@ -1,7 +1,7 @@
 
 import simplejson
 import ast
-import re
+import xlrd
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -198,6 +198,53 @@ class DataUpload(View):
         data_file.uploaded_file = request.FILES['data_file']
         data_file.uploaded_by = request.user
         data_file.save()
+        sheets = []
+        workbook = xlrd.open_workbook(data_file.uploaded_file.name)
+        worksheets = workbook.sheet_names()
+        data_file.number_of_sheets = len(worksheets)
+        for worksheet_name in worksheets:
+            sheet = {}
+            sheet['sheet_name'] = worksheet_name
+            rows = []
+            worksheet = workbook.sheet_by_name(worksheet_name)
+            num_rows = worksheet.nrows - 1
+            num_cells = worksheet.ncols - 1
+            curr_row = -1            
+            curr_cell = -1
+            fields = []
+            while curr_row < num_rows:
+                curr_row += 1                
+                curr_cell = -1
+                row = []
+                if curr_row != 0:
+                    for x in rows[0]:
+                        row.append(x)
+                while curr_cell < num_cells:
+                    curr_cell += 1
+
+                    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
+                    #cell_type = worksheet.cell_type(curr_row, curr_cell)
+                    cell_value = worksheet.cell_value(curr_row, curr_cell)
+                    if curr_row != 0 :
+                        field_name = worksheet.cell_value(0, curr_cell)
+                        index = rows[0].index(field_name)
+                        row[index] = cell_value
+                    else:
+                        fields.append(cell_value)
+                if curr_row == 0:
+                    rows.append(list(set(fields)))
+                else:
+                    rows.append(row)
+            sheet['rows'] = rows
+            sheets.append(sheet)
+        data_file.sheets = simplejson.dumps(sheets)
+        data_file.save()
+
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'sheets': sheets,
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
         context = {}
         return render(request, 'data_upload.html', context)
 

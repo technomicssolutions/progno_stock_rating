@@ -1266,7 +1266,6 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
                 $scope.error_msg = "Please upload an excel file";
                 return false;
             }
-            console.log(split_name, index);
             var fd = new FormData();
             fd.append('data_file', $scope.data_file.src);
             fd.append('csrfmiddlewaretoken', $scope.csrf_token);
@@ -1278,7 +1277,8 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
                 headers: {'Content-Type': undefined
                 }
             }).success(function(data, status){ 
-                hide_loader();          
+                hide_loader(); 
+                console.log(data.sheets)         ;
             }).error(function(data, status){           
 
             });
