@@ -193,12 +193,17 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         }        
     }
     $scope.delete_user = function(user){
+        show_loader();
         var url = '/delete_user/?id='+user.id;
         $http.get(url).success(function(data){
-        if(data.result == 'ok')
+        if(data.result == 'ok'){
+            hide_loader();
             $scope.msg = "User deleted";
-        else 
+        }
+        else {
+            hide_loader();
             $scope.msg = "Error";
+        }
         $scope.get_users();                    
         })
     }
@@ -301,6 +306,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_new_field = function(){
         if($scope.validate_field()){
+            show_loader();
             params = { 
                 'field_details': angular.toJson($scope.new_field),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -312,7 +318,8 @@ function FieldController($scope, $element, $http, $timeout, $location)
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
-            }).success(function(data, status) {  
+            }).success(function(data, status) { 
+                hide_loader(); 
                 if(data.result == 'error')
                      $scope.msg = "Field already exists";
                 else
@@ -560,6 +567,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_new_general = function(){
         if($scope.validate_field_general()){
+            show_loader();
             params = { 
                 'function_details': angular.toJson($scope.new_general),
                 'function_type' : angular.toJson($scope.select_type),
@@ -574,6 +582,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
+                hide_loader();
                 if(data.result == 'error'){
                      $scope.msg = "Function already exists";
                     }
@@ -587,6 +596,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_new_continuity = function(){
         if($scope.validate_field_continuity()){
+            show_loader();
             params = { 
                 'function_details': angular.toJson($scope.new_continuity),
                 'function_type' : angular.toJson($scope.select_type),
@@ -601,6 +611,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
+                hide_loader();
                 if(data.result == 'error'){
                      $scope.msg = "Function already exists";
                     }
@@ -614,6 +625,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_new_consistency = function(){
         if($scope.validate_field_consistency()){
+            show_loader();
             params = { 
                 'function_details': angular.toJson($scope.new_consistency),
                 'function_type' : angular.toJson($scope.select_type),
@@ -628,6 +640,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
+                hide_loader();
                 if(data.result == 'error'){
                      $scope.msg = "Function already exists";
                     }
@@ -835,8 +848,10 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.function_view = [];
         $scope.edit_parameters = false;
         $scope.flag = 0;
+        show_loader();
         var url = '/model_details/?id='+id;
         $http.get(url).success(function(data) {
+            hide_loader();
             $scope.model_details = data.analytical_heads;
             for(var i = 0; i < $scope.model_details.length; i++){
                 for(var j = 0; j < $scope.model_details[i].function_set.length; j++){
@@ -929,6 +944,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
 
     $scope.save_parameters = function(model_id, function_id, parameters){ 
         if($scope.validate_parameters(function_id, parameters)){
+            show_loader();
             params = { 
                 'model_id': angular.toJson(model_id),
                 'function_id': angular.toJson(function_id),
@@ -943,6 +959,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
+                hide_loader();
                 $scope.edit_parameters = false;
                 $scope.get_model_details(model_id);
                 }).error(function(data, status){
@@ -959,13 +976,15 @@ function ModelController($scope, $element, $http, $timeout, $location)
        }
     }
      $scope.delete_parameters = function(model_id, parameters){
+        show_loader();
         var url = '/delete_parameters/?id='+parameters.parameter_id;
         $http.get(url).success(function(data){
-        if(data.result == 'ok')
-            $scope.msg = "Parameters deleted";
-        else 
-            $scope.msg = "Error";
-        $scope.get_model_details(model_id);              
+            hide_loader();
+            if(data.result == 'ok')
+                $scope.msg = "Parameters deleted";
+            else 
+                $scope.msg = "Error";
+            $scope.get_model_details(model_id);              
         })
      }
     $scope.moveRight = function(){
@@ -1138,6 +1157,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_model = function(){
         if($scope.validate_model()){
+            show_loader();
             for(var i = 0; i < $scope.anly_heads.length; i++)
                 $scope.anly_heads[i].selected = String($scope.anly_heads[i].selected);
             for(var i = 0; i < $scope.rightSelect.length; i++)
@@ -1156,6 +1176,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) { 
+                hide_loader();
                 if(data.result == 'error'){
                      $scope.msg = "Model already exists";
                     }
@@ -1202,8 +1223,10 @@ function ModelController($scope, $element, $http, $timeout, $location)
         }
     }
     $scope.delete_model = function(field){
+        show_loader();
         var url = '/delete_model/?id='+field.id;
         $http.get(url).success(function(data){
+            hide_loader();
             if(data.result == 'ok'){
                 $scope.msg = "Model deleted";
                }
@@ -1304,6 +1327,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_new_head = function(){
         if($scope.validate_head()){
+            show_loader();
             params = { 
                 'head_details': angular.toJson($scope.new_head),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -1316,6 +1340,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {  
+                hide_loader();
                 if(data.result == 'error')
                      $scope.msg = "Head already exists";
                 else
@@ -1333,8 +1358,10 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         $scope.new_head.id = head.id;
     }
     $scope.delete_head = function(head){
+        show_loader();
         var url = '/delete_head/?id='+head.id;
         $http.get(url).success(function(data){
+            hide_loader();
             if(data.result == 'ok')
                 $scope.msg = "Analytical Head deleted";
             $scope.get_anly_head();                    
