@@ -1288,6 +1288,46 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
         
     }
 }
+function FieldMappingController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.hide_dropdown();
+        $scope.get_file_fields();
+        $scope.get_system_fields();
+    }
+    /*$scope.draggableObjects = [
+                    {name: 'one'},
+                    {name: 'two'},
+                    {name: 'three'}
+                ];*/
+    $scope.onDropComplete = function (index, obj, evt) {
+        var otherObj = $scope.system_fields[index];
+        var otherIndex = $scope.system_fields.indexOf(obj);
+        $scope.system_fields[index] = obj;
+        $scope.system_fields[otherIndex] = otherObj;
+    }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.get_file_fields = function(){
+        $scope.error_msg = '';  
+        var url = '/file_fields/';
+        $http.get(url).success(function(data) {
+            $scope.file_fields = data.fields;
+        })       
+    }
+    $scope.get_system_fields = function(){
+        $scope.error_msg = '';  
+        var url = '/field_settings/';
+        $http.get(url).success(function(data) {
+            $scope.system_fields = data.fields;
+        })     
+    }
+}
 
 function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
 {

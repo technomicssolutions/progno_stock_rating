@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('stock', ['stock.services', 'stock.directives']);
+var app = angular.module('stock', ['stock.services', 'stock.directives', 'ngDraggable']);
 
 app.config(function($interpolateProvider)
 {

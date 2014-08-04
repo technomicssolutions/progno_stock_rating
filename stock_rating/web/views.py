@@ -192,8 +192,11 @@ def process_data_file(data_file):
     data_file.number_of_sheets = len(worksheets)
     data_file.save()
     for worksheet_name in worksheets:
-        sheet = {}
-        sheet['sheet_name'] = worksheet_name
+        sheet = OrderedDict({
+            'name_of_sheet': '',
+            'rows': ''
+        })
+        sheet['name_of_sheet'] = worksheet_name
         rows = []
         worksheet = workbook.sheet_by_name(worksheet_name)
         num_rows = worksheet.nrows - 1
@@ -261,6 +264,23 @@ class FieldMapping(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'field_mapping.html', {})
 
+class FileFields(View):
+    def get(self, request, *args, **kwargs):
+        file_obj = DataFile.objects.latest('id')
+        if file_obj:
+            if request.is_ajax():
+                fields = []
+                for sheet in file_obj.sheets:
+                    fields.append(sheet['rows'][0])
+                fields = [x for y in fields for x in y]
+                response = simplejson.dumps({
+                    'fields': list(OrderedDict.fromkeys(fields))
+                })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'field_mapping.html', {
+            'fields' : file_obj.sheets if file_obj else []
+        })
+
 class AnalyticalHeads(View):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -279,7 +299,7 @@ class AnalyticalHeads(View):
                     function_set.append({
                         'function_id': function.id,
                         'function_name': function.function_name,
-                         })
+                    })
                 heads.append({
                     'id':head.id,
                     'title': head.title,
