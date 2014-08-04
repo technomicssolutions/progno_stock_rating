@@ -602,3 +602,19 @@ th.three{
 }
 
 /******************* End Data Upload Style ***************/
+
+/****************** Field Mapping styles starts *************/
+
+/******************* Data Upload Style ***************/
+
+#field_mapping .field_mapping{
+	display: block !important;
+}
+.field_mapping {
+	float: left;
+    margin-left: 5%;
+    margin-top: 3%;
+    width: 41%;
+}
+
+/**************** Fields mapping ends *************/

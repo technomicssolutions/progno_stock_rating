@@ -2,6 +2,7 @@
 import simplejson
 import ast
 import xlrd
+from collections import OrderedDict
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -184,6 +185,48 @@ class FunctionSettings(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'function_settings.html', {})
 
+def process_data_file(data_file):
+    sheets = []
+    workbook = xlrd.open_workbook(data_file.uploaded_file.name)
+    worksheets = workbook.sheet_names()
+    data_file.number_of_sheets = len(worksheets)
+    data_file.save()
+    for worksheet_name in worksheets:
+        sheet = {}
+        sheet['sheet_name'] = worksheet_name
+        rows = []
+        worksheet = workbook.sheet_by_name(worksheet_name)
+        num_rows = worksheet.nrows - 1
+        num_cells = worksheet.ncols - 1
+        curr_row = -1            
+        curr_cell = -1
+        while curr_row < num_rows:
+            curr_row += 1                
+            curr_cell = -1
+            row = []
+            if curr_row != 0:
+                for x in rows[0]:
+                    row.append(x)
+            while curr_cell < num_cells:
+                curr_cell += 1
+                # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
+                #cell_type = worksheet.cell_type(curr_row, curr_cell)
+                cell_value = worksheet.cell_value(curr_row, curr_cell)
+                if curr_row != 0 :
+                    field_name = worksheet.cell_value(0, curr_cell)
+                    index = rows[0].index(field_name)
+                    row[index] = cell_value
+                else:
+                    row.append(cell_value)
+            if curr_row == 0:
+                row = list(OrderedDict.fromkeys(row))
+                rows.append(row)
+            else:
+                rows.append(row)
+        sheet['rows'] = rows
+        sheets.append(sheet)
+    return sheets
+
 
 class DataUpload(View):
     def get(self, request, *args, **kwargs):
@@ -202,41 +245,7 @@ class DataUpload(View):
         workbook = xlrd.open_workbook(data_file.uploaded_file.name)
         worksheets = workbook.sheet_names()
         data_file.number_of_sheets = len(worksheets)
-        for worksheet_name in worksheets:
-            sheet = {}
-            sheet['sheet_name'] = worksheet_name
-            rows = []
-            worksheet = workbook.sheet_by_name(worksheet_name)
-            num_rows = worksheet.nrows - 1
-            num_cells = worksheet.ncols - 1
-            curr_row = -1            
-            curr_cell = -1
-            fields = []
-            while curr_row < num_rows:
-                curr_row += 1                
-                curr_cell = -1
-                row = []
-                if curr_row != 0:
-                    for x in rows[0]:
-                        row.append(x)
-                while curr_cell < num_cells:
-                    curr_cell += 1
-
-                    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-                    #cell_type = worksheet.cell_type(curr_row, curr_cell)
-                    cell_value = worksheet.cell_value(curr_row, curr_cell)
-                    if curr_row != 0 :
-                        field_name = worksheet.cell_value(0, curr_cell)
-                        index = rows[0].index(field_name)
-                        row[index] = cell_value
-                    else:
-                        fields.append(cell_value)
-                if curr_row == 0:
-                    rows.append(list(set(fields)))
-                else:
-                    rows.append(row)
-            sheet['rows'] = rows
-            sheets.append(sheet)
+        sheets = process_data_file(data_file)
         data_file.sheets = simplejson.dumps(sheets)
         data_file.save()
 
@@ -248,6 +257,9 @@ class DataUpload(View):
         context = {}
         return render(request, 'data_upload.html', context)
 
+class FieldMapping(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'field_mapping.html', {})
 
 class AnalyticalHeads(View):
     def get(self, request, *args, **kwargs):
@@ -559,7 +571,6 @@ class ModelDetails(View):
         return HttpResponse(response, status=200, mimetype='application/json')
 
     def post(self, request, *args, **kwargs):
-        print request.POST['model_id']
         if request.is_ajax():
             model_id = ast.literal_eval(request.POST['model_id'])
             parameters = ast.literal_eval(request.POST['parameters'])

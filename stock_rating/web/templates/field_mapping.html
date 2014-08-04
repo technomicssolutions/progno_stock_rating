@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %} Field Mapping {% endblock title%}
+{% block body_id %}field_mapping{% endblock %}
+{% block controller %}
+	ng-controller="FieldMappingController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+<div class="field_mapping">
+	<h3 class="field_mapping_heading"> Field Mapping </h3>
+	<div class="field_mapping_content">
+		<label> Map Field: </label>
+		<input type="text" /> 
+		<p class='error_msg'>[[error_msg]]</p>
+		<input type="submit" name="upload" value="Upload" ng-click="submit_file();"/>
+	</div>
+</div>
+{% endblock content %}
