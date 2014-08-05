@@ -31,9 +31,9 @@ urlpatterns = patterns('',
     url(r'category/$', login_required(Category.as_view()), name="category"),   
     url(r'industry/$', login_required(IndustryDetails.as_view()), name="industry"),
 
-    url(r'get_general/$', login_required(General.as_view()), name="get_general"),
-    url(r'get_continuity/$', login_required(Continuity.as_view()), name="get_continuity"),
-    url(r'get_consistency/$', login_required(Consistency.as_view()), name="get_consistency"),
+    url(r'get_type_general/$', login_required(General.as_view()), name="get_type_general"),
+    url(r'get_type_continuity/$', login_required(Continuity.as_view()), name="get_type_continuity"),
+    url(r'get_type_consistency/$', login_required(Consistency.as_view()), name="get_type_consistency"),
     url(r'model_details/$', login_required(ModelDetails.as_view()), name="model_details"),
 
     url(r'delete_field/$', login_required(DeleteField.as_view()), name="delete_field"),

@@ -409,7 +409,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.hide_dropdown();
         $scope.change_type();
         $scope.get_category();
-        $scope.get_anly_head();
+        $scope.get_analytical_head();
         $scope.get_functions();
         $scope.show_general = true;
         $scope.show_consistency = false;
@@ -705,7 +705,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }   
     }
     $scope.edit_general = function(id){
-        var url = '/get_general/?id='+id;
+        var url = '/get_type_general/?id='+id;
         $http.get(url).success(function(data) {
             $scope.general_list = data.general_set;
             $scope.select_type = 1;
@@ -718,7 +718,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.edit_continuity = function(id){
-        var url = '/get_continuity/?id='+id;
+        var url = '/get_type_continuity/?id='+id;
         $http.get(url).success(function(data) {
             $scope.continuity_list = data.continuity_objects;
             $scope.select_type = 2;
@@ -735,7 +735,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.edit_consistency = function(id){
-        var url = '/get_consistency/?id='+id;
+        var url = '/get_type_consistency/?id='+id;
         $http.get(url).success(function(data) {
             $scope.consistency_list = data.consistency_objects;
             $scope.select_type = 3;
@@ -757,7 +757,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.category_set = data.category_objects;
         })
     }
-    $scope.get_anly_head = function(){
+    $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
@@ -802,7 +802,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.get_industries();
         $scope.get_models();
         $scope.create_model = true; 
-        $scope.get_anly_head();
+        $scope.get_analytical_head();
         $scope.rightSelect = [];
         $scope.industry_selected = [];    
         $scope.show_table = false;
@@ -833,7 +833,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $scope.model_list = data.model_list;
         })
     }
-    $scope.get_anly_head = function(){
+    $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
@@ -1339,7 +1339,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
-        $scope.get_anly_head();
+        $scope.get_analytical_head();
        }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -1347,7 +1347,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
     }
-    $scope.get_anly_head = function(){
+    $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
@@ -1385,7 +1385,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
                      $scope.msg = "Head already exists";
                 else
                     $scope.reset_head();
-                $scope.get_anly_head();                    
+                $scope.get_analytical_head();                    
             }).error(function(data, status){
                 $scope.message = data.message;
             });
@@ -1404,7 +1404,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
             hide_loader();
             if(data.result == 'ok')
                 $scope.msg = "Analytical Head deleted";
-            $scope.get_anly_head();                    
+            $scope.get_analytical_head();                    
         })
     }
     $scope.reset_head = function(){
