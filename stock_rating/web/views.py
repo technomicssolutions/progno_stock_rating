@@ -10,6 +10,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile)
@@ -187,7 +188,7 @@ class FunctionSettings(View):
 
 def process_data_file(data_file):
     sheets = []
-    workbook = xlrd.open_workbook('media/'+data_file.uploaded_file.name)
+    workbook = xlrd.open_workbook(settings.MEDIA_ROOT+'/'+data_file.uploaded_file.name)
     worksheets = workbook.sheet_names()
     data_file.number_of_sheets = len(worksheets)
     data_file.save()
