@@ -13,7 +13,8 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
- ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile)
+ ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
+ FieldMap, Operator)
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -259,6 +260,61 @@ class DataUpload(View):
 
 class FieldMapping(View):
     def get(self, request, *args, **kwargs):
+        mappings = FieldMap.objects.count()
+        if mappings > 0:
+            mapping_status = 'exists'
+        else:
+            mapping_status = 'empty'
+        if request.is_ajax():
+            mapping = FieldMap.objects.all()
+            system_fields = []
+            file_fields = []
+            for mp in mapping:
+                system_fields.append({
+                    'id': mp.data_field.id if mp.data_field else '',
+                    'name': mp.data_field.name if mp.data_field else '',  
+                    'mapping_id': mp.id                  
+                })
+                file_fields.append(mp.file_field)
+            response = simplejson.dumps({
+                'result': 'Ok',
+                'file_fields': file_fields,
+                'system_fields': system_fields
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'field_mapping.html', {
+            'mapping_status': mapping_status
+        })
+
+    def post(self, request, *args, **kwargs):
+        data_file = DataFile.objects.latest('id')
+        if request.is_ajax():
+            system_fields = ast.literal_eval(request.POST['system_fields'])
+            file_fields = ast.literal_eval(request.POST['file_fields'])
+            mappings = FieldMap.objects.count()
+            if mappings > 0:
+                for system_field, file_field in zip(system_fields, file_fields):
+                    mapping = FieldMap.objects.get(id=system_field['mapping_id'])
+                    if system_field['id'] != '':
+                        system_field = DataField.objects.get(id=system_field['id'])
+                    else:
+                        system_field = None
+                    mapping.system_field = system_field
+                    mapping.file_field = file_field
+                    mapping.save()
+            else:
+                for system_field, file_field in zip(system_fields, file_fields):
+                    if system_field['id'] != '':
+                        system_field = DataField.objects.get(id=system_field['id'])
+                    else:
+                        system_field = None
+                    mapping = FieldMap.objects.create(data_file=data_file, data_field=system_field, file_field=file_field)
+                    mapping.save()
+            response = simplejson.dumps({
+                'result': 'Ok'
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
         return render(request, 'field_mapping.html', {})
 
 class FileFields(View):
@@ -623,7 +679,7 @@ class ModelDetails(View):
         return render(request, 'models.html', {})
 
 
-class General(View):
+class GeneralFunctions(View):
 
     def get(self, request, *args, **kwargs):
         general_objects = Function.objects.get(id=request.GET.get('id'))
@@ -643,7 +699,7 @@ class General(View):
             return HttpResponse(response, status=200, mimetype='application/json')
 
 
-class Continuity(View):
+class ContinuityFunctions(View):
 
     def get(self, request, *args, **kwargs):
         continuity_objects = ContinuityFunction.objects.get(id=request.GET.get('id'))
@@ -667,7 +723,7 @@ class Continuity(View):
             return HttpResponse(response, status=200, mimetype='application/json')
 
 
-class Consistency(View):
+class ConsistencyFunctions(View):
 
     def get(self, request, *args, **kwargs):
         consistency_objects = ConsistencyFunction.objects.get(id=request.GET.get('id'))
@@ -782,3 +838,25 @@ class ResetPassword(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'administration.html', {})
+
+class OperatorsView(View):
+
+    def get(self, request, *args, **kwargs):
+        operators = Operator.objects.all()
+
+        if request.is_ajax():
+            op_list = []
+            for opeartor in operators:
+                op_list.append({
+                    'id': opeartor.id,
+                    'symbol': opeartor.symbol
+                })
+            res = {
+                'result': 'ok',
+                'operators': op_list
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'administration.html', {
+            'operators': operators
+        })

@@ -56,8 +56,8 @@ class DataFile(Date):
 class FieldMap(models.Model):
 
     data_file = models.ForeignKey(DataFile)
-    data_field = models.ForeignKey(DataField)
-    file_field = models.CharField('File Field', max_length=200, unique=True)
+    data_field = models.ForeignKey(DataField, null=True, blank=True)
+    file_field = models.CharField('File Field', max_length=200, unique=False, null=True, blank=True)
 
     def __unicode__(self):
         return str(self.data_file) + ' - ' + self.file_field

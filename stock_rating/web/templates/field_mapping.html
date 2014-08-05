@@ -2,7 +2,7 @@
 {% block title %} Field Mapping {% endblock title%}
 {% block body_id %}field_mapping{% endblock %}
 {% block controller %}
-	ng-controller="FieldMappingController" ng-init="init('{{csrf_token}}')"
+	ng-controller="FieldMappingController" ng-init="init('{{csrf_token}}', '{{mapping_status}}')"
 {% endblock controller %}
 {% block content%}
 <div class="field_mapping">
@@ -26,6 +26,8 @@
 		</div>
 		<div class="help_text"> <p> (Drag and Drop System Fields for Mapping) </p> </div>
 		<p class='error_msg'>[[error_msg]]</p>
+		<input type="submit" name="save" value="Save" ng-click="save_mapping();" />
+
 	</div>
 </div>
 {% endblock content %}

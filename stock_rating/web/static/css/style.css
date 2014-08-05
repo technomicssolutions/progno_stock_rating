@@ -95,6 +95,7 @@ footer {
 	float: right;
 	padding: 2px;
 	border: 1px solid #D6D4D2;
+	color: #FFFFFF;
 }
 .create_user input[type="checkbox"] {
 	margin-right: 20px;
@@ -276,6 +277,7 @@ header {
 	float: right;
 	padding: 2px;
 	border: 1px solid #D6D4D2;
+	color: #FFFFFF;
 }
 .create_field input[type="checkbox"] {
 	margin-right: 20px;
@@ -317,6 +319,7 @@ header {
 	float: right;
 	padding: 2px;
 	border: 1px solid #D6D4D2;
+	color: #FFFFFF;
 }
 .create_head input[type="checkbox"] {
 	margin-right: 20px;
@@ -387,6 +390,7 @@ header {
 	float: right;
 	padding: 2px;
 	border: 1px solid #D6D4D2;
+	color: #FFFFFF;
 }
 .function_set input[type="checkbox"] {
 	margin-right: 20px;
@@ -468,6 +472,7 @@ select.one{
 	margin-top: 2%;
 	margin-left: 4%;
 	border: 1px solid #D6D4D2;
+	color: #FFFFFF;
 }
 
 .model_set input[type="submit"] {
@@ -479,6 +484,7 @@ select.one{
 	margin-left: 3%;
 	padding: 2px;
 	border: 1px solid #D6D4D2;
+	color: #FFFFFF;
 }
 .model_set input[type="button"] {
 	width: 5%;	
@@ -600,15 +606,22 @@ th.three{
 	padding: 4px;
 	border: 1px solid #D6D4D2;
 }
-
+input[type="submit"] {
+	color: #FFFFFF;
+}
 /******************* End Data Upload Style ***************/
 
 /****************** Field Mapping styles starts *************/
 
-/******************* Data Upload Style ***************/
 
 #field_mapping .field_mapping{
 	display: block !important;
+}
+.field_mapping_arrow {
+	float: left;
+    margin-left: 5%;
+    margin-top: 3%;
+    width: 41%;
 }
 .field_mapping {
 	float: left;
@@ -616,11 +629,17 @@ th.three{
     margin-top: 3%;
     width: 80%;
 }
-
+.field_mapping_heading {
+	color: #12569A;
+	padding: 0px 0px 10px 0px;
+	border-bottom: 1px solid #12569A;
+	margin-top: 5%;
+}
 .file_fields, .system_fields {
 	width: 35%;
 	float: left;
 	border-top: 1px solid #B3B3B3;
+	margin-top: 3%
 }
 
 .system_field, .file_field {
@@ -669,5 +688,6 @@ th.three{
 	font-weight: bold;
 	font-size: 12px;
 	width: 30%;
+	margin-top: 3%
 }
 /**************** Fields mapping ends *************/

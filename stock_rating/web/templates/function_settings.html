@@ -37,8 +37,23 @@
 				<input type="text" name="function_name" ng-model="new_general.function_name" />
 				<label> Function Description: </label>
 				<input type="text" name="function_description" ng-model="new_general.function_description" />
-				<label> Formula: </label>
-				<input type="text" name="function_formula" ng-model="new_general.function_formula" />
+				
+				<div class="formula">
+					<div class="formula_row">
+						<label> Operands: </label>
+						<select ng-model="operand">
+							<option ng-repeat="operand in operands" value="operand.id">[[operand.name]]</option>
+						</select>
+						<label> Operators: </label>
+						<select ng-model="operator">
+							<option ng-repeat="operator in operators" value="operator.id">[[operator.symbol]]</option>
+						</select> <input type="button" value="+" ng-click="add_operand()" />
+					</div>
+					<input type="text" name="function_formula" ng-model="new_general.function_formula" />
+					<label> Formula: </label>
+					<input type="text" name="function_formula" ng-model="new_general.function_formula" readOnly/>
+					<input type="button" value="+" ng-click="add_operator()" />
+				</div>
 				<label> Analytical Head: </label>
 				<select name="general_select_head" ng-model="new_general.select_head">
 						 <option value="" disabled="True">Select</option>

@@ -415,6 +415,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.show_consistency = false;
         $scope.show_continuity = false;    
         $scope.select_type = 1;  
+        $scope.get_operands();
+        $scope.get_operators()
     }
     $scope.change_type = function(type){
         if(type == 1)
@@ -705,7 +707,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }   
     }
     $scope.edit_general = function(id){
-        var url = '/get_type_general/?id='+id;
+        var url = '/general_function/?id='+id;
         $http.get(url).success(function(data) {
             $scope.general_list = data.general_set;
             $scope.select_type = 1;
@@ -718,7 +720,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.edit_continuity = function(id){
-        var url = '/get_type_continuity/?id='+id;
+        var url = '/continuity_function/?id='+id;
         $http.get(url).success(function(data) {
             $scope.continuity_list = data.continuity_objects;
             $scope.select_type = 2;
@@ -735,7 +737,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.edit_consistency = function(id){
-        var url = '/get_type_consistency/?id='+id;
+        var url = '/consistency_function/?id='+id;
         $http.get(url).success(function(data) {
             $scope.consistency_list = data.consistency_objects;
             $scope.select_type = 3;
@@ -751,7 +753,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.new_consistency.select_head = $scope.consistency_list[0].head;
         })
     }
-   $scope.get_category = function(){
+    $scope.get_category = function(){
         var url = '/category/';
         $http.get(url).success(function(data) {
             $scope.category_set = data.category_objects;
@@ -768,6 +770,18 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
         })
+    }
+    $scope.get_operands = function(){
+        var url = '/field_settings/';
+        $http.get(url).success(function(data) {
+            $scope.operands = data.fields;
+        })  
+    }
+    $scope.get_operators = function(){
+        var url = '/operators/';
+        $http.get(url).success(function(data) {
+            $scope.operators = data.operators;
+        })  
     }
 }
 
@@ -1290,11 +1304,17 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
 }
 function FieldMappingController($scope, $element, $http, $timeout, $location)
 {
-    $scope.init = function(csrf_token){
+    $scope.init = function(csrf_token, mapping_status){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
-        $scope.get_file_fields();
-        $scope.get_system_fields();        
+        if(mapping_status == 'empty'){
+            $scope.get_file_fields();
+            $scope.get_system_fields(); 
+            $scope.edit_flag = false; 
+        } else {
+            $scope.get_mapping();
+            $scope.edit_flag = true;
+        }              
     }
     $scope.fill_fields = function(){
         var diff = Math.abs($scope.file_fields.length - $scope.system_fields.length);
@@ -1345,6 +1365,36 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
             if($scope.file_fields)
                 $scope.fill_fields();
         })     
+    }
+    $scope.get_mapping = function(){
+        var url = '/field_mapping/';
+        $http.get(url).success(function(data) {
+            $scope.file_fields = data.file_fields;
+            $scope.system_fields = data.system_fields;
+            if($scope.system_fields)
+                $scope.fill_fields();
+        })  
+    }
+    $scope.save_mapping = function(){
+        show_loader();
+        params = { 
+            'system_fields': angular.toJson($scope.system_fields),
+            'file_fields': angular.toJson($scope.file_fields),
+            "csrfmiddlewaretoken" : $scope.csrf_token,
+        }
+        $http({
+            method : 'post',
+            url : "/field_mapping/",
+            data : $.param(params),
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data, status) {  
+            hide_loader();
+            document.location.href = '/field_mapping/';
+        }).error(function(data, status){
+            $scope.message = data.message;
+        });
     }
 }
 
