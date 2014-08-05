@@ -187,7 +187,7 @@ class FunctionSettings(View):
 
 def process_data_file(data_file):
     sheets = []
-    workbook = xlrd.open_workbook(data_file.uploaded_file.name)
+    workbook = xlrd.open_workbook('media/'+data_file.uploaded_file.name)
     worksheets = workbook.sheet_names()
     data_file.number_of_sheets = len(worksheets)
     data_file.save()
@@ -243,11 +243,7 @@ class DataUpload(View):
         data_file = DataFile()
         data_file.uploaded_file = request.FILES['data_file']
         data_file.uploaded_by = request.user
-        data_file.save()
-        sheets = []
-        workbook = xlrd.open_workbook(data_file.uploaded_file.name)
-        worksheets = workbook.sheet_names()
-        data_file.number_of_sheets = len(worksheets)
+        data_file.save()        
         sheets = process_data_file(data_file)
         data_file.sheets = simplejson.dumps(sheets)
         data_file.save()
