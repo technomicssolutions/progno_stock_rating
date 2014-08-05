@@ -8,17 +8,23 @@
 <div class="field_mapping">
 	<h3 class="field_mapping_heading"> Field Mapping </h3>
 	<div class="field_mapping_content">
-		<label> Map Field: </label>
 		<div class="file_fields"> 
+			<div class="file_field">
+				<span><b>File Fields</b></span>
+			</div>
 			<div class="file_field" ng-repeat="file_field in file_fields">
-				<span>[[file_field]]</span>
+				<span> <label> [[file_field]] </label> <span class="mapping_arrow"> &nbsp;</span> </span>
 			</div>
 		</div>
 		<div class="system_fields"> 
+			<div class="system_field" >
+				<span><b> System Fields </b></span>
+			</div>
 			<div class="system_field" ng-repeat="system_field in system_fields" ng-drop="true" ng-drop-success="onDropComplete($index, $data,$event)" >
-				<span ng-drag="true" ng-drag-data="system_field" ng-class="system_field.name" >[[system_field.name]]</span>
+				<span ng-drag="true" ng-drag-data="system_field" ng-class="system_field.name" ><label>[[system_field.name]]</label></span>
 			</div>
 		</div>
+		<div class="help_text"> <p> (Drag and Drop System Fields for Mapping) </p> </div>
 		<p class='error_msg'>[[error_msg]]</p>
 	</div>
 </div>

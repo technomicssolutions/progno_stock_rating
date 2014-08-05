@@ -28,7 +28,7 @@ function DashboardController($scope, $element, $http, $timeout, $location)
         else
             return '';
     }
-  
+    
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
@@ -1294,13 +1294,28 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
         $scope.get_file_fields();
-        $scope.get_system_fields();
+        $scope.get_system_fields();        
     }
-    /*$scope.draggableObjects = [
-                    {name: 'one'},
-                    {name: 'two'},
-                    {name: 'three'}
-                ];*/
+    $scope.fill_fields = function(){
+        var diff = Math.abs($scope.file_fields.length - $scope.system_fields.length);
+        if(diff > 0) {
+            if($scope.system_fields.length > $scope.file_fields.length){
+                for(i=1; i<=diff; i++){
+                    $scope.file_fields.push(' ');
+                }
+            } else {
+                for(i=1; i<=diff; i++){
+                    $scope.system_fields.push({
+                        "status": "", 
+                        "date": "", 
+                        "description": "", 
+                        "id": '', 
+                        "name": ""
+                    });
+                }
+            }
+        }
+    }
     $scope.onDropComplete = function (index, obj, evt) {
         var otherObj = $scope.system_fields[index];
         var otherIndex = $scope.system_fields.indexOf(obj);
@@ -1318,6 +1333,8 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
         var url = '/file_fields/';
         $http.get(url).success(function(data) {
             $scope.file_fields = data.fields;
+            if($scope.system_fields)
+                $scope.fill_fields();
         })       
     }
     $scope.get_system_fields = function(){
@@ -1325,6 +1342,8 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
         var url = '/field_settings/';
         $http.get(url).success(function(data) {
             $scope.system_fields = data.fields;
+            if($scope.file_fields)
+                $scope.fill_fields();
         })     
     }
 }

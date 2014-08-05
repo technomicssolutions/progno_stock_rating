@@ -246,7 +246,7 @@ class DataUpload(View):
         data_file.uploaded_by = request.user
         data_file.save()        
         sheets = process_data_file(data_file)
-        data_file.sheets = simplejson.dumps(sheets)
+        data_file.sheets = sheets
         data_file.save()
 
         if request.is_ajax():
