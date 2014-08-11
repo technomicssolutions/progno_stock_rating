@@ -1,0 +1,15 @@
+<div class="page" ng-hide="visible_list.length < 1">
+    <ul class="pagination"> 
+    	<li class="arrow unavailable">
+    		<a href="" ng-click="select_previous_page()">&laquo;</a>
+    	</li>
+    	<li ng-repeat="page in range(pages)" ng-class="getClass($index+1)" ng-show="$index < 20 || $index > (pages-5)">
+    		<a href="" ng-click="select_page($index+1)" ng-show="$index < 5 || $index > (pages-5)" >[[$index+1]]</a>
+            <a href="" ng-show="$index < 20 && $index > 5" >.</a>
+    	</li>
+    	<li class="arrow">
+    		<a href="" ng-click="select_next_page()">&raquo;</a>
+    	</li> 
+    </ul>
+</div>
+<div class="clear"></div>

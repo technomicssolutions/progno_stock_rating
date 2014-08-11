@@ -8,29 +8,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Removing M2M table for field insdustries on 'AnalysisModel'
-        db.delete_table('web_analysismodel_insdustries')
 
-        # Adding M2M table for field industries on 'AnalysisModel'
-        db.create_table(u'web_analysismodel_industries', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('analysismodel', models.ForeignKey(orm[u'web.analysismodel'], null=False)),
-            ('industry', models.ForeignKey(orm[u'web.industry'], null=False))
-        ))
-        db.create_unique(u'web_analysismodel_industries', ['analysismodel_id', 'industry_id'])
-
+        # Changing field 'Date.created_by'
+        db.alter_column(u'web_date', 'created_by_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True))
     def backwards(self, orm):
-        # Adding M2M table for field insdustries on 'AnalysisModel'
-        db.create_table(u'web_analysismodel_insdustries', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('analysismodel', models.ForeignKey(orm[u'web.analysismodel'], null=False)),
-            ('industry', models.ForeignKey(orm[u'web.industry'], null=False))
-        ))
-        db.create_unique(u'web_analysismodel_insdustries', ['analysismodel_id', 'industry_id'])
 
-        # Removing M2M table for field industries on 'AnalysisModel'
-        db.delete_table('web_analysismodel_industries')
-
+        # User chose to not deal with backwards NULL issues for 'Date.created_by'
+        raise RuntimeError("Cannot reverse this migration. 'Date.created_by' and its values cannot be restored.")
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -78,30 +62,37 @@ class Migration(SchemaMigration):
         },
         u'web.analyticalhead': {
             'Meta': {'object_name': 'AnalyticalHead', '_ormbases': [u'web.Date']},
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '200'})
+            'title': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
         },
         u'web.company': {
-            'Meta': {'object_name': 'Company'},
+            'Meta': {'object_name': 'Company', '_ormbases': [u'web.Date']},
             'company_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'industry': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Industry']"}),
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'industry': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Industry']", 'null': 'True', 'blank': 'True'}),
             'isin_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
         },
+        u'web.companyfile': {
+            'Meta': {'object_name': 'CompanyFile', '_ormbases': [u'web.Date']},
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'number_of_sheets': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'processing_completed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'uploaded_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
+        },
         u'web.companyfunctionscore': {
-            'Meta': {'object_name': 'CompanyFunctionScore'},
+            'Meta': {'object_name': 'CompanyFunctionScore', '_ormbases': [u'web.Date']},
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Company']"}),
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'function': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Function']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'score': ('django.db.models.fields.FloatField', [], {'max_length': '5'})
         },
         u'web.companymodelscore': {
-            'Meta': {'object_name': 'CompanyModelScore'},
+            'Meta': {'object_name': 'CompanyModelScore', '_ormbases': [u'web.Date']},
             'analysis_model': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.AnalysisModel']"}),
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Company']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'score': ('django.db.models.fields.IntegerField', [], {'max_length': '5'}),
             'star_rating': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.StarRating']"})
         },
@@ -125,7 +116,6 @@ class Migration(SchemaMigration):
         },
         u'web.datafield': {
             'Meta': {'object_name': 'DataField', '_ormbases': [u'web.Date']},
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
@@ -133,25 +123,29 @@ class Migration(SchemaMigration):
         u'web.datafile': {
             'Meta': {'object_name': 'DataFile', '_ormbases': [u'web.Date']},
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'number_of_sheets': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
+            'processing_completed': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'sheets': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'}),
             'uploaded_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'uploaded_file': ('django.db.models.fields.files.FileField', [], {'max_length': '100'})
         },
         u'web.date': {
             'Meta': {'object_name': 'Date'},
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'created_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'updated_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
         u'web.fieldmap': {
-            'Meta': {'object_name': 'FieldMap'},
-            'data_field': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.DataField']"}),
+            'Meta': {'object_name': 'FieldMap', '_ormbases': [u'web.Date']},
+            'data_field': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.DataField']", 'null': 'True', 'blank': 'True'}),
             'data_file': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.DataFile']"}),
-            'file_field': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'file_field': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
         },
         u'web.formula': {
-            'Meta': {'object_name': 'Formula'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'Meta': {'object_name': 'Formula', '_ormbases': [u'web.Date']},
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'operands': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['web.DataField']", 'symmetrical': 'False'}),
             'operators': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['web.Operator']", 'symmetrical': 'False'})
         },
@@ -166,53 +160,57 @@ class Migration(SchemaMigration):
             'function_type': ('django.db.models.fields.CharField', [], {'max_length': '11'})
         },
         u'web.functioncategory': {
-            'Meta': {'object_name': 'FunctionCategory'},
+            'Meta': {'object_name': 'FunctionCategory', '_ormbases': [u'web.Date']},
             'category_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         u'web.hardcodedformula': {
-            'Meta': {'object_name': 'HardcodedFormula'},
+            'Meta': {'object_name': 'HardcodedFormula', '_ormbases': [u'web.Date']},
             'consistency_formula': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'continuity_formula': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'})
         },
         u'web.industry': {
             'Meta': {'object_name': 'Industry'},
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'industry_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'})
         },
         u'web.operator': {
-            'Meta': {'object_name': 'Operator'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'Meta': {'object_name': 'Operator', '_ormbases': [u'web.Date']},
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'symbol': ('django.db.models.fields.CharField', [], {'max_length': '1'})
         },
         u'web.parameterlimit': {
-            'Meta': {'object_name': 'ParameterLimit'},
+            'Meta': {'object_name': 'ParameterLimit', '_ormbases': [u'web.Date']},
             'analysis_model': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.AnalysisModel']"}),
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'function': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Function']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'neutral_comment': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'neutral_max': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
             'neutral_min': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
+            'neutral_points': ('django.db.models.fields.FloatField', [], {'default': '0', 'max_length': '5'}),
             'strong_comment': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
             'strong_max': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
             'strong_min': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
-            'week_comment': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'week_max': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
-            'week_min': ('django.db.models.fields.FloatField', [], {'max_length': '5'})
+            'strong_points': ('django.db.models.fields.FloatField', [], {'default': '0', 'max_length': '5'}),
+            'weak_comment': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True'}),
+            'weak_max': ('django.db.models.fields.FloatField', [], {'default': '0', 'max_length': '5'}),
+            'weak_min': ('django.db.models.fields.FloatField', [], {'default': '0', 'max_length': '5'}),
+            'weak_points': ('django.db.models.fields.FloatField', [], {'default': '0', 'max_length': '5'})
         },
         u'web.scorerating': {
             'Meta': {'object_name': 'ScoreRating', '_ormbases': [u'web.Date']},
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'neutral_score': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1'}),
             'strong_score': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1'}),
-            'week_score': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1'})
+            'weak_score': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '1'})
         },
         u'web.starrating': {
-            'Meta': {'object_name': 'StarRating'},
+            'Meta': {'object_name': 'StarRating', '_ormbases': [u'web.Date']},
             'comment': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'max_score': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
             'min_score': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
             'star_count': ('django.db.models.fields.IntegerField', [], {'max_length': '1'})

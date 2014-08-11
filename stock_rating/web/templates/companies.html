@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %} Data Upload {% endblock title%}
+{% block body_id %}companies{% endblock %}
+{% block controller %}
+	ng-controller="CompanyController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+<div class="companies_container">
+	<h3 class=""> Data Upload </h3>
+	<div class="data_upload_content">
+		{% if company_file %}
+			<p>
+				<label> Latest Uploaded File : </label>
+				<span> <a href="/site_media/{{company_file.uploaded_file.name}}">{{company_file.uploaded_file.name}} </a></span>
+			</p>
+			<p>
+				<label> Uploaded date: </label>
+				<span> {{company_file.created_date}} </span>
+			</p>
+			<p>
+				<label> Uploaded By: </label>
+				<span> {{company_file.uploaded_by}} </span>
+			</p>
+		{% endif %}
+		<p>
+			<label> Upload New File With Company Data: </label>
+			<input type="file" fileread="data_file.src"/ style="float: right;">
+			<input type="hidden" ng-model="data_file.src">
+		</p>
+		<p class='error_msg'>[[error_msg]]</p>
+		<input type="submit" name="upload" value="Upload" ng-click="submit_file();"/>
+	</div>
+	<div class="tab_list" ng-show="visible_list.length > 0">
+		<h3 class="sub_heading"> Companies </h3>
+		<table class="table table-stripped">
+			<tr> 
+				<th> # </th>
+				<th> Name </th>
+				<th> Industry </th>
+				<!-- <th> Password </th> -->
+				<th> ISIN Code </th>
+				<th> Created By</th>
+				<th> Created date</th>
+			</tr>
+			<tr ng-repeat="company in visible_list">
+				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
+				<td> [[company.name]] </td>
+				<td> [[company.industry]] </td>
+				<!-- <td> [[user.password]] </td> -->
+				<td> [[company.isin_code]] </td>
+				<td> [[company.created_by]] </td>
+				<td> [[company.created_date]] </td>
+			</tr>
+		</table>
+	</div>
+	<div class="clear"></div>
+	{% include 'pagination.html' %}
+</div>
+{% endblock content %}

@@ -14,7 +14,7 @@ from django.conf import settings
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
- FieldMap, Operator)
+ FieldMap, Operator, Company, CompanyFile)
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -230,13 +230,93 @@ def process_data_file(data_file):
                 rows.append(row)
         sheet['rows'] = rows
         sheets.append(sheet)
+    data_file.processing_completed = True
+    data_file.save()
     return sheets
 
+def process_company_file(data_file, request):
+    workbook = xlrd.open_workbook(settings.MEDIA_ROOT+'/'+data_file.uploaded_file.name)
+    worksheets = workbook.sheet_names()
+    data_file.number_of_sheets = len(worksheets)
+    data_file.save()
+    for worksheet_name in worksheets:
+        worksheet = workbook.sheet_by_name(worksheet_name)
+        num_rows = worksheet.nrows - 1
+        curr_row = 0            
+        while curr_row < num_rows:
+            curr_row += 1                
+            company_name = worksheet.cell_value(curr_row, 0)
+            industry = worksheet.cell_value(curr_row, 1)
+            isin = worksheet.cell_value(curr_row, 2)
+            industry, created = Industry.objects.get_or_create(industry_name=industry)
+            industry.created_by = data_file.uploaded_by
+            industry.save()
+            company, created = Company.objects.get_or_create(isin_code=isin)
+            company.industry = industry
+            company.company_name = company_name
+            company.created_by = data_file.uploaded_by
+            company.save()
+    data_file.processing_completed = True
+    data_file.save()
+    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
+    #cell_type = worksheet.cell_type(curr_row, curr_cell)
+
+class Companies(View):
+    def get(self, request, *args, **kwargs):
+
+        companies = Company.objects.all()
+        company_files = CompanyFile.objects.all()
+        if company_files.count() > 0:
+            company_file = CompanyFile.objects.latest('id')
+        else:
+            company_file = None
+        if request.is_ajax():
+            company_list = []
+            for company in companies:
+                company_list.append({
+                    'name': company.company_name,
+                    'isin_code': company.isin_code,
+                    'industry': company.industry.industry_name if company.industry else '',
+                    'created_by': company.created_by.username if company.created_by else '',
+                    'created_date': company.created_date.strftime("%d/%m/%Y")
+                })
+            response = simplejson.dumps({
+                'result': 'Ok',
+                'companies': company_list,
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'companies.html', {
+            'company_file': company_file
+        })
+
+    def post(self, request, *args, **kwargs):
+        data_file  = CompanyFile()
+        data_file.uploaded_file = request.FILES['data_file']
+        data_file.uploaded_by = request.user
+        data_file.save()    
+        process_company_file(data_file, request)
+        if request.is_ajax():
+            response = simplejson.dumps({
+               'result': 'OK',
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        context = {}
+        return render(request, 'companies.html', context)
 
 class DataUpload(View):
     def get(self, request, *args, **kwargs):
-        context = {}
-        return render(request, 'data_upload.html', context)
+        data_files = DataFile.objects.all()
+        if data_files.count() > 0:
+            data_file = DataFile.objects.latest('id')
+            if data_file.processing_completed:
+                pass
+            else:
+                process_data_file(data_file)
+        else:
+            data_file = None
+        return render(request, 'data_upload.html', {
+            'data_file': data_file 
+        })
 
     def post(self, request, *args, **kwargs):
         data_files = DataFile.objects.all()

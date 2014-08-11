@@ -8,11 +8,25 @@
 <div class="data_upload">
 	<h3 class="data_upload_heading"> Data Upload </h3>
 	<div class="data_upload_content">
-		<label> Upload File: </label>
-		<input type="file" fileread="data_file.src"/>
-		<input type="hidden" ng-model="data_file.src">
-		<!-- <label> Map Field: </label>
-		<input type="text" /> -->
+		{% if data_file %}
+			<p>
+				<label> Latest Uploaded File : </label>
+				<span> <a href="/site_media/{{data_file.uploaded_file.name}}">{{data_file.uploaded_file.name}} </a></span>
+			</p>
+			<p>
+				<label> Uploaded date: </label>
+				<span> {{data_file.created_date}} </span>
+			</p>
+			<p>
+				<label> Uploaded By: </label>
+				<span> {{data_file.uploaded_by}} </span>
+			</p>
+		{% endif %}
+		<p>
+			<label> Upload New File With stock data: </label>
+			<input type="file" fileread="data_file.src"/>
+			<input type="hidden" ng-model="data_file.src">
+		</p>
 		<p class='error_msg'>[[error_msg]]</p>
 		<input type="submit" name="upload" value="Upload" ng-click="submit_file();"/>
 	</div>

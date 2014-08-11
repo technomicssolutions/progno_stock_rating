@@ -8,7 +8,7 @@ from views import (Login,Logout, Dashboard, Administration, Users, SaveUser, Res
     FieldSettings, FunctionSettings, Category, GeneralFunctions, ContinuityFunctions, \
     ConsistencyFunctions, DeleteField, Model, IndustryDetails, DeleteModel, DeleteUser, \
     ModelDetails, DeleteParameter, DataUpload, AnalyticalHeads, DeleteHead, FieldMapping, \
-    FileFields, OperatorsView)
+    FileFields, OperatorsView, Companies)
 
 urlpatterns = patterns('',
 
@@ -46,6 +46,9 @@ urlpatterns = patterns('',
     url(r'save_user/$', login_required(SaveUser.as_view()), name="save_user"),
     url(r'reset_password/$', login_required(ResetPassword.as_view()), name="reset_password"),
     url(r'operators/$', login_required(OperatorsView.as_view()), name="operators"),
+
+    url(r'companies/$', login_required(Companies.as_view()), name="companies"),
+
 )
 
 

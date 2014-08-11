@@ -23,4 +23,6 @@ admin.site.register(ParameterLimit)
 admin.site.register(StarRating)
 admin.site.register(CompanyFunctionScore)
 admin.site.register(CompanyModelScore)
+admin.site.register(CompanyFile)
+
 

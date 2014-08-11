@@ -597,7 +597,7 @@ th.three{
 .data_upload input[type="text"] {
 	width: 50%;	
 }
-.data_upload input[type="submit"] {
+input[type="submit"] {
 	border: none;
 	background-color: #12569A;
 	width: 15%;
@@ -614,15 +614,15 @@ input[type="submit"] {
 /****************** Field Mapping styles starts *************/
 
 
-#field_mapping .field_mapping{
+#field_mapping .field_mapping_arrow{
 	display: block !important;
 }
-.field_mapping_arrow {
+/*.field_mapping_arrow {
 	float: left;
     margin-left: 5%;
     margin-top: 3%;
     width: 41%;
-}
+}*/
 .field_mapping {
 	float: left;
     margin-left: 5%;
@@ -691,3 +691,46 @@ input[type="submit"] {
 	margin-top: 3%
 }
 /**************** Fields mapping ends *************/
+
+/***************** companies styles ********/
+
+.companies_container {
+	width: 90%;
+}
+.companies_container h3 {
+	margin-left: 5%;
+	color: #12569A;
+	padding: 0px 0px 10px 0px;
+	border-bottom: 1px solid #12569A;
+	margin-top: 5%;
+}
+
+.companies_container .sub_heading {
+	margin-left: 0%;
+}
+#companies .companies {
+	display: block;
+}
+/**************** end companies styles **************/
+
+/************ pagination style *****************/
+
+.pagination {
+	margin-left: 5%;
+}
+.page {
+	width: 100%;
+	height: auto;
+}
+.pagination li {
+	list-style: none;
+	float: left;
+	font-weight: bold;
+	padding: 3px;
+	width: auto;
+}
+.pagination li span, .pagination li a {
+	padding: 10px;
+}
+
+/**************** pagination style end **********/

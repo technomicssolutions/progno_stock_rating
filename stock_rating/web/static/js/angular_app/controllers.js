@@ -1,4 +1,24 @@
 
+function paginate(list, $scope, page_interval) {
+    if(!page_interval)
+        var page_interval = 20;
+    $scope.current_page = 1;
+    $scope.pages = list.length / page_interval;
+    if($scope.pages > parseInt($scope.pages))
+        $scope.pages = parseInt($scope.pages) + 1;
+    $scope.visible_list = list.slice(0, page_interval);
+}
+    
+function select_page(page, list, $scope, page_interval) {
+    if(!page_interval)
+        var page_interval = 20;
+    var last_page = page - 1;
+    var start = (last_page * page_interval);
+    var end = page_interval * page;
+    $scope.visible_list = list.slice(start, end);
+    $scope.current_page = page;
+}
+
 function validateEmail(email) { 
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
@@ -1483,5 +1503,81 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
          'head_description': '',
          'id': '',
          }         
+    }
+}
+
+function CompanyController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        $scope.hide_dropdown();
+        $scope.data_file = {};
+        $scope.data_file.src = "";
+        $scope.get_companies();
+        $scope.visible_list = [];
+        $scope.page_interval = 30;
+    }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.submit_file = function(){
+        $scope.error_msg = '';
+        if($scope.data_file.src){
+            var split_name = $scope.data_file.src.name.split('.');
+            split_name = split_name[split_name.length - 1];
+            var extensions = ['xlsx', 'xlsm', 'xlsb', 'xltm', 'xlam', 'xls', 'xla', 'xlb', 'xlc', 'xld', 'xlk', 'xll', 'xlm', 'xlt', 'xlv', 'xlw']
+            var index = extensions.indexOf(split_name);
+            if(index == -1){
+                $scope.error_msg = "Please upload an excel file";
+                return false;
+            }
+            var fd = new FormData();
+            fd.append('data_file', $scope.data_file.src);
+            fd.append('csrfmiddlewaretoken', $scope.csrf_token);
+            show_loader();
+
+            var url = '/companies/';
+            $http.post(url, fd, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined
+                }
+            }).success(function(data, status){ 
+                hide_loader(); 
+                console.log(data.sheets)         ;
+            }).error(function(data, status){           
+
+            });
+        } else {
+            $scope.error_msg = "Please upload an excel file";
+        }
+        
+    }
+    $scope.get_companies = function(){
+        var url = '/companies/';
+        show_loader();
+        $http.get(url).success(function(data) {
+            $scope.companies = data.companies;
+            paginate($scope.companies, $scope, $scope.page_interval);
+            hide_loader();
+        })
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.companies, $scope, $scope.page_interval);
+    }
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.companies, $scope, $scope.page_interval);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.companies, $scope, $scope.page_interval);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
     }
 }

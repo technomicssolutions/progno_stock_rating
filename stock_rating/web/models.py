@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 
 
 class Date(models.Model):
-
+    created_by = models.ForeignKey(User, null=True, blank=True)
     created_date = models.DateTimeField('Created Date', auto_now_add=True)
     updated_date = models.DateTimeField('Updated Date', auto_now=True)
 
@@ -24,7 +24,6 @@ class UserPermission(Date):
 
 class AnalyticalHead(Date):
 
-    created_by = models.ForeignKey(User)
     title = models.CharField('Title', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
 
@@ -32,7 +31,6 @@ class AnalyticalHead(Date):
         return self.title
 
 class DataField(Date):
-    created_by = models.ForeignKey(User)
     name = models.CharField('Name', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
 
@@ -49,11 +47,13 @@ class DataFile(Date):
     uploaded_file = models.FileField(upload_to='uploads/data_file/')
     number_of_sheets = models.IntegerField('Number of sheets', null=True, blank=True)
     sheets = JSONField('sheets', null=True, blank=True)
+    processing_completed = models.BooleanField('Processing Completed', default = False)
+
 
     def __unicode__(self):
         return self.uploaded_by.first_name + ' - ' + self.uploaded_file.name
 
-class FieldMap(models.Model):
+class FieldMap(Date):
 
     data_file = models.ForeignKey(DataFile)
     data_field = models.ForeignKey(DataField, null=True, blank=True)
@@ -62,7 +62,7 @@ class FieldMap(models.Model):
     def __unicode__(self):
         return str(self.data_file) + ' - ' + self.file_field
 
-class FunctionCategory(models.Model):
+class FunctionCategory(Date):
 
     category_name = models.CharField('Category Name', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
@@ -70,10 +70,10 @@ class FunctionCategory(models.Model):
     def __unicode__(self):
         return self.category_name
 
-class Operator(models.Model):
+class Operator(Date):
     symbol = models.CharField('Symbol', max_length=1)
 
-class Formula(models.Model):
+class Formula(Date):
     operands = models.ManyToManyField(DataField)
     operators = models.ManyToManyField(Operator)
 
@@ -100,7 +100,7 @@ class Function(Date):
     def __unicode__(self):
         return self.function_name
 
-class HardcodedFormula(models.Model):
+class HardcodedFormula(Date):
     continuity_formula = models.CharField('Continuity Formula', max_length=200)
     consistency_formula = models.CharField('Consistency Formula', max_length=200)
 
@@ -120,14 +120,23 @@ class ConsistencyFunction(Function):
 
 class Industry(models.Model):
     industry_name = models.CharField('Industry', max_length=200, unique=True)
-
+    created_by = models.ForeignKey(User, null=True, blank=True)
     def __unicode__(self):
         return self.industry_name
 
-class Company(models.Model):
+class CompanyFile(Date):
+    uploaded_by = models.ForeignKey(User)
+    uploaded_file = models.FileField(upload_to='uploads/data_file/')
+    number_of_sheets = models.IntegerField('Number of sheets', null=True, blank=True)
+    processing_completed = models.BooleanField('Processing Completed', default = False)
+
+    def __unicode__(self):
+        return self.uploaded_by.first_name + ' - ' + self.uploaded_file.name
+
+class Company(Date):
     company_name = models.CharField('company_name', max_length=200, unique=True)
     isin_code = models.CharField('ISIN Code', max_length=200, unique=True)
-    industry = models.ForeignKey(Industry)
+    industry = models.ForeignKey(Industry, null=True, blank=True)
 
     def __unicode__(self):
         return self.company_name + ' - ' + self.isin_code
@@ -148,7 +157,7 @@ class AnalysisModel(Date):
     def __unicode__(self):
         return self.name
 
-class ParameterLimit(models.Model):
+class ParameterLimit(Date):
 
     analysis_model = models.ForeignKey('AnalysisModel')
     function = models.ForeignKey(Function)
@@ -165,7 +174,7 @@ class ParameterLimit(models.Model):
     neutral_comment = models.CharField('Neutral Comment', max_length=200)
     weak_comment = models.CharField('weak Comment', max_length=200, null=True)
         
-class StarRating(models.Model):
+class StarRating(Date):
 
     star_count = models.IntegerField('StarCount', max_length=1)
     min_score = models.FloatField('Min Score', max_length=5)
@@ -175,12 +184,12 @@ class StarRating(models.Model):
     def __unicode__(self):
         return str(self.star_count) + ' star'
 
-class CompanyFunctionScore(models.Model):
+class CompanyFunctionScore(Date):
     company = models.ForeignKey(Company)
     function = models.ForeignKey(Function)
     score = models.FloatField('Function Score', max_length=5)
 
-class CompanyModelScore(models.Model):
+class CompanyModelScore(Date):
     company = models.ForeignKey(Company)
     analysis_model = models.ForeignKey(AnalysisModel)
     score = models.IntegerField('Model Score', max_length=5)
