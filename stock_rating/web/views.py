@@ -1,7 +1,6 @@
 
 import simplejson
 import ast
-import xlrd
 from collections import OrderedDict
 
 from django.shortcuts import render
@@ -10,11 +9,12 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-from django.conf import settings
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
  FieldMap, Operator, Company, CompanyFile)
+
+from utils import process_data_file, process_company_file, create_stock_data
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -25,7 +25,6 @@ class Administration(View):
     def get(self, request, *args, **kwargs):
         context = {}
         return render(request, 'administration.html', context)
-
 
 class FieldSettings(View):
     def get(self, request, *args, **kwargs):
@@ -78,7 +77,6 @@ class FieldSettings(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'field_settings.html', {})
-
 
 class FunctionSettings(View):
     def get(self, request, *args, **kwargs):
@@ -187,80 +185,6 @@ class FunctionSettings(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'function_settings.html', {})
 
-def process_data_file(data_file):
-    sheets = []
-    workbook = xlrd.open_workbook(settings.MEDIA_ROOT+'/'+data_file.uploaded_file.name)
-    worksheets = workbook.sheet_names()
-    data_file.number_of_sheets = len(worksheets)
-    data_file.save()
-    for worksheet_name in worksheets:
-        sheet = OrderedDict({
-            'name_of_sheet': '',
-            'rows': ''
-        })
-        sheet['name_of_sheet'] = worksheet_name
-        rows = []
-        worksheet = workbook.sheet_by_name(worksheet_name)
-        num_rows = worksheet.nrows - 1
-        num_cells = worksheet.ncols - 1
-        curr_row = -1            
-        curr_cell = -1
-        while curr_row < num_rows:
-            curr_row += 1                
-            curr_cell = -1
-            row = []
-            if curr_row != 0:
-                for x in rows[0]:
-                    row.append(x)
-            while curr_cell < num_cells:
-                curr_cell += 1
-                # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-                #cell_type = worksheet.cell_type(curr_row, curr_cell)
-                cell_value = worksheet.cell_value(curr_row, curr_cell)
-                if curr_row != 0 :
-                    field_name = worksheet.cell_value(0, curr_cell)
-                    index = rows[0].index(field_name)
-                    row[index] = cell_value
-                else:
-                    row.append(cell_value)
-            if curr_row == 0:
-                row = list(OrderedDict.fromkeys(row))
-                rows.append(row)
-            else:
-                rows.append(row)
-        sheet['rows'] = rows
-        sheets.append(sheet)
-    data_file.processing_completed = True
-    data_file.save()
-    return sheets
-
-def process_company_file(data_file, request):
-    workbook = xlrd.open_workbook(settings.MEDIA_ROOT+'/'+data_file.uploaded_file.name)
-    worksheets = workbook.sheet_names()
-    data_file.number_of_sheets = len(worksheets)
-    data_file.save()
-    for worksheet_name in worksheets:
-        worksheet = workbook.sheet_by_name(worksheet_name)
-        num_rows = worksheet.nrows - 1
-        curr_row = 0            
-        while curr_row < num_rows:
-            curr_row += 1                
-            company_name = worksheet.cell_value(curr_row, 0)
-            industry = worksheet.cell_value(curr_row, 1)
-            isin = worksheet.cell_value(curr_row, 2)
-            industry, created = Industry.objects.get_or_create(industry_name=industry)
-            industry.created_by = data_file.uploaded_by
-            industry.save()
-            company, created = Company.objects.get_or_create(isin_code=isin)
-            company.industry = industry
-            company.company_name = company_name
-            company.created_by = data_file.uploaded_by
-            company.save()
-    data_file.processing_completed = True
-    data_file.save()
-    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-    #cell_type = worksheet.cell_type(curr_row, curr_cell)
-
 class Companies(View):
     def get(self, request, *args, **kwargs):
 
@@ -286,7 +210,8 @@ class Companies(View):
             })
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'companies.html', {
-            'company_file': company_file
+            'company_file': company_file,
+            'status': 'Processing Completed' if company_file.processing_completed else 'Processing Pending',
         })
 
     def post(self, request, *args, **kwargs):
@@ -315,13 +240,12 @@ class DataUpload(View):
         else:
             data_file = None
         return render(request, 'data_upload.html', {
-            'data_file': data_file 
+            'data_file': data_file,
+            'status': 'Processing Completed' if data_file.processing_completed else 'Processing Pending',
         })
 
     def post(self, request, *args, **kwargs):
-        data_files = DataFile.objects.all()
-        if data_files.count() > 0:
-            DataFile.objects.all().delete()       
+            
         data_file = DataFile()
         data_file.uploaded_file = request.FILES['data_file']
         data_file.uploaded_by = request.user

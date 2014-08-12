@@ -196,4 +196,11 @@ class CompanyModelScore(Date):
     star_rating = models.ForeignKey(StarRating)
 
     def __unicode__(self):
-        return self.company
+        return self.company.company_name
+
+class CompanyStockData(Date):
+    company = models.ForeignKey(Company)
+    stock_data = JSONField('Stock Data', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.company.company_name
