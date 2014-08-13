@@ -222,7 +222,7 @@ class Companies(View):
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'companies.html', {
             'company_file': company_file,
-            'status': 'Processing Completed' if company_file.processing_completed else 'Processing Pending',
+            'status': ('Processing Completed' if company_file.processing_completed else 'Processing Pending') if company_file else '',
         })
 
     def post(self, request, *args, **kwargs):
