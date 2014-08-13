@@ -37,28 +37,39 @@
 				<input type="text" name="function_name" ng-model="new_general.function_name" />
 				<label> Function Description: </label>
 				<input type="text" name="function_description" ng-model="new_general.function_description" />
-				
-				<div class="formula">
-					<div class="formula_row">
-						<label> Operands: </label>
-						<select ng-model="operand">
-							<option ng-repeat="operand in operands" value="operand.id">[[operand.name]]</option>
-						</select>
-						<label> Operators: </label>
-						<select ng-model="operator">
-							<option ng-repeat="operator in operators" value="operator.id">[[operator.symbol]]</option>
-						</select> <input type="button" value="+" ng-click="add_operand()" />
-					</div>
-					<input type="text" name="function_formula" ng-model="new_general.function_formula" />
-					<label> Formula: </label>
-					<input type="text" name="function_formula" ng-model="new_general.function_formula" readOnly/>
-					<input type="button" value="+" ng-click="add_operator()" />
-				</div>
 				<label> Analytical Head: </label>
 				<select name="general_select_head" ng-model="new_general.select_head">
 						 <option value="" disabled="True">Select</option>
 						 <option value="[[ entry.id ]]" ng-selected="entry.id == new_general.select_head" ng-repeat="entry in anly_heads">[[ entry.title ]]</option>	
 				</select>
+				<div class="clear"></div>
+
+				<div class="formula">
+					<h4> Construct Formula </h4>
+					<div class="formula_row">
+						<label> Select Operands: </label>
+						<select ng-model="operand">
+							<option ng-repeat="operand in operands" value="[[operand.id]]" ng-click="select_operand(operand)">[[operand.name]]</option>
+						</select>
+						<input type="button" value="+" ng-click="add_operand()" />
+
+						<label> Select Operators: </label>
+						<select ng-model="operator">
+							<option ng-repeat="operator in operators" value="[[operator.id]]" ng-click="select_operator(operator)">[[operator.symbol]]</option>
+						</select> <input type="button" value="+" ng-click="add_operator()" />
+						<label> Add Digits: </label>
+						<input type="text" ng-model="digits" />
+						<input type="button" value="+" ng-click="add_digits()" />
+					</div>
+					
+					<label> Formula: </label>
+					<input type="text" name="function_formula" ng-model="formula" readOnly ng-change="check_formula()" />
+					<input type="button" value="Clear" ng-click="clear()" />
+					<div class="clear"></div>
+					<p class="error_msg"> [[error_msg]] </p>
+
+				</div>
+				
 				<p class="error_msg"> [[msg]] </p>
 				<input type="submit" name="submit" value="Save" ng-click="save_new_general()"/>
 				<input type="submit" name="submit" value="Reset" ng-click="reset_general()"/>

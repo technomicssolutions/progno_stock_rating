@@ -12,9 +12,9 @@ from django.contrib.auth.models import User
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
- FieldMap, Operator, Company, CompanyFile)
+ FieldMap, Operator, Company, CompanyFile, Formula)
 
-from utils import process_data_file, process_company_file, create_stock_data
+from utils import process_data_file, process_company_file
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -39,12 +39,12 @@ class FieldSettings(View):
                     status = "Created"
                     date = field.created_date
                 fields.append({
-                        'id': field.id,
-                        'name': field.name,
-                        'description': field.description,
-                        'status': status,
-                        'date': date.strftime("%d/%m/%Y"),
-                    })
+                    'id': field.id,
+                    'name': field.name,
+                    'description': field.description,
+                    'status': status,
+                    'date': date.strftime("%d/%m/%Y"),
+                })
             if request.is_ajax():
                 response = simplejson.dumps({
                     'result': 'OK',
@@ -107,10 +107,16 @@ class FunctionSettings(View):
             function_details = ast.literal_eval(request.POST['function_details'])
             function_type = ast.literal_eval(request.POST['function_type'])
             function_category = ast.literal_eval(request.POST['function_category'])
+            operators = ast.literal_eval(request.POST['formula_operators'])
+            operands = ast.literal_eval(request.POST['formula_operands'])
+            formula_string = request.POST['formula_string']
             category=FunctionCategory.objects.get(id=function_category)
             if int(function_type) == 1:
                 try:
                     general_function = Function.objects.get(id=function_details['id'])
+                    if general_function.formula:
+                        general_function.formula.delete()
+                        general_function.save()
                 except:
                     general_function = Function()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
@@ -119,15 +125,20 @@ class FunctionSettings(View):
                 general_function.description = function_details['function_description']
                 general_function.function_type = 'general'
                 general_function.analytical_head = anly_head
-                try:
-                    general_function.save()
-                    res = {
-                      'result': 'ok',
-                    }
-                except:
-                    res = {
-                      'result': 'error',  
-                    }
+                general_function.save()
+                formula = Formula.objects.create(formula_string=formula_string)
+                for operator in operators:
+                    op = Operator.objects.get(id=int(operator['id']))
+                    formula.operators.add(op)
+                for operand in operands:
+                    opnd = DataField.objects.get(id=operand['id'])
+                    formula.operands.add(opnd)
+                formula.save()
+                general_function.formula = formula
+                general_function.save()
+                res = {
+                  'result': 'ok',
+                }
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
             elif int(function_type) == 2:
@@ -686,21 +697,35 @@ class ModelDetails(View):
 class GeneralFunctions(View):
 
     def get(self, request, *args, **kwargs):
-        general_objects = Function.objects.get(id=request.GET.get('id'))
-        general_set = []
-        general_set.append({
-                'id':general_objects.id,
-                'name': general_objects.function_name,
-                'description': general_objects.description,
-                'head': general_objects.analytical_head.id,
-                'formula': general_objects.formula,
-                'category': general_objects.category.id,
-            })
+        general_function = Function.objects.get(id=request.GET.get('id'))
+        formula_operators = []
+        formula_operands = []
+        if general_function.formula:
+            for operator in general_function.formula.operators.all().all():
+                formula_operators.append({
+                    'id': operator.id,
+                    'symbol': operator.symbol
+                })
+            for operand in general_function.formula.operands.all().all():
+                formula_operands.append({
+                    'id': operand.id,
+                    'name': operand.name,
+                })
+        general_dict = {
+            'id':general_function.id,
+            'name': general_function.function_name,
+            'description': general_function.description,
+            'head': general_function.analytical_head.id,
+            'formula': general_function.formula.formula_string if general_function.formula else '',
+            'category': general_function.category.id,
+            'formula_operands': formula_operands,
+            'formula_operators': formula_operators
+        }
         if request.is_ajax():
             response = simplejson.dumps({
-               'general_objects': general_set
+               'general_function': general_dict
             })
-            return HttpResponse(response, status=200, mimetype='application/json')
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 
 class ContinuityFunctions(View):
@@ -850,10 +875,10 @@ class OperatorsView(View):
 
         if request.is_ajax():
             op_list = []
-            for opeartor in operators:
+            for operator in operators:
                 op_list.append({
-                    'id': opeartor.id,
-                    'symbol': opeartor.symbol
+                    'id': operator.id,
+                    'symbol': operator.symbol
                 })
             res = {
                 'result': 'ok',

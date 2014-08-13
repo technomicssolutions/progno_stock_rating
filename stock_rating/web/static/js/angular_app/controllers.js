@@ -314,8 +314,12 @@ function FieldController($scope, $element, $http, $timeout, $location)
     }
     $scope.validate_field = function(){
         $scope.msg = '';
+        var letters = /^[0-9a-zA-Z_]+$/;  
         if($scope.new_field.field_name == '') {
             $scope.msg = "Please enter Field Name";
+            return false;
+        } else if(!$scope.new_field.field_name.match(letters)) {
+            $scope.msg = "Special characters and spaces are not allowed in field name (Only Alphabets, Numerals and _ is allowed)";
             return false;
         } else if($scope.new_field.field_description == '' ) {
             $scope.msg = "Please enter Field Description";
@@ -398,32 +402,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
 
 function FunctionController($scope, $element, $http, $timeout, $location)
 {
-    $scope.new_general = {
-        'function_name': '',
-        'function_description': '',
-        'function_formula': '',
-        'select_head': '',
-    }
-   $scope.new_continuity = {
-        'function_name': '',
-        'function_description': '',
-        'no_of_periods': '',
-        'minimum_value': '',
-        'period_1': '',
-        'period_2': '',
-        'period_3': '',
-        'select_head': '',
-    }
-   $scope.new_consistency = {
-        'function_name': '',
-        'function_description': '',
-        'no_of_periods': '',
-        'mean': '',
-        'period_1': '',
-        'period_2': '',
-        'select_head': '',
-    }
-    $scope.select_category = ''
+    
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
@@ -437,6 +416,35 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.select_type = 1;  
         $scope.get_operands();
         $scope.get_operators()
+        $scope.new_general = {
+            'function_name': '',
+            'function_description': '',
+            'function_formula': [],
+            'select_head': '',
+        }
+        $scope.new_continuity = {
+            'function_name': '',
+            'function_description': '',
+            'no_of_periods': '',
+            'minimum_value': '',
+            'period_1': '',
+            'period_2': '',
+            'period_3': '',
+            'select_head': '',
+        }
+        $scope.new_consistency = {
+            'function_name': '',
+            'function_description': '',
+            'no_of_periods': '',
+            'mean': '',
+            'period_1': '',
+            'period_2': '',
+            'select_head': '',
+        }
+        $scope.select_category = ''
+        $scope.selected_operators = [];
+        $scope.selected_operands = [];
+        $scope.test = ['sd', '+', 'dg'].join(' ');
     }
     $scope.change_type = function(type){
         if(type == 1)
@@ -484,7 +492,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_general.function_description == '' ) {
             $scope.msg = "Please enter Function Description";
             return false;
-        } else if($scope.new_general.function_formula == '' ) {
+        } else if($scope.formula == '' ) {
             $scope.msg = "Please enter Formula";
             return false;
         } else if($scope.new_general.select_head == '' ) {
@@ -594,6 +602,9 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                 'function_details': angular.toJson($scope.new_general),
                 'function_type' : angular.toJson($scope.select_type),
                 'function_category' : angular.toJson($scope.select_category),
+                'formula_operands': angular.toJson($scope.selected_operands),
+                'formula_operators': angular.toJson($scope.selected_operators),
+                'formula_string': $scope.formula,
                 "csrfmiddlewaretoken" : $scope.csrf_token,
             }
             $http({
@@ -606,8 +617,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }).success(function(data, status) {  
                 hide_loader();
                 if(data.result == 'error'){
-                     $scope.msg = "Function already exists";
-                    }
+                    $scope.msg = "Function already exists";
+                }
                 else
                     $scope.reset_general();
             $scope.get_functions(); 
@@ -697,7 +708,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             'period_3': '',
             'select_head': '',
         }         
-
     }
     $scope.reset_consistency = function(){
         $scope.msg = "";
@@ -729,14 +739,16 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.edit_general = function(id){
         var url = '/general_function/?id='+id;
         $http.get(url).success(function(data) {
-            $scope.general_list = data.general_set;
+            $scope.selected_general_function = data.general_function;
             $scope.select_type = 1;
-            $scope.new_general.id = $scope.general_list[0].id;
-            $scope.new_general.function_name = $scope.general_list[0].name;
-            $scope.new_general.function_description = $scope.general_list[0].description;
-            $scope.new_general.function_formula = $scope.general_list[0].formula;
-            $scope.select_category = $scope.general_list[0].category;
-            $scope.new_general.select_head = $scope.general_list[0].head;
+            $scope.new_general.id = $scope.selected_general_function.id;
+            $scope.new_general.function_name = $scope.selected_general_function.name;
+            $scope.new_general.function_description = $scope.selected_general_function.description;
+            $scope.formula = $scope.selected_general_function.formula;
+            $scope.select_category = $scope.selected_general_function.category;
+            $scope.new_general.select_head = $scope.selected_general_function.head;
+            $scope.selected_operands = data.general_function.formula_operands;
+            $scope.selected_operators = data.general_function.formula_operators;
         })
     }
     $scope.edit_continuity = function(id){
@@ -802,6 +814,67 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $http.get(url).success(function(data) {
             $scope.operators = data.operators;
         })  
+    }
+    $scope.add_operand = function(){
+        $scope.error_msg = '';
+        if($scope.operator_added || ($scope.new_general.function_formula.length == 0)){
+            $scope.new_general.function_formula.push($scope.selected_operand.name);
+            $scope.operator_added = false;
+            $scope.operand_added = true;
+            $scope.selected_operands.push($scope.selected_operand);
+            $scope.formula = $scope.new_general.function_formula.join(' ')
+        } else {
+            $scope.error_msg = "Please add an operator";
+        }
+    }
+    $scope.select_operator = function(operator){
+        $scope.selected_operator = operator;
+    }
+    $scope.select_operand = function(operand){
+        $scope.selected_operand = operand;
+    }
+    $scope.add_operator = function(){
+        $scope.error_msg = '';
+        console.log($scope.new_general.function_formula.length, $scope.operand_added, $scope.selected_operator)
+        if($scope.operand_added || ($scope.new_general.function_formula.length == 0 && $scope.selected_operator.symbol == "(")){
+            $scope.new_general.function_formula.push($scope.selected_operator.symbol);
+            $scope.operand_added = false;
+            $scope.operator_added = true;
+            $scope.selected_operators.push($scope.selected_operator);
+            $scope.formula = $scope.new_general.function_formula.join(' ')
+        } else {
+            $scope.error_msg = "Please add an operand";
+        }
+    }
+    $scope.clear = function(){
+        $scope.error_msg = '';
+        $scope.new_general.function_formula.pop();
+        $scope.formula = $scope.new_general.function_formula.join(' ')
+        if($scope.operator_added){
+            $scope.selected_operators.pop();
+            $scope.operator_added = false;
+            $scope.operand_added = true;
+        }
+        if($scope.operand_added){
+            $scope.selected_operands.pop();
+            $scope.operand_added = false;
+            $scope.operator_added = true;
+        }
+    }
+    $scope.add_digits = function(){
+        $scope.error_msg = '';        
+        if($scope.operator_added || ($scope.new_general.function_formula.length == 0)){
+            if(!Number($scope.digits)){
+                $scope.error_msg = "Please Enter Digits";
+                return;
+            }
+            $scope.new_general.function_formula.push($scope.digits);
+            $scope.operator_added = false;
+            $scope.operand_added = true;
+            $scope.formula = $scope.new_general.function_formula.join(' ')
+        } else {
+            $scope.error_msg = "Please add an operator";
+        }
     }
 }
 

@@ -371,16 +371,47 @@ header {
 	float: left;
     margin-left: 5%;
     margin-top: 3%;
-    width: 35%;	
+    width: 80%;	
 }
 
 .function_set label {
-	width: 39%;
-	height: 30px;
+	width: 21%;
+	float: left;
+	display: block;
 }
-.function_set input {
-	width: 58%;
+.function_set input[type="text"] {
+	width: 65%;
 	height: 30px;
+	float: left;
+	display: block;
+	margin-bottom: 10px;
+}
+.function_set input[type="hidden"] {
+	display: none;
+}
+.function_set input[type="button"] {
+	width: 5%;
+	height: 30px;
+	float: left;
+	display: block;
+	margin-bottom: 10px;
+}
+.function_set select {
+	width: 65%;
+	height: 30px;
+	float: left
+}
+.function_set h4 {
+	border-bottom: 1px solid #12569A;
+    clear: both;
+    color: #12569A;
+    display: block;
+    font-size: 18px;
+    padding-bottom: 10px;
+    width: 23%;
+}
+.formula {
+	margin: 20px 0px 20px 0px;
 }
 
 .function_set input[type="submit"] {

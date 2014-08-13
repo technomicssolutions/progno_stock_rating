@@ -76,11 +76,10 @@ class Operator(Date):
 class Formula(Date):
     operands = models.ManyToManyField(DataField)
     operators = models.ManyToManyField(Operator)
+    formula_string = models.CharField('Formula', max_length=500)
 
-    def display(self):
-        pass
     def __unicode__(self):
-        return self.display()
+        return self.formula_string
 
 FUNCTION_TYPES = (
     ('general', 'General'),
