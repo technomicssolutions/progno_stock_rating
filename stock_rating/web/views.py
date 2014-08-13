@@ -252,7 +252,7 @@ class DataUpload(View):
             data_file = None
         return render(request, 'data_upload.html', {
             'data_file': data_file,
-            'status': 'Processing Completed' if data_file.processing_completed else 'Processing Pending',
+            'status': ('Processing Completed' if data_file.processing_completed else 'Processing Pending') if data_file else '',
         })
 
     def post(self, request, *args, **kwargs):
