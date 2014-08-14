@@ -2,7 +2,7 @@
 import xlrd
 from django.conf import settings
 from collections import OrderedDict
-from models import Company, Industry, CompanyStockData
+from models import Company, Industry, CompanyStockData, CompanyFunctionScore, FieldMap
 
 def process_data_file(data_file):
     sheets = []
@@ -50,7 +50,6 @@ def process_data_file(data_file):
     data_file.save()
     create_stock_data(data_file)    
     return sheets
-
 
 def process_company_file(data_file, request):
     workbook = xlrd.open_workbook(settings.MEDIA_ROOT+'/'+data_file.uploaded_file.name)
@@ -102,3 +101,22 @@ def create_stock_data(data_file):
     data_file.processing_completed = True
     data_file.save()
 
+def calculate_general_function_score(general_function):
+    stocks = CompanyStockData.objects.all()
+    function_operands = general_function.formula.operands.all()
+    formula = general_function.formula.formula_string
+    for stock in stocks:
+        company = stock.company
+        stock = stock.stock_data
+        for operand in function_operands:
+            mapping = FieldMap.objects.get(data_field = operand)
+            key_name = mapping.file_field
+            vars()[operand.name] = stock[key_name]
+        try:
+            function_value = eval(formula)
+            function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=general_function)
+            function_score.score = function_value 
+            function_score.save()
+        except Exception as e:
+            print e
+            continue

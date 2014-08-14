@@ -174,7 +174,7 @@ class ParameterLimit(Date):
     weak_comment = models.CharField('weak Comment', max_length=200, null=True)
         
 class StarRating(Date):
-
+    model = models.ForeignKey(AnalysisModel)
     star_count = models.IntegerField('StarCount', max_length=1)
     min_score = models.FloatField('Min Score', max_length=5)
     max_score = models.FloatField('Max Score', max_length=5)
@@ -184,15 +184,23 @@ class StarRating(Date):
         return str(self.star_count) + ' star'
 
 class CompanyFunctionScore(Date):
+
     company = models.ForeignKey(Company)
     function = models.ForeignKey(Function)
-    score = models.FloatField('Function Score', max_length=5)
+    score = models.FloatField('Function Score', max_length=5, null=True, blank=True)
+    points = models.FloatField('Function Point', max_length=5, null=True, blank=True)
+    comment = models.CharField('Comment', max_length=500, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.company.company_name + " - " + self.function.function_name + " - " + str(self.score)
 
 class CompanyModelScore(Date):
     company = models.ForeignKey(Company)
     analysis_model = models.ForeignKey(AnalysisModel)
-    score = models.IntegerField('Model Score', max_length=5)
-    star_rating = models.ForeignKey(StarRating)
+    score = models.IntegerField('Model Score', max_length=5, null=True, blank=True)
+    star_rating = models.CharField('Star Rating', max_length=200 , null=True, blank=True)
+    comment = models.CharField('Comment', max_length=500, null=True, blank=True)
+
 
     def __unicode__(self):
         return self.company.company_name

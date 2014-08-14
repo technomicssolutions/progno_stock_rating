@@ -296,14 +296,13 @@ function FieldController($scope, $element, $http, $timeout, $location)
     $scope.delete_field = function(field){
         var url = '/delete_field/?id='+field.id;
         $http.get(url).success(function(data){
+            console.log('result', data.result);
             if(data.result == 'ok'){
                 $scope.msg = "Field deleted";
-               }
-            else if(data.result == 'error'){
-                $scope.msg = "Field is used by another function";
-               }
+            } else if(data.result == 'error'){
+                $scope.error_msg = "This Field is used in a function formula";
+            }
             $scope.get_fields(); 
-            $scope.reset_field();                   
         })
     }
     $scope.get_fields = function(){
@@ -619,9 +618,9 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                 if(data.result == 'error'){
                     $scope.msg = "Function already exists";
                 }
-                else
-                    $scope.reset_general();
-            $scope.get_functions(); 
+                else{
+                    document.location.href = "/function_settings/";
+                }
             }).error(function(data, status){
                 $scope.message = data.message;
             });
@@ -817,6 +816,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.add_operand = function(){
         $scope.error_msg = '';
+        if($scope.new_general.function_formula.length == 0) {
+            $scope.selected_operands = [];
+            $scope.selected_operators = [];
+        }
         if($scope.operator_added || ($scope.new_general.function_formula.length == 0)){
             $scope.new_general.function_formula.push($scope.selected_operand.name);
             $scope.operator_added = false;
@@ -834,6 +837,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.selected_operand = operand;
     }
     $scope.add_operator = function(){
+        if($scope.new_general.function_formula.length == 0) {
+            $scope.selected_operands = [];
+            $scope.selected_operators = [];
+        }
         $scope.error_msg = '';
         console.log($scope.new_general.function_formula.length, $scope.operand_added, $scope.selected_operator)
         if($scope.operand_added || ($scope.new_general.function_formula.length == 0 && $scope.selected_operator.symbol == "(")){
@@ -862,6 +869,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }
     }
     $scope.add_digits = function(){
+        if($scope.new_general.function_formula.length == 0) {
+            $scope.selected_operands = [];
+            $scope.selected_operators = [];
+        }
         $scope.error_msg = '';        
         if($scope.operator_added || ($scope.new_general.function_formula.length == 0)){
             if(!Number($scope.digits)){
@@ -916,6 +927,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.editorEnabled = true;
         $scope.function_row = [];
         $scope.edit_parameters = false;
+        $scope.selected_model = '';
     }
     $scope.show_create_model = function(){
         $scope.create_model = true; 
@@ -932,13 +944,24 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $http.get(url).success(function(data) {
             $scope.industry_list = data.industry_list;
             $scope.industry_select = '';
-        })
+        }) 
     }
     $scope.get_models = function(){
         var url = '/models/';
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
         })
+    }
+    $scope.calculate_star_rating = function(){
+        $scope.msg = '';
+        if($scope.selected_model){
+            var url = '/model/'+$scope.selected_model+'/star_rating/';
+            $http.get(url).success(function(data) {
+                $scope.model_list = data.model_list;
+            })
+        } else {
+            $scope.msg = "Please select a model";
+        }
     }
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
@@ -986,6 +1009,9 @@ function ModelController($scope, $element, $http, $timeout, $location)
                                 'weak_max': '',                                    
                                 'weak_min': '',                                    
                                 'weak_points': '',
+                                'strong_comment': '',
+                                'weak_comment': '',
+                                'neutral_comment': '',
                             },                            
                         })                   
                     }

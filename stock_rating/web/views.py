@@ -12,9 +12,9 @@ from django.contrib.auth.models import User
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
- FieldMap, Operator, Company, CompanyFile, Formula)
+ FieldMap, Operator, Company, CompanyFile, Formula, CompanyFunctionScore, CompanyModelScore)
 
-from utils import process_data_file, process_company_file
+from utils import process_data_file, process_company_file, calculate_general_function_score
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -106,12 +106,12 @@ class FunctionSettings(View):
         if request.is_ajax():
             function_details = ast.literal_eval(request.POST['function_details'])
             function_type = ast.literal_eval(request.POST['function_type'])
-            function_category = ast.literal_eval(request.POST['function_category'])
-            operators = ast.literal_eval(request.POST['formula_operators'])
-            operands = ast.literal_eval(request.POST['formula_operands'])
-            formula_string = request.POST['formula_string']
+            function_category = ast.literal_eval(request.POST['function_category'])            
             category=FunctionCategory.objects.get(id=function_category)
             if int(function_type) == 1:
+                operators = ast.literal_eval(request.POST['formula_operators'])
+                operands = ast.literal_eval(request.POST['formula_operands'])
+                formula_string = request.POST['formula_string']
                 try:
                     general_function = Function.objects.get(id=function_details['id'])
                     if general_function.formula:
@@ -136,6 +136,7 @@ class FunctionSettings(View):
                 formula.save()
                 general_function.formula = formula
                 general_function.save()
+                calculate_general_function_score(general_function)
                 res = {
                   'result': 'ok',
                 }
@@ -376,7 +377,6 @@ class AnalyticalHeads(View):
                     'date': date.strftime("%d/%m/%Y"),
                     'function_set': function_set,
                 })
-                print heads
                 function_set = []
             if request.is_ajax():
                 response = simplejson.dumps({
@@ -639,6 +639,9 @@ class ModelDetails(View):
                         'weak_min': parameter.weak_min,
                         'weak_max': parameter.weak_max,
                         'weak_points': parameter.weak_points,
+                        'strong_comment': parameter.strong_comment,
+                        'weak_comment': parameter.weak_comment,
+                        'neutral_comment': parameter.neutral_comment
                         }
                 function_set.append({
                     'function_id':function.id,
@@ -680,6 +683,9 @@ class ModelDetails(View):
             parameterlimit.weak_min = parameters['weak_min']
             parameterlimit.weak_max = parameters['weak_max']
             parameterlimit.weak_points = parameters['weak_points']
+            parameterlimit.strong_comment = parameters['strong_comment']
+            parameterlimit.weak_comment = parameters['weak_comment']
+            parameterlimit.neutral_comment = parameters['neutral_comment']
             try:
                 parameterlimit.save()
                 res = {
@@ -787,6 +793,7 @@ class DeleteField(View):
         else:
                 res = {
                    'result': 'error',  
+                   'message': 'This field is used in funtion Formula'
                 }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
@@ -889,3 +896,46 @@ class OperatorsView(View):
         return render(request, 'administration.html', {
             'operators': operators
         })
+
+class DeleteFunction(View):
+    def get(self, request, *args, **kwargs):
+        function = Function.objects.get(id=kwargs['function_id'])
+        function.delete()
+        return HttpResponseRedirect(reverse('function_settings'))
+
+class StarRating(View):
+    def get(self, request, *args, **kwargs):
+        model = AnalysisModel.objects.get(id=kwargs['model_id'])
+        industries = model.industries.all()
+        analytical_heads = model.analytical_heads.all()
+        companies = Company.objects.all()
+        for industry in industries:
+            companies = industry.company_set.all()
+            for company in companies:
+                company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
+                for head in analytical_heads:
+                    score = 0
+                    parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
+                    for parameterlimit in parameterlimits:
+                        function = parameterlimit.function
+                        try:
+                            fn_score = CompanyFunctionScore.objects.get(company=company, function=function)
+                            if fn_score.score <= parameterlimit.strong_min and fn_score.score <= parameterlimit.strong_max:
+                                fn_score.points = parameterlimit.strong_points
+                                fn_score.comment = parameterlimit.strong_comment
+                                fn_score.save()
+                            elif fn_score.score <= parameterlimit.neutral_min and fn_score.score <= parameterlimit.neutral_max:
+                                fn_score.points = parameterlimit.neutral_points
+                                fn_score.comment = parameterlimit.neutral_comment
+                                fn_score.save()
+                            elif fn_score.score <= parameterlimit.weak_min and fn_score.score <= parameterlimit.weak_max:
+                                fn_score.points = parameterlimit.weak_points
+                                fn_score.comment = parameterlimit.weak_comment
+                                fn_score.save()
+                            score = score + fn_score.score
+                        except Exception as e:
+                            print e
+                            continue
+                company_model_score.score = score
+                company_model_score.save()
+        return HttpResponseRedirect(reverse("models"))

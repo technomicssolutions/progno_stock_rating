@@ -1,4 +1,4 @@
-
+/********** common styles *************/
 
 html, body {
 	margin: 0;
@@ -55,6 +55,9 @@ footer {
 	color: #FF0000;
 	font-weight: bold;
 }
+
+
+/************************** common styles end ***********/
 /************** Login page  and create user styles**************/
 .login, .create_user {
 	width: 20%;
@@ -592,6 +595,15 @@ th.three{
 }
 .no_border_left{
 	border-left: none !important;
+}
+.calculate_star_rating {
+	float: right !important;
+    font-weight: bold;
+    margin-right: 20%;
+    width: 20% !important;
+}
+.comment_textarea {
+	width: 100% !important;
 }
 /******************* End Models Style ***************/
 
