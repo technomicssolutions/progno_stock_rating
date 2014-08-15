@@ -73,6 +73,9 @@ class FunctionCategory(Date):
 class Operator(Date):
     symbol = models.CharField('Symbol', max_length=1)
 
+    def __unicode__(self):
+        return self.symbol
+
 class Formula(Date):
     operands = models.ManyToManyField(DataField)
     operators = models.ManyToManyField(Operator)
@@ -172,6 +175,9 @@ class ParameterLimit(Date):
     strong_comment = models.CharField('Strong Comment', max_length=200)
     neutral_comment = models.CharField('Neutral Comment', max_length=200)
     weak_comment = models.CharField('weak Comment', max_length=200, null=True)
+
+    def __unicode__(self):
+        return self.analysis_model.name + ' - '+ self.function.function_name
         
 class StarRating(Date):
     model = models.ForeignKey(AnalysisModel)

@@ -8,7 +8,7 @@ from views import (Login,Logout, Dashboard, Administration, Users, SaveUser, Res
     FieldSettings, FunctionSettings, Category, GeneralFunctions, ContinuityFunctions, \
     ConsistencyFunctions, DeleteField, Model, IndustryDetails, DeleteModel, DeleteUser, \
     ModelDetails, DeleteParameter, DataUpload, AnalyticalHeads, DeleteHead, FieldMapping, \
-    FileFields, OperatorsView, Companies, DeleteFunction, StarRating)
+    FileFields, OperatorsView, Companies, DeleteFunction, ModelStarRating, SaveModelStarRating)
 
 urlpatterns = patterns('',
 
@@ -49,7 +49,9 @@ urlpatterns = patterns('',
     url(r'operators/$', login_required(OperatorsView.as_view()), name="operators"),
 
     url(r'companies/$', login_required(Companies.as_view()), name="companies"),
-    url(r'model/(?P<model_id>\d+)/star_rating/$', login_required(StarRating.as_view()), name="star_rating"),
+    url(r'model/(?P<model_id>\d+)/star_rating/$', login_required(ModelStarRating.as_view()), name="star_rating"),
+    url(r'model/(?P<model_id>\d+)/save_star_rating/$', login_required(SaveModelStarRating.as_view()), name="save_star_rating"),
+
 
 )
 

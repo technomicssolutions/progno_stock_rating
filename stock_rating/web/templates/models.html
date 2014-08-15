@@ -129,6 +129,46 @@
 			</table>
 		</div>
 		<p class="error_msg"> [[msg]] </p>
+		<div class="tab_def_model">
+			<h3 class="sub_heading"> Start Rating </h3>
+			<table class="table table-stripped">
+				<tr>
+					<th class="six">Start Count</th>
+					<th class="three">Min Score</th>
+					<th class="four">Max Score</th>
+					<th class="four">Comment</th>
+					<th class="four no_border" colspan="3">&nbsp;</th></tr>
+				</tr>				
+				<tr ng-repeat="rating in star_ratings">									
+					<td class="five">
+						<input type="text" ng-model="rating.star_count" ng-show="rating.editorEnabled">
+						<span ng-hide="rating.editorEnabled">[[ rating.star_count]]</span>
+					</td>
+					<td class="five">
+						<input type="text" ng-model="rating.min_score" ng-show="rating.editorEnabled">
+						<span ng-hide="rating.editorEnabled">[[ rating.min_score]]</span>
+					</td>
+					<td class="five">
+						<input type="text" ng-model="rating.max_score" ng-show="rating.editorEnabled">
+						<span ng-hide="rating.editorEnabled">[[ rating.max_score]]
+					</span></td>
+					<td class="five">
+						<input type="text" ng-model="rating.comment" ng-show="rating.editorEnabled">
+						<span ng-hide="rating.editorEnabled">[[ rating.comment]]</span>
+					</td>					
+					<td class="five no_border">
+						<input type="hidden" ng-model="rating.parameter_set.id" />
+						<input type="button" value="Edit" ng-click="edit_rating(rating)">
+					</td>
+					<td class="five no_border">
+						<input type="button" value="Del" ng-click="delete_parameters(selected_model, rating)">
+					</td>
+					<td class="five no_border">
+						<input type="button" value="Save" ng-click="save_rating(rating)">
+					</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 	<div class="tab_list" ng-show="create_model">
 		<h3 class="sub_heading"> Model List </h3>

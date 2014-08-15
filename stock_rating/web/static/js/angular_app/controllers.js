@@ -983,6 +983,15 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $http.get(url).success(function(data) {
             hide_loader();
             $scope.model_details = data.analytical_heads;
+            $scope.star_ratings = data.star_ratings;
+            $scope.star_ratings.push({
+                'id': '',
+                'star_count': '',
+                'min_score': '',
+                'max_score': '',
+                'comment': '',
+                'editorEnabled': true,
+            })
             for(var i = 0; i < $scope.model_details.length; i++){
                 for(var j = 0; j < $scope.model_details[i].function_set.length; j++){
                     if($scope.model_details[i].function_set[j].parameter_set.strong_points){
@@ -997,22 +1006,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     } else {                    
                         $scope.function_view.push({
                             'function_id': $scope.model_details[i].function_set[j].function_id,
-                            'function_name': $scope.model_details[i].function_set[j].function_name,
-                            "parameter_set": {
-                                'neutral_max': '',    
-                                'neutral_min': '',                                    
-                                'neutral_points': '',                                    
-                                'parameter_id': '',                                    
-                                'strong_max': '',                                    
-                                'strong_min': '',                                    
-                                'strong_points': '',                                    
-                                'weak_max': '',                                    
-                                'weak_min': '',                                    
-                                'weak_points': '',
-                                'strong_comment': '',
-                                'weak_comment': '',
-                                'neutral_comment': '',
-                            },                            
+                            'function_name': $scope.model_details[i].function_set[j].function_name,                                            
                         })                   
                     }
                 }
@@ -1027,35 +1021,34 @@ function ModelController($scope, $element, $http, $timeout, $location)
                 }
                 else
                 {
-                   $scope.function_set.push({
-                    'editorEnabled': true,
-                    'dropdown_enabled': true,
-                   })
-                   $scope.function_row.push({
-                    'head_id': $scope.model_details[i].analytical_head_id,
-                    'head_name': $scope.model_details[i].analytical_head_name,
-                    'function_set':  $scope.function_set,
-                    'function_view': $scope.function_view,
+                    $scope.function_set.push({
+                        'editorEnabled': true,
+                        'dropdown_enabled': true,
                     })
-                   $scope.function_view = []
+                    $scope.function_row.push({
+                        'head_id': $scope.model_details[i].analytical_head_id,
+                        'head_name': $scope.model_details[i].analytical_head_name,
+                        'function_set':  $scope.function_set,
+                        'function_view': $scope.function_view,
+                    })
+                    $scope.function_view = []
                 }
             $scope.flag = 0;
             $scope.function_set = [];
             }            
             for(var x = 0; x < $scope.function_row.length; x++){
-                    var count = 0;
-                    for(var i = 0; i < $scope.model_details.length; i++ ){
-                        if($scope.model_details[i].analytical_head_id == $scope.function_row[x].head_id)
-                            var count = $scope.model_details[i].function_set.length;
-                    }
-                    if(count > $scope.function_row[x].function_set.length && $scope.function_row[x].function_set[0].editorEnabled == false){
-                        $scope.function_row[x].function_set.push({
-                            'editorEnabled': true,
-                            'dropdown_enabled': true,
+                var count = 0;
+                for(var i = 0; i < $scope.model_details.length; i++ ){
+                    if($scope.model_details[i].analytical_head_id == $scope.function_row[x].head_id)
+                        var count = $scope.model_details[i].function_set.length;
+                }
+                if(count > $scope.function_row[x].function_set.length && $scope.function_row[x].function_set[0].editorEnabled == false){
+                    $scope.function_row[x].function_set.push({
+                        'editorEnabled': true,
+                        'dropdown_enabled': true,
 
-                        });  
-                    }
-                        
+                    });  
+                }                        
             }
          })
     }
@@ -1108,7 +1101,11 @@ function ModelController($scope, $element, $http, $timeout, $location)
             model_function.editorEnabled = true;
        }
     }
-     $scope.delete_parameters = function(model_id, parameters){
+    $scope.edit_rating = function(rating){
+        $scope.edit_rating = true;
+        rating.editorEnabled = true;
+    }
+    $scope.delete_parameters = function(model_id, parameters){
         show_loader();
         var url = '/delete_parameters/?id='+parameters.parameter_id;
         $http.get(url).success(function(data){
@@ -1213,7 +1210,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.validate_parameters = function(function_id, parameters){
         $scope.msg = '';
-        console.log("validate",function_id, parameters);
         if(angular.isUndefined(function_id) && !$scope.edit_parameters) {
             $scope.msg = "Please select a function";
             return false;
@@ -1271,14 +1267,20 @@ function ModelController($scope, $element, $http, $timeout, $location)
         } else if(!Number(parameters.weak_points) ) {
             $scope.msg = "Invalid entry in Weak Points";
             return false;
-        } else if(parameters.strong_min >= parameters.strong_max) {
+        } else if(Number(parameters.strong_min) >= Number(parameters.strong_max)) {
+            console.log(Number(parameters.strong_min), parameters.strong_max)
             $scope.msg = "Strong Minimum should be less than Strong Maximum";
             return false;
-        } else if(parameters.neutral_min >= parameters.neutral_max) {
+        } else if(Number(parameters.neutral_min) >= Number(parameters.neutral_max)) {
+            console.log(Number(parameters.neutral_min), parameters.neutral_max)
             $scope.msg = "Neutral Minimum should be less than Neutral Maximum";
             return false;
         } else if(parameters.weak_min >= parameters.weak_max) {
+            console.log(Number(parameters.weak_min), parameters.weak_max)
             $scope.msg = "Weak Minimum should be less than Weak Maximum";
+            return false;
+        } if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
+            $scope.msg = "Please select a function";
             return false;
         } if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
             $scope.msg = "Please select a function";
@@ -1287,6 +1289,24 @@ function ModelController($scope, $element, $http, $timeout, $location)
             return true;
         }
 
+    }
+    $scope.validate_rating = function(rating){
+        $scope.rating_msg = '';
+        if(!Number(rating.star_count) ) {
+            $scope.rating_msg = "Invalid entry in Star Count";
+            return false;
+        } else if(!Number(rating.min_score) ){
+            $scope.rating_msg = "Please enter in Min Score";
+            return false;
+        } else if(!Number(rating.max_score) ) {
+            $scope.rating_msg = "Invalid entry in Max Score";
+            return false;
+        } else if(rating.comment == ''){
+            $scope.rating_msg = "Please enter Comment";
+            return false;
+        } else {
+            return true;
+        }
     }
     $scope.save_model = function(){
         if($scope.validate_model()){
@@ -1304,6 +1324,36 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $http({
                 method : 'post',
                 url : "/models/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) { 
+                hide_loader();
+                if(data.result == 'error'){
+                     $scope.msg = "Model already exists";
+                    }
+                else
+                    $scope.reset_model(); 
+                    $scope.get_models();        
+             
+              }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        } 
+
+    }
+    $scope.save_rating = function(rating){
+        if($scope.validate_rating(rating)){
+            show_loader();
+            rating.editorEnabled = String(rating.editorEnabled);
+            params = { 
+                'rating': angular.toJson(rating),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/model/"+$scope.selected_model+"/save_star_rating/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'

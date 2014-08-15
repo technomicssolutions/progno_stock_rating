@@ -1,7 +1,6 @@
 {% load base_tags %}
 <div class="menu_container">
 	<h3 class="page_header"> Progno Stock Rating </h3>
-
 	<ul class="menu">
 		{% if user.is_superuser %}
 			<li> 
@@ -33,9 +32,10 @@
 			<a href ="{% url 'function_settings' %}"> Function Settings </a>
 			<span class="functionsettings"> > </span> 
 		</li>
-		<li class="no-border"> 
+		<li> 
 			<a href ="{% url 'models' %}"> Models </a> 
 			<span class="model"> > </span>
 		</li>
+		
 	</ul>
 </div>

@@ -12,7 +12,8 @@ from django.contrib.auth.models import User
 
 from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
- FieldMap, Operator, Company, CompanyFile, Formula, CompanyFunctionScore, CompanyModelScore)
+ FieldMap, Operator, Company, CompanyFile, Formula, CompanyFunctionScore, CompanyModelScore, \
+ StarRating)
 
 from utils import process_data_file, process_company_file, calculate_general_function_score
 
@@ -136,7 +137,6 @@ class FunctionSettings(View):
                 formula.save()
                 general_function.formula = formula
                 general_function.save()
-                calculate_general_function_score(general_function)
                 res = {
                   'result': 'ok',
                 }
@@ -623,6 +623,7 @@ class ModelDetails(View):
         function_set = []
         analytical_head_set = []
         analytical_heads_list =  model.analytical_heads.all()
+        star_ratings = model.starrating_set.all()
         for analytical_head in analytical_heads_list:
             function_list = analytical_head.function_set.all()
             for function in function_list:
@@ -649,16 +650,26 @@ class ModelDetails(View):
                     'parameter_set': parameter_set,
                     })
                 parameter_set = {}
+            ratings = []
+            for rating in star_ratings:
+                ratings.append({
+                    'id': rating.id,
+                    'star_count': rating.star_count,
+                    'min_score': rating.min_score,
+                    'max_score': rating.max_score,
+                    'comment': rating.comment
+                })
             analytical_head_set.append({
                 'analytical_head_id': analytical_head.id,
                 'analytical_head_name': analytical_head.title,
-                'function_set':function_set,
-                })
+                'function_set': function_set,
+            })
             function_set = []
         if request.is_ajax():
          response = simplejson.dumps({
-            'analytical_heads': analytical_head_set
-            })
+            'analytical_heads': analytical_head_set,
+            'star_ratings': ratings,
+        })
         return HttpResponse(response, status=200, mimetype='application/json')
 
     def post(self, request, *args, **kwargs):
@@ -903,14 +914,17 @@ class DeleteFunction(View):
         function.delete()
         return HttpResponseRedirect(reverse('function_settings'))
 
-class StarRating(View):
+class ModelStarRating(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=kwargs['model_id'])
         industries = model.industries.all()
         analytical_heads = model.analytical_heads.all()
         companies = Company.objects.all()
+        model_ratings = model.starrating_set.all()
+        print "industries=", industries
         for industry in industries:
             companies = industry.company_set.all()
+            print "companies = ", companies
             for company in companies:
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
                 for head in analytical_heads:
@@ -918,8 +932,10 @@ class StarRating(View):
                     parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                     for parameterlimit in parameterlimits:
                         function = parameterlimit.function
+                        print "function=", function
                         try:
-                            fn_score = CompanyFunctionScore.objects.get(company=company, function=function)
+                            fn_score = calculate_general_function_score(function, company)
+                            print "function score= ", fn_score
                             if fn_score.score <= parameterlimit.strong_min and fn_score.score <= parameterlimit.strong_max:
                                 fn_score.points = parameterlimit.strong_points
                                 fn_score.comment = parameterlimit.strong_comment
@@ -938,4 +954,29 @@ class StarRating(View):
                             continue
                 company_model_score.score = score
                 company_model_score.save()
+                for rating in model_ratings:
+                    if company_model_score.score >= rating.min_score and company_model_score.score <= rating.max_score:
+                        company_model_score.star_rating = rating.star_count
+                        company_model_score.comment = rating.comment
+                        company_model_score.save()
+                        break;
+
+        return HttpResponseRedirect(reverse("models"))
+
+class SaveModelStarRating(View):
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            rating_details = ast.literal_eval(request.POST['rating'])
+            if rating_details['id']:
+                rating = StarRating.objects.get(id=rating_details['id'])
+            else:
+                model = AnalysisModel.objects.get(id=kwargs['model_id'])
+                rating = StarRating()
+                rating.model = model
+            rating.star_count = rating_details['star_count']
+            rating.min_score = rating_details['min_score']
+            rating.max_score = rating_details['max_score']
+            rating.comment = rating_details['comment']
+            rating.save()
         return HttpResponseRedirect(reverse("models"))
