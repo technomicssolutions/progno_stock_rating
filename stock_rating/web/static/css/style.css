@@ -777,3 +777,63 @@ input[type="submit"] {
 }
 
 /**************** pagination style end **********/
+
+/******************** Rating Report styles *************/
+#rating_report .rating_report {
+	display: block;
+}
+.report_content {
+	width: 100%;
+	padding: 2%;
+}
+.search_div {
+	width: 80%;
+	margin: auto;
+	position: relative;
+}
+.search_box {
+	width: 80%;
+	border: 2px solid #EAE8E7;
+	height: 50px;
+	float: left;
+	padding: 5px;
+}
+.search_div input[type="text"] {
+	border: medium none;
+    display: block;
+    float: left;
+    height: 40px;
+    width: 20%;
+}
+.search_div input[type="button"] {
+	background-color: #12569A;
+    border: 2px solid #EAE8E7;
+    border-radius: 10px;
+    color: #FFFFFF;
+    display: block;
+    float: left;
+    font-weight: bold;
+    height: 50px;
+    margin-left: 10px;
+    width: 10%;
+}
+.search_div ul {
+	float: left;
+	display: block;
+	list-style: none;
+	border: 1px solid #EAE8E7;
+	width: 80%;
+	position: absolute;
+	margin-top: 50px;
+	padding: 0px;
+	z-index: 2;
+	display: none;
+}
+.search_div ul li{
+	width: 100%;
+	border-bottom: 1px solid #EAE8E7;
+	padding: 10px;
+	display: block;
+	height: 40px;
+}
+/*********************** Rating Report styles end *************/

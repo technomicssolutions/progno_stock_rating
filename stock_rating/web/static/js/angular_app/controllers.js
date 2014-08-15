@@ -32,6 +32,12 @@ function hide_loader(){
     $('#overlay').css('display', 'none');
     $('.spinner').css('display', 'none');
 }
+function show_dropdow(){
+    $('#dropdown_menu').css('display', 'block');
+}
+function hide_dropdown(){
+    $('#dropdown_menu').css('display', 'none');
+}
 function DashboardController($scope, $element, $http, $timeout, $location)
 {
     $scope.init = function(user){
@@ -901,12 +907,26 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.model = {
         'parameter_set': [
             {
-                "analytical_head_name": "Profitability", 
+                "analytical_head_name": "", 
                 "function_set": [
                     {
                         "function_id": '', 
-                        "parameter_set": {}, 
-                        "function_name": "NP Growth"
+                        "parameter_set": {
+                            'neutral_max': '',    
+                            'neutral_min': '',                                    
+                            'neutral_points': '',                                    
+                            'parameter_id': '',                                    
+                            'strong_max': '',                                    
+                            'strong_min': '',                                    
+                            'strong_points': '',                                    
+                            'weak_max': '',                                    
+                            'weak_min': '',                                    
+                            'weak_points': '',
+                            'strong_comment': '',
+                            'weak_comment': '',
+                            'neutral_comment': '',
+                        },        
+                        "function_name": " "
                     }
                 ]
             }
@@ -982,7 +1002,31 @@ function ModelController($scope, $element, $http, $timeout, $location)
         var url = '/model_details/?id='+id;
         $http.get(url).success(function(data) {
             hide_loader();
-            $scope.model_details = data.analytical_heads;
+            $scope.analytical_heads = data.analytical_heads;
+            for(i = 0; i< $scope.analytical_heads.length; i++) {
+                if($scope.analytical_heads[i].empty_functions.length > 0) {
+                    $scope.analytical_heads[i].function_set.push({
+                        "function_id": '', 
+                        "parameter_set": {
+                            'neutral_max': '',    
+                            'neutral_min': '',                                    
+                            'neutral_points': '',                                    
+                            'parameter_id': '',                                    
+                            'strong_max': '',                                    
+                            'strong_min': '',                                    
+                            'strong_points': '',                                    
+                            'weak_max': '',                                    
+                            'weak_min': '',                                    
+                            'weak_points': '',
+                            'strong_comment': '',
+                            'weak_comment': '',
+                            'neutral_comment': '',
+                        },        
+                        "function_name": " "
+                    })
+                }
+            }
+            
             $scope.star_ratings = data.star_ratings;
             $scope.star_ratings.push({
                 'id': '',
@@ -992,80 +1036,22 @@ function ModelController($scope, $element, $http, $timeout, $location)
                 'comment': '',
                 'editorEnabled': true,
             })
-            for(var i = 0; i < $scope.model_details.length; i++){
-                for(var j = 0; j < $scope.model_details[i].function_set.length; j++){
-                    if($scope.model_details[i].function_set[j].parameter_set.strong_points){
-                        $scope.function_set.push({
-                            'function_id': $scope.model_details[i].function_set[j].function_id,
-                            'function_name': $scope.model_details[i].function_set[j].function_name,     
-                            'parameter_set': $scope.model_details[i].function_set[j].parameter_set,
-                            'editorEnabled': false,   
-                            'dropdown_enabled': false,    
-                        });
-                        $scope.flag = 1;                    
-                    } else {                    
-                        $scope.function_view.push({
-                            'function_id': $scope.model_details[i].function_set[j].function_id,
-                            'function_name': $scope.model_details[i].function_set[j].function_name,                                            
-                        })                   
-                    }
-                }
-                if($scope.flag == 1){
-                    $scope.function_row.push({
-                        'head_id': $scope.model_details[i].analytical_head_id,
-                        'head_name': $scope.model_details[i].analytical_head_name,
-                        'function_set':  $scope.function_set,
-                        'function_view': $scope.function_view,
-                    })   
-                    $scope.function_view = [];
-                }
-                else
-                {
-                    $scope.function_set.push({
-                        'editorEnabled': true,
-                        'dropdown_enabled': true,
-                    })
-                    $scope.function_row.push({
-                        'head_id': $scope.model_details[i].analytical_head_id,
-                        'head_name': $scope.model_details[i].analytical_head_name,
-                        'function_set':  $scope.function_set,
-                        'function_view': $scope.function_view,
-                    })
-                    $scope.function_view = []
-                }
-            $scope.flag = 0;
-            $scope.function_set = [];
-            }            
-            for(var x = 0; x < $scope.function_row.length; x++){
-                var count = 0;
-                for(var i = 0; i < $scope.model_details.length; i++ ){
-                    if($scope.model_details[i].analytical_head_id == $scope.function_row[x].head_id)
-                        var count = $scope.model_details[i].function_set.length;
-                }
-                if(count > $scope.function_row[x].function_set.length && $scope.function_row[x].function_set[0].editorEnabled == false){
-                    $scope.function_row[x].function_set.push({
-                        'editorEnabled': true,
-                        'dropdown_enabled': true,
-
-                    });  
-                }                        
-            }
          })
     }
     $scope.add_function = function(model_id, function_id, parameters,entry){ 
         $scope.edit_parameters = false;
         $scope.save_parameters(model_id, function_id, parameters);
         var count = 0;
-        for(var i = 0; i < $scope.model_details.length; i++ ){
+        for(var i = 0; i < $scope.analytical_heads.length; i++ ){
             if($scope.model_details[i].analytical_head_id == entry.head_id)
                 var count = $scope.model_details[i].function_set.length;
         }
-        if(count > entry.function_set.length)
+        if(count > entry.function_set.length) {
             entry.function_set.push({
                 'editorEnabled': true,
                 'dropdown_enabled': true,
-
-            });            
+            }); 
+        }                       
     }
 
     $scope.save_parameters = function(model_id, function_id, parameters){ 
@@ -1728,5 +1714,32 @@ function CompanyController($scope, $element, $http, $timeout, $location)
     }
     $scope.range = function(n) {
         return new Array(n);
+    }
+}
+
+function RatingReportController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token){
+        $scope.csrf_token = csrf_token;
+        hide_dropdown();
+        $scope.visible_list = [];
+        $scope.page_interval = 30;
+        ratings = [];
+        companies = [];
+    }
+    $scope.show_dropdown = function(){
+        $('#dropdown_menu').css('display', 'block');
+    }
+    $scope.hide_dropdown = function(){
+        $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.search_companies = function(){
+        var url = '/companies/?search_key='+$scope.search_key;
+        show_loader();
+        $http.get(url).success(function(data) {
+            $scope.companies = data.companies;
+            paginate($scope.companies, $scope, $scope.page_interval);
+            hide_loader();
+        })
     }
 }

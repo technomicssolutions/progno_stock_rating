@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %} Rating Report {% endblock title%}
+{% block body_id %}rating_report{% endblock %}
+{% block controller %}
+	ng-controller="RatingReportController" ng-init="init('{{csrf_token}}')"
+{% endblock controller %}
+{% block content%}
+	<div class="report_content">
+		<div class="search_div">
+			<p class="search_box">
+				<input type="text" name='companies' ng-model="companies" /> 
+			</p>
+			<input type="button" name="search" ng-model="search_key" value="Search" ng-change="search_companies()"/>
+			<ul>
+				<li ng-repeat="company in companies"> [[company.name]] - [[company.isin_code]] </li>
+				<li > asd </li>
+				<li > asd</li>
+				<li > asd</li>
+				<li > asd </li>
+			</ul>
+		</div>
+
+	</div>
+{% endblock content%}
