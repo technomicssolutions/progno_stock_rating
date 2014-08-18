@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 
 from views import (Login,Logout, Dashboard, Administration, Users, SaveUser, ResetPassword, \
-    FieldSettings, FunctionSettings, Category, GeneralFunctions, ContinuityFunctions, \
+    FieldSettings, FunctionSettings, GeneralFunctions, ContinuityFunctions, \
     ConsistencyFunctions, DeleteField, Model, IndustryDetails, DeleteModel, DeleteUser, \
     ModelDetails, DeleteParameter, DataUpload, AnalyticalHeads, DeleteHead, FieldMapping, \
     FileFields, OperatorsView, Companies, DeleteFunction, ModelStarRating, SaveModelStarRating, \
@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'analytical_heads/$', login_required(AnalyticalHeads.as_view()), name="analytical_heads"),
     url(r'models/$', login_required(Model.as_view()), name="models"),
     url(r'users/$', login_required(Users.as_view()), name="users"),
-    url(r'category/$', login_required(Category.as_view()), name="category"),   
+    # url(r'category/$', login_required(Category.as_view()), name="category"),   
     url(r'industry/$', login_required(IndustryDetails.as_view()), name="industry"),
 
     url(r'general_function/$', login_required(GeneralFunctions.as_view()), name="general_function"),

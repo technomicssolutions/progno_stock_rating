@@ -411,7 +411,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
         $scope.change_type();
-        $scope.get_category();
+        /*$scope.get_category();*/
         $scope.get_analytical_head();
         $scope.get_functions();
         $scope.show_general = true;
@@ -445,7 +445,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             'period_2': '',
             'select_head': '',
         }
-        $scope.select_category = ''
+        /*$scope.select_category = ''*/
         $scope.selected_operators = [];
         $scope.selected_operands = [];
         $scope.test = ['sd', '+', 'dg'].join(' ');
@@ -458,7 +458,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_consistency = false;
          $scope.reset_continuity();
          $scope.reset_consistency();
-         $scope.select_category = ''
+         /*$scope.select_category = ''*/
          $scope.msg = '';
         }
        if(type == 2)
@@ -468,7 +468,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_consistency = false;
          $scope.reset_general();
          $scope.reset_consistency();
-         $scope.select_category = ''
+         /*$scope.select_category = ''*/
          $scope.msg = '';
         }       
        if(type == 3)
@@ -478,7 +478,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_consistency = true;
          $scope.reset_general();
          $scope.reset_continuity();
-         $scope.select_category = ''
+         /*$scope.select_category = ''*/
          $scope.msg = '';
         }       
     }
@@ -502,10 +502,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_general.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } else if($scope.select_category == '' ) {
+        } /*else if($scope.select_category == '' ) {
             $scope.msg = "Please select category";
             return false;
-        } else {
+        }*/ else {
             return true;
         }  
     }
@@ -550,10 +550,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_continuity.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } else if($scope.select_category == '' ) {
+        } /*else if($scope.select_category == '' ) {
             $scope.msg = "Please select category";
             return false;
-        } else {
+        }*/ else {
             return true;
         }  
     }
@@ -592,10 +592,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_consistency.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } else if($scope.select_category == '' ) {
+        } /*else if($scope.select_category == '' ) {
             $scope.msg = "Please select category";
             return false;
-        } else {
+        }*/ else {
             return true;
         }  
     }
@@ -605,7 +605,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             params = { 
                 'function_details': angular.toJson($scope.new_general),
                 'function_type' : angular.toJson($scope.select_type),
-                'function_category' : angular.toJson($scope.select_category),
+                /* 'function_category' : angular.toJson($scope.select_category),*/  
                 'formula_operands': angular.toJson($scope.selected_operands),
                 'formula_operators': angular.toJson($scope.selected_operators),
                 'formula_string': $scope.formula,
@@ -637,7 +637,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             params = { 
                 'function_details': angular.toJson($scope.new_continuity),
                 'function_type' : angular.toJson($scope.select_type),
-                'function_category' : angular.toJson($scope.select_category),
+                /*'function_category' : angular.toJson($scope.select_category),*/
                 "csrfmiddlewaretoken" : $scope.csrf_token,
             }
             $http({
@@ -666,7 +666,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             params = { 
                 'function_details': angular.toJson($scope.new_consistency),
                 'function_type' : angular.toJson($scope.select_type),
-                'function_category' : angular.toJson($scope.select_category),
+                /*'function_category' : angular.toJson($scope.select_category),*/
                 "csrfmiddlewaretoken" : $scope.csrf_token,
             }
             $http({
@@ -749,7 +749,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.new_general.function_name = $scope.selected_general_function.name;
             $scope.new_general.function_description = $scope.selected_general_function.description;
             $scope.formula = $scope.selected_general_function.formula;
-            $scope.select_category = $scope.selected_general_function.category;
+            /*$scope.select_category = $scope.selected_general_function.category;*/
             $scope.new_general.select_head = $scope.selected_general_function.head;
             $scope.selected_operands = data.general_function.formula_operands;
             $scope.selected_operators = data.general_function.formula_operators;
@@ -768,7 +768,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.new_continuity.period_1 = $scope.continuity_list[0].period_1;
             $scope.new_continuity.period_2 = $scope.continuity_list[0].period_2;
             $scope.new_continuity.period_3 = $scope.continuity_list[0].period_3;
-            $scope.select_category = $scope.continuity_list[0].category;
+            /*$scope.select_category = $scope.continuity_list[0].category;*/
             $scope.new_continuity.select_head = $scope.continuity_list[0].head;
         })
     }
@@ -785,16 +785,16 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.new_consistency.period_1 = $scope.consistency_list[0].period_1;
             $scope.new_consistency.period_2 = $scope.consistency_list[0].period_2;
             $scope.new_consistency.mean = $scope.consistency_list[0].mean;
-            $scope.select_category = $scope.consistency_list[0].category;
+            /*$scope.select_category = $scope.consistency_list[0].category;*/
             $scope.new_consistency.select_head = $scope.consistency_list[0].head;
         })
     }
-    $scope.get_category = function(){
+    /*$scope.get_category = function(){
         var url = '/category/';
         $http.get(url).success(function(data) {
             $scope.category_set = data.category_objects;
         })
-    }
+    }*/
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
@@ -825,7 +825,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.selected_operands = [];
             $scope.selected_operators = [];
         }
-        
+
         if($scope.operator_added || ($scope.new_general.function_formula.length == 0)){
             $scope.new_general.function_formula.push($scope.selected_operand.name);
             $scope.operator_added = false;

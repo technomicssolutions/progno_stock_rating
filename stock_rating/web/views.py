@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
-from models import (UserPermission, DataField, FunctionCategory, AnalyticalHead, Function,\
+from models import (UserPermission, DataField, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
  FieldMap, Operator, Company, CompanyFile, Formula, CompanyFunctionScore, CompanyModelScore, \
  StarRating)
@@ -89,7 +89,7 @@ class FunctionSettings(View):
                         'id': function.id,
                         'name': function.function_name,
                         'head': function.analytical_head.title,
-                        'category': function.category.category_name,
+                        # 'category': function.category.category_name,
                         'created_date': function.created_date.strftime("%d/%m/%Y"),
                         'modified_date': function.updated_date.strftime("%d/%m/%Y"),
                         'function_type': function.function_type,
@@ -107,8 +107,8 @@ class FunctionSettings(View):
         if request.is_ajax():
             function_details = ast.literal_eval(request.POST['function_details'])
             function_type = ast.literal_eval(request.POST['function_type'])
-            function_category = ast.literal_eval(request.POST['function_category'])            
-            category=FunctionCategory.objects.get(id=function_category)
+            # function_category = ast.literal_eval(request.POST['function_category'])            
+            # category=FunctionCategory.objects.get(id=function_category)
             if int(function_type) == 1:
                 operators = ast.literal_eval(request.POST['formula_operators'])
                 operands = ast.literal_eval(request.POST['formula_operands'])
@@ -121,7 +121,7 @@ class FunctionSettings(View):
                 except:
                     general_function = Function()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
-                general_function.category = category
+                # general_function.category = category
                 general_function.function_name = function_details['function_name']
                 general_function.description = function_details['function_description']
                 general_function.function_type = 'general'
@@ -148,7 +148,7 @@ class FunctionSettings(View):
                 except:
                     continuity_function = ContinuityFunction()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
-                continuity_function.category = category
+                # continuity_function.category = category
                 continuity_function.function_name = function_details['function_name']
                 continuity_function.description = function_details['function_description']
                 continuity_function.function_type = 'continuity'
@@ -175,7 +175,7 @@ class FunctionSettings(View):
                 except:
                     consistency_function = ConsistencyFunction()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
-                consistency_function.category = category
+                # consistency_function.category = category
                 consistency_function.function_name = function_details['function_name']
                 consistency_function.description = function_details['function_description']
                 consistency_function.function_type = 'consistency'
@@ -548,21 +548,21 @@ class Users(View):
             'users': user_objects
         })
 
-class Category(View):
+# class Category(View):
 
-    def get(self, request, *args, **kwargs):
-        category_objects = FunctionCategory.objects.all()
-        category_set = []
-        for category in category_objects:
-            category_set.append({
-                'id':category.id,
-                'category': category.category_name
-            })
-        #if request.is_ajax():
-        response = simplejson.dumps({
-           'category_objects': category_set
-        })
-        return HttpResponse(response, status=200, mimetype='application/json')
+#     def get(self, request, *args, **kwargs):
+#         category_objects = FunctionCategory.objects.all()
+#         category_set = []
+#         for category in category_objects:
+#             category_set.append({
+#                 'id':category.id,
+#                 'category': category.category_name
+#             })
+#         #if request.is_ajax():
+#         response = simplejson.dumps({
+#            'category_objects': category_set
+#         })
+#         return HttpResponse(response, status=200, mimetype='application/json')
 
 
 class IndustryDetails(View):
@@ -748,7 +748,7 @@ class GeneralFunctions(View):
             'description': general_function.description,
             'head': general_function.analytical_head.id,
             'formula': general_function.formula.formula_string if general_function.formula else '',
-            'category': general_function.category.id,
+            # 'category': general_function.category.id,
             'formula_operands': formula_operands,
             'formula_operators': formula_operators
         }
@@ -774,7 +774,7 @@ class ContinuityFunctions(View):
                 'period_1': continuity_objects.period_1,
                 'period_2': continuity_objects.period_2,
                 'period_3': continuity_objects.period_3,
-                'category': continuity_objects.category.id,
+                # 'category': continuity_objects.category.id,
             })
         if request.is_ajax():
             response = simplejson.dumps({
@@ -798,7 +798,7 @@ class ConsistencyFunctions(View):
                 'period_1': consistency_objects.period_1,
                 'period_2': consistency_objects.period_2,
                 'mean': consistency_objects.mean,
-                'category': consistency_objects.category.id,
+                # 'category': consistency_objects.category.id,
             })
         if request.is_ajax():
             response = simplejson.dumps({

@@ -62,13 +62,13 @@ class FieldMap(Date):
     def __unicode__(self):
         return str(self.data_file) + ' - ' + self.file_field
 
-class FunctionCategory(Date):
+# class FunctionCategory(Date):
 
-    category_name = models.CharField('Category Name', max_length=200, unique=True)
-    description = models.TextField('Description', null=True, blank=True)
+#     category_name = models.CharField('Category Name', max_length=200, unique=True)
+#     description = models.TextField('Description', null=True, blank=True)
 
-    def __unicode__(self):
-        return self.category_name
+#     def __unicode__(self):
+#         return self.category_name
 
 class Operator(Date):
     symbol = models.CharField('Symbol', max_length=1)
@@ -92,7 +92,7 @@ FUNCTION_TYPES = (
 
 class Function(Date):
 
-    category = models.ForeignKey(FunctionCategory)
+    # category = models.ForeignKey(FunctionCategory)
     analytical_head = models.ForeignKey(AnalyticalHead)
     function_name = models.CharField('Name', max_length=200, unique=True)
     description = models.TextField('Description', null=True, blank=True)
