@@ -47,6 +47,7 @@ def process_data_file(data_file):
                 rows.append(row)
         sheet['rows'] = rows
         sheets.append(sheet)
+    data_file.sheets = sheets
     data_file.save()
     create_stock_data(data_file)    
     return sheets
@@ -79,7 +80,7 @@ def process_company_file(data_file, request):
     #cell_type = worksheet.cell_type(curr_row, curr_cell)
 
 def create_stock_data(data_file):
-
+    print dir(data_file)
     for sheet in data_file.sheets:
         company_stock = None
         labels = sheet['rows'][0]
@@ -102,7 +103,6 @@ def create_stock_data(data_file):
     data_file.save()
 
 def calculate_general_function_score(function, company):
-    print "company = ", company
     stock = CompanyStockData.objects.get(company=company)
     function_operands = function.formula.operands.all()
     formula = function.formula.formula_string    
