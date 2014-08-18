@@ -71,7 +71,7 @@ class FieldMap(Date):
 #         return self.category_name
 
 class Operator(Date):
-    symbol = models.CharField('Symbol', max_length=1)
+    symbol = models.CharField('Symbol', max_length=5)
 
     def __unicode__(self):
         return self.symbol
