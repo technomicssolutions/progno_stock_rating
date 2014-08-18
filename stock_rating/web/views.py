@@ -2,6 +2,7 @@
 import simplejson
 import ast
 from collections import OrderedDict
+from math import sqrt
 
 from django.shortcuts import render
 from django.views.generic.base import View
