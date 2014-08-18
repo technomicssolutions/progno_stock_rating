@@ -48,14 +48,13 @@
 					<h4> Construct Formula </h4>
 					<div class="formula_row">
 						<label> Select Operands: </label>
-						<select ng-model="operand">
-							<option ng-repeat="operand in operands" value="[[operand.id]]" ng-click="select_operand(operand)">[[operand.name]]</option>
+						<select ng-model="operand" ng-options="operand as operand.name for operand in operands" ng-change="select_operand(operand)">
+							
 						</select>
 						<input type="button" value="+" ng-click="add_operand()" />
 
 						<label> Select Operators: </label>
-						<select ng-model="operator">
-							<option ng-repeat="operator in operators" value="[[operator.id]]" ng-click="select_operator(operator)">[[operator.symbol]]</option>
+						<select ng-model="operator" ng-options="operator as operator.symbol for operator in operators" ng-change="select_operator(operator)">
 						</select> <input type="button" value="+" ng-click="add_operator()" />
 						<label> Add Digits: </label>
 						<input type="text" ng-model="digits" />

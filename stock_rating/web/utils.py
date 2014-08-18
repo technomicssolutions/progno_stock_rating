@@ -52,7 +52,7 @@ def process_data_file(data_file):
     create_stock_data(data_file)    
     return sheets
 
-def process_company_file(data_file, request):
+def process_company_file(data_file):
     workbook = xlrd.open_workbook(settings.MEDIA_ROOT+'/'+data_file.uploaded_file.name)
     worksheets = workbook.sheet_names()
     data_file.number_of_sheets = len(worksheets)
@@ -80,7 +80,6 @@ def process_company_file(data_file, request):
     #cell_type = worksheet.cell_type(curr_row, curr_cell)
 
 def create_stock_data(data_file):
-    print dir(data_file)
     for sheet in data_file.sheets:
         company_stock = None
         labels = sheet['rows'][0]

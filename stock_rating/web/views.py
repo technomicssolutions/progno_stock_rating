@@ -200,12 +200,16 @@ class FunctionSettings(View):
 class Companies(View):
     def get(self, request, *args, **kwargs):
         if request.GET.get('search_key', ''):
-            companies = Company.objects.filter(company_name__starts_with=request.GET.get('search_key', ''))
+            companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''))
         else:
             companies = Company.objects.all()
         company_files = CompanyFile.objects.all()
         if company_files.count() > 0:
             company_file = CompanyFile.objects.latest('id')
+            if company_file.processing_completed:
+                pass
+            else:
+                process_company_file(company_file)
         else:
             company_file = None
         if request.is_ajax():
@@ -229,11 +233,11 @@ class Companies(View):
         })
 
     def post(self, request, *args, **kwargs):
-        data_file  = CompanyFile()
-        data_file.uploaded_file = request.FILES['data_file']
-        data_file.uploaded_by = request.user
-        data_file.save()    
-        process_company_file(data_file, request)
+        company_file  = CompanyFile()
+        company_file.uploaded_file = request.FILES['data_file']
+        company_file.uploaded_by = request.user
+        company_file.save()    
+        process_company_file(company_file)
         if request.is_ajax():
             response = simplejson.dumps({
                'result': 'OK',
@@ -554,11 +558,11 @@ class Category(View):
                 'id':category.id,
                 'category': category.category_name
             })
-        if request.is_ajax():
-            response = simplejson.dumps({
-               'category_objects': category_set
-            })
-            return HttpResponse(response, status=200, mimetype='application/json')
+        #if request.is_ajax():
+        response = simplejson.dumps({
+           'category_objects': category_set
+        })
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 
 class IndustryDetails(View):
@@ -1000,16 +1004,39 @@ class RatingReport(View):
         })
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-            rating_details = ast.literal_eval(request.POST['rating'])
-            if rating_details['id']:
-                rating = StarRating.objects.get(id=rating_details['id'])
-            else:
-                model = AnalysisModel.objects.get(id=kwargs['model_id'])
-                rating = StarRating()
-                rating.model = model
-            rating.star_count = rating_details['star_count']
-            rating.min_score = rating_details['min_score']
-            rating.max_score = rating_details['max_score']
-            rating.comment = rating_details['comment']
-            rating.save()
-        return HttpResponseRedirect(reverse("models"))
+            search_keys = ast.literal_eval(request.POST['search_keys'])
+            ratings = []
+            for key in search_keys:
+                company = Company.objects.get(isin_code=key)
+                model_score = CompanyModelScore.objects.filter(company=company)
+                if model_score.count() > 0:
+                    model_score = model_score[0]
+                    print "model_score", model_score
+                    print "model_score rating", model_score.star_rating
+                    rating = {
+                        'company_name': company.company_name + ' - ' + company.isin_code,
+                        'star_rating': "*" * int(model_score.star_rating),
+                        'score': model_score.score,
+                        'brief_comment': model_score.comment,
+                    }
+                    model = model_score.analysis_model
+                    parameters = model.parameterlimit_set.all()
+                    comments = []
+                    for parameter in parameters:
+                        function = parameter.function
+                        fun_score = CompanyFunctionScore.objects.filter(company=company, function=function)
+                        if fun_score.count() > 0:
+                            comments.append(fun_score[0].comment)
+                    rating['detailed_comment'] = comments
+                else:
+                    rating = {
+                        'company_name': 'No rating Available',
+                    }
+                ratings.append(rating)
+            response = simplejson.dumps({
+                'star_ratings': ratings
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'rating_report.html', {})
+            
+

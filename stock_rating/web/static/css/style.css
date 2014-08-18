@@ -182,13 +182,24 @@ header {
     width: 100%;
 	
 }
+
+.menu_container ul li span{
+	color: #FFFFFF;
+	display: none;
+}
+
+#rating_report .rating_report {
+	display: block;
+}
 .menu_container ul li {
 	height: 40px;
 	padding: 5px;
 	display: block;	
 	border-bottom: 1px ridge #FFFFFF;
 }
-
+.menu_container ul li ul li{
+	border: none;
+}
 .menu_container ul li a {
 	color: #FFFFFF;
 	text-decoration: none;
@@ -196,12 +207,12 @@ header {
 	display: block;
 	float: left;
 }
-.menu_container ul li span {
+.menu_container ul li ul li span {
 	color: #FFFFFF;
 	display: none;
 	float: left;
 }
-.menu_container ul li:hover span {
+.menu_container ul li ul li:hover span {
 	color: #FFFFFF;
 	display: block;
 	float: left;
@@ -210,7 +221,22 @@ header {
 .no-border {
 	border: none !important;
 }
+.menu_container ul li ul {
+	/*display: none;*/
+	height: 0px;
+	overflow: hidden;
+	background-color: #12569A;
+}
 
+.menu_container ul li:hover ul {
+	display: block;
+	height: auto;
+	border-bottom: 1px ridge #FFFFFF;
+}
+
+.menu_container ul li:hover {
+	border: none;
+}
 /*************** Menu style end ************/
 
 
@@ -797,6 +823,7 @@ input[type="submit"] {
 	height: 50px;
 	float: left;
 	padding: 5px;
+	border-radius: 5px;
 }
 .search_div input[type="text"] {
 	border: medium none;
@@ -828,6 +855,9 @@ input[type="submit"] {
 	padding: 0px;
 	z-index: 2;
 	display: none;
+	max-height: 200px;
+	overflow: auto;
+	background-color: #FFFFFF;
 }
 .search_div ul li{
 	width: 100%;
@@ -835,5 +865,16 @@ input[type="submit"] {
 	padding: 10px;
 	display: block;
 	height: 40px;
+}
+.search_text {
+	display: block;
+    float: left;
+    height: 100%;
+    padding: 11px;
+}
+.rating_container {
+	width: 100%;
+	float: left;
+	margin-top: 50px;
 }
 /*********************** Rating Report styles end *************/

@@ -8,17 +8,31 @@
 	<div class="report_content">
 		<div class="search_div">
 			<p class="search_box">
-				<input type="text" name='companies' ng-model="companies" /> 
+				<span class="search_text">[[search_text]]</span>
+				<input type="text" name='companies'  ng-model="search_key" ng-change="search_companies()" /> 
 			</p>
-			<input type="button" name="search" ng-model="search_key" value="Search" ng-change="search_companies()"/>
-			<ul>
-				<li ng-repeat="company in companies"> [[company.name]] - [[company.isin_code]] </li>
-				<li > asd </li>
-				<li > asd</li>
-				<li > asd</li>
-				<li > asd </li>
+			<input type="button" name="search" value="Search" ng-click="search_rating()"/>
+			<ul id="suggestions">
+				<li ng-repeat="company in companies" ng-click="hide_suggestions(company)"> [[company.name]] - [[company.isin_code]] </li>
 			</ul>
 		</div>
-
+		<div class="rating_container">
+			<table class="table">
+				<tr>
+					<th> Company Name </th>
+					<th> Star Rating </th>
+					<th> Score </th>
+					<th> Brief Comment </th>
+					<th> Detailed Comment </th>
+				</tr>
+				<tr ng-repeat="rating in star_ratings">
+					<td>[[rating.company_name]]</td>
+					<td>[[rating.star_rating]]</td>
+					<td>[[rating.score]]</td>
+					<td>[[rating.brief_comment]]</td>
+					<td>[[rating.detailed_comment]]</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 {% endblock content%}

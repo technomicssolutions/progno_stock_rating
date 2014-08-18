@@ -1,4 +1,5 @@
 
+
 function paginate(list, $scope, page_interval) {
     if(!page_interval)
         var page_interval = 20;
@@ -67,7 +68,6 @@ function DashboardController($scope, $element, $http, $timeout, $location)
         if($scope.que_pages > parseInt($scope.que_pages))
             $scope.que_pages = parseInt($scope.que_pages) + 1;
         $scope.visible_questionairs = $scope.questionairs.slice(0, $scope.ques_page_interval);
-        console.log($scope.que_pages);
     }
 
     $scope.select_page = function(page) {
@@ -302,7 +302,6 @@ function FieldController($scope, $element, $http, $timeout, $location)
     $scope.delete_field = function(field){
         var url = '/delete_field/?id='+field.id;
         $http.get(url).success(function(data){
-            console.log('result', data.result);
             if(data.result == 'ok'){
                 $scope.msg = "Field deleted";
             } else if(data.result == 'error'){
@@ -826,12 +825,14 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.selected_operands = [];
             $scope.selected_operators = [];
         }
+        
         if($scope.operator_added || ($scope.new_general.function_formula.length == 0)){
             $scope.new_general.function_formula.push($scope.selected_operand.name);
             $scope.operator_added = false;
             $scope.operand_added = true;
             $scope.selected_operands.push($scope.selected_operand);
             $scope.formula = $scope.new_general.function_formula.join(' ')
+            console.log('$scope.formula', $scope.formula);
         } else {
             $scope.error_msg = "Please add an operator";
         }
@@ -848,7 +849,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.selected_operators = [];
         }
         $scope.error_msg = '';
-        console.log($scope.new_general.function_formula.length, $scope.operand_added, $scope.selected_operator)
         if($scope.operand_added || ($scope.new_general.function_formula.length == 0 && $scope.selected_operator.symbol == "(")){
             $scope.new_general.function_formula.push($scope.selected_operator.symbol);
             $scope.operand_added = false;
@@ -1254,15 +1254,12 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $scope.msg = "Invalid entry in Weak Points";
             return false;
         } else if(Number(parameters.strong_min) >= Number(parameters.strong_max)) {
-            console.log(Number(parameters.strong_min), parameters.strong_max)
             $scope.msg = "Strong Minimum should be less than Strong Maximum";
             return false;
         } else if(Number(parameters.neutral_min) >= Number(parameters.neutral_max)) {
-            console.log(Number(parameters.neutral_min), parameters.neutral_max)
             $scope.msg = "Neutral Minimum should be less than Neutral Maximum";
             return false;
         } else if(parameters.weak_min >= parameters.weak_max) {
-            console.log(Number(parameters.weak_min), parameters.weak_max)
             $scope.msg = "Weak Minimum should be less than Weak Maximum";
             return false;
         } if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
@@ -1447,7 +1444,6 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
                 }
             }).success(function(data, status){ 
                 hide_loader(); 
-                console.log(data.sheets)         ;
             }).error(function(data, status){           
 
             });
@@ -1616,7 +1612,6 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         }        
     }
     $scope.edit_head = function(head){
-        console.log(head);
         $scope.new_head.head_name = head.title;
         $scope.new_head.head_description = head.description;
         $scope.new_head.id = head.id;
@@ -1681,7 +1676,6 @@ function CompanyController($scope, $element, $http, $timeout, $location)
                 }
             }).success(function(data, status){ 
                 hide_loader(); 
-                console.log(data.sheets)         ;
             }).error(function(data, status){           
 
             });
@@ -1724,8 +1718,9 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
         hide_dropdown();
         $scope.visible_list = [];
         $scope.page_interval = 30;
-        ratings = [];
-        companies = [];
+        $scope.ratings = [];
+        $scope.companies = [];
+        $scope.search_keys = [];
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -1733,13 +1728,53 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
     }
-    $scope.search_companies = function(){
-        var url = '/companies/?search_key='+$scope.search_key;
-        show_loader();
-        $http.get(url).success(function(data) {
-            $scope.companies = data.companies;
-            paginate($scope.companies, $scope, $scope.page_interval);
-            hide_loader();
-        })
+    $scope.show_suggestions = function() {
+        if($scope.companies.length > 0){
+            $('#suggestions').css('display', 'block');
+        } else {
+            $('#suggestions').css('display', 'none');
+        }
+    }
+    $scope.hide_suggestions = function(company){
+        $('#suggestions').css('display', 'none');
+        $scope.companies = [];
+        $scope.search_keys.push(company.isin_code);
+        $scope.search_text = $scope.search_keys.join(', ');
+        $scope.search_key = '';
+    }
+    $scope.search_companies = function(){ 
+        if($scope.search_key.length >= 3){
+            var url = '/companies/?search_key='+$scope.search_key;
+            show_loader();
+            $http.get(url).success(function(data) {
+                $scope.companies = data.companies;
+                paginate($scope.companies, $scope, $scope.page_interval);
+                hide_loader();
+                $scope.show_suggestions();
+            })
+        }        
+    }
+    $scope.search_rating = function(){
+       if($scope.search_keys.length > 0) {
+            show_loader();
+            var url = '/rating_report/';
+            params = { 
+                'search_keys': angular.toJson($scope.search_keys),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : url,
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                hide_loader();
+                $scope.star_ratings = data.star_ratings;                    
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+       }
     }
 }

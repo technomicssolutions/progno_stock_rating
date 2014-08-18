@@ -2,40 +2,45 @@
 <div class="menu_container">
 	<h3 class="page_header"> Progno Stock Rating </h3>
 	<ul class="menu">
-		{% if user.is_superuser %}
-			<li> 
-				<a href ="{% url 'administration' %}"> Administration </a>
-				<span class="administration"> > </span> 
-			</li>
-		{% endif %}
-		<li> 
-			<a href ="{% url 'companies' %}"> Companies </a>
-			<span class="companies"> > </span> 
+		<li> <a href="">Setup </a>
+			<ul>
+				{% if user.is_superuser %}
+					<li> 
+						<a href ="{% url 'administration' %}"> Administration </a>
+						<span class="administration"> > </span> 
+					</li>
+				{% endif %}
+				<li> 
+					<a href ="{% url 'companies' %}"> Companies </a>
+					<span class="companies"> > </span> 
+				</li>
+				<li> 
+					<a href ="{% url 'data_upload' %}"> Data Upload </a>
+					<span class="dataupload"> > </span> 
+				</li>
+				<li> 
+					<a href ="{% url 'field_mapping' %}"> Field Mapping </a>
+					<span class="field_mapping_arrow"> > </span> 
+				</li> 
+				<li> 
+					<a href ="{% url 'field_settings' %}"> Field Settings </a>
+					<span class="field_settings"> > </span> 
+				</li>
+				<li> 
+					<a href ="{% url 'analytical_heads' %}"> Analytical Heads </a>
+					<span class="analytical_heads"> > </span> 
+				</li>
+				<li> 
+					<a href ="{% url 'function_settings' %}"> Function Settings </a>
+					<span class="functionsettings"> > </span> 
+				</li>
+				<li> 
+					<a href ="{% url 'models' %}"> Models </a> 
+					<span class="model"> > </span>
+				</li>
+			</ul>
 		</li>
-		<li> 
-			<a href ="{% url 'data_upload' %}"> Data Upload </a>
-			<span class="dataupload"> > </span> 
-		</li>
-		<li> 
-			<a href ="{% url 'field_mapping' %}"> Field Mapping </a>
-			<span class="field_mapping_arrow"> > </span> 
-		</li> 
-		<li> 
-			<a href ="{% url 'field_settings' %}"> Field Settings </a>
-			<span class="field_settings"> > </span> 
-		</li>
-		<li> 
-			<a href ="{% url 'analytical_heads' %}"> Analytical Heads </a>
-			<span class="analytical_heads"> > </span> 
-		</li>
-		<li> 
-			<a href ="{% url 'function_settings' %}"> Function Settings </a>
-			<span class="functionsettings"> > </span> 
-		</li>
-		<li> 
-			<a href ="{% url 'models' %}"> Models </a> 
-			<span class="model"> > </span>
-		</li>
+		
 		<li class="no-border"> 
 			<a href ="{% url 'rating_report' %}"> Rating Report </a> 
 			<span class="rating_report"> > </span>

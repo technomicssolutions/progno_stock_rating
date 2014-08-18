@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('stock', ['stock.services', 'stock.directives', 'ngDraggable']);
+var app = angular.module('stock', ['stock.services', 'stock.directives', 'ngDraggable', 'ngRoute']);
 
 app.config(function($interpolateProvider)
 {
@@ -9,4 +9,8 @@ app.config(function($interpolateProvider)
 })
 app.config(['$routeProvider', '$locationProvider', function($routes, $location) {
 	
+}]);
+
+app.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 }]);
