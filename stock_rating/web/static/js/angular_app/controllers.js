@@ -192,6 +192,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
             $scope.new_user.score_settings = String($scope.new_user.score_settings)
             $scope.new_user.function_settings = String($scope.new_user.function_settings)
             $scope.new_user.analytical_heads = String($scope.new_user.analytical_heads)
+            console.log($scope.new_user);
             params = { 
                 'user_details': angular.toJson($scope.new_user),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -419,7 +420,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.show_continuity = false;    
         $scope.select_type = 1;  
         $scope.get_operands();
-        $scope.get_operators()
+        $scope.get_operators();
+        $scope.get_fields();
         $scope.new_general = {
             'function_name': '',
             'function_description': '',
@@ -429,11 +431,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.new_continuity = {
             'function_name': '',
             'function_description': '',
-            'no_of_periods': '',
-            'minimum_value': '',
-            'period_1': '',
-            'period_2': '',
-            'period_3': '',
+            'no_of_periods': '',           
+            'periods': [],               
             'select_head': '',
         }
         $scope.new_consistency = {
@@ -441,8 +440,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             'function_description': '',
             'no_of_periods': '',
             'mean': '',
-            'period_1': '',
-            'period_2': '',
+            'periods': [],          
             'select_head': '',
         }
         /*$scope.select_category = ''*/
@@ -482,6 +480,49 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.msg = '';
         }       
     }
+    $scope.add_periods_continuity = function(new_continuity){       
+        var no_of_periods = new_continuity.no_of_periods;
+        $scope.msg = '';
+        if(no_of_periods > $scope.fields.length)
+            $scope.msg = "No of periods should not be greater than number of fields";
+        else if (no_of_periods > 0){
+            for(var i = 0; i < no_of_periods; i++){
+                new_continuity.periods.push({
+                    'count': i+1,
+                    'period' : '',
+                });
+            }
+        }  else {
+            var diff = new_continuity.periods.length - no_of_periods ;
+            for (i=diff; i >0; i--){
+                last_index = new_continuity.periods.indexOf(new_continuity.periods[new_continuity.periods.length - 1]);
+                new_continuity.periods.splice(last_index, 1);
+            }
+        }      
+    }
+
+    $scope.add_periods_consistency = function(new_consistency){        
+        var no_of_periods = new_consistency.no_of_periods;
+        $scope.msg = '';
+        if(no_of_periods > $scope.fields.length)
+            $scope.msg = "No of periods should not be greater than number of fields";
+        else if (no_of_periods > 0){
+            for(var i = 0; i < no_of_periods; i++){
+                new_consistency.periods.push({
+                    'count': i+1,
+                    'period' : '',
+                });
+            }
+        }  else {
+            var diff = new_consistency.periods.length - no_of_periods ;
+            for (i=diff; i >0; i--){
+                last_index = new_consistency.periods.indexOf(new_consistency.periods[new_consistency.periods.length - 1]);
+                new_consistency.periods.splice(last_index, 1);
+            }
+        }    
+
+    }
+
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
@@ -511,6 +552,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.validate_field_continuity = function(){
         $scope.msg = '';
+        $scope.flag = 1;
         if($scope.new_continuity.function_name == '') {
             $scope.msg = "Please enter Function Name";
             return false;
@@ -523,42 +565,36 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if(!Number($scope.new_continuity.no_of_periods) ) {
             $scope.msg = "Invalid entry in field No of Periods";
             return false;
-        } else if($scope.new_continuity.minimum_value == '' ) {
-            $scope.msg = "Please enter Minimum Value";
-            return false;
-        } else if(!Number($scope.new_continuity.minimum_value) ) {
-            $scope.msg = "Invalid entry in field Minimum Value";
-            return false;
-        } else if($scope.new_continuity.period_1 == '' ) {
-            $scope.msg = "Please enter Period 1";
-            return false;
-        } else if(!Number($scope.new_continuity.period_1) ) {
-            $scope.msg = "Invalid entry in field Period 1";
-            return false;
-        } else if($scope.new_continuity.period_2 == '' ) {
-            $scope.msg = "Please enter Period 2";
-            return false;
-        } else if(!Number($scope.new_continuity.period_2) ) {
-            $scope.msg = "Invalid entry in field Period 2";
-            return false;
-        } else if($scope.new_continuity.period_3 == '' ) {
-            $scope.msg = "Please enter Period 3";
-            return false;
-        } else if(!Number($scope.new_continuity.period_3) ) {
-            $scope.msg = "Invalid entry in field Period 3";
-            return false;
         } else if($scope.new_continuity.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } /*else if($scope.select_category == '' ) {
-            $scope.msg = "Please select category";
+        } else if($scope.new_continuity.no_of_periods > $scope.fields.length){
+            $scope.msg = "No of periods should not be greater than number of fields";
             return false;
-        }*/ else {
-            return true;
-        }  
+        } else if($scope.new_continuity.no_of_periods > 0){
+            for(var i = 1; i <= $scope.new_continuity.no_of_periods; i++){
+                if($scope.new_continuity.periods[i-1].period == ''){
+                    $scope.flag = 0;
+                    $scope.msg = "please choose the value for period "+ i;
+                    break;
+                }
+                for(var j = i+1; j <= $scope.new_continuity.no_of_periods; j++){
+                    if($scope.new_continuity.periods[i-1].period == $scope.new_continuity.periods[j-1].period){
+                        $scope.flag = 0;
+                        $scope.msg = "Duplicate values in periods is not allowed";
+                        break;
+                    }                        
+                }
+            }  
+        }
+        if($scope.flag == 1) 
+            return true;         
+        else
+            return false;
     }
     $scope.validate_field_consistency = function(){
         $scope.msg = '';
+        $scope.flag = 1;
         if($scope.new_consistency.function_name == '') {
             $scope.msg = "Please enter Function Name";
             return false;
@@ -577,27 +613,32 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if(!Number($scope.new_consistency.mean) ) {
             $scope.msg = "Invalid entry in field mean";
             return false;
-        } else if($scope.new_consistency.period_1 == '' ) {
-            $scope.msg = "Please enter Period 1";
-            return false;
-        } else if(!Number($scope.new_consistency.period_1) ) {
-            $scope.msg = "Invalid entry in field Period 1";
-            return false;
-        } else if($scope.new_consistency.period_2 == '' ) {
-            $scope.msg = "Please enter Period 2";
-            return false;
-        } else if(!Number($scope.new_consistency.period_2) ) {
-            $scope.msg = "Invalid entry in field Period 2";
-            return false;
         } else if($scope.new_consistency.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } /*else if($scope.select_category == '' ) {
-            $scope.msg = "Please select category";
+        } else if($scope.new_consistency.no_of_periods > $scope.fields.length){
+            $scope.msg = "No of periods should not be greater than number of fields";
             return false;
-        }*/ else {
-            return true;
-        }  
+        } else if($scope.new_consistency.no_of_periods > 0){
+            for(var i = 1; i <= $scope.new_consistency.no_of_periods; i++){
+                if($scope.new_consistency.periods[i-1].period == ''){
+                    $scope.flag = 0;
+                    $scope.msg = "please choose the value for period "+ i;
+                    break;
+                }
+                for(var j = i+1; j <= $scope.new_consistency.no_of_periods; j++){
+                    if($scope.new_consistency.periods[i-1].period == $scope.new_consistency.periods[j-1].period){
+                        $scope.flag = 0;
+                        $scope.msg = "Duplicate values in periods is not allowed";
+                        break;
+                    }                        
+                }
+            }
+        }
+        if($scope.flag == 1) 
+            return true;         
+        else
+            return false; 
     }
     $scope.save_new_general = function(){
         if($scope.validate_field_general()){
@@ -631,8 +672,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             });
         }        
     }
-    $scope.save_new_continuity = function(){
-        if($scope.validate_field_continuity()){
+    $scope.save_new_continuity = function(){        
+        if($scope.validate_field_continuity()){            
             show_loader();
             params = { 
                 'function_details': angular.toJson($scope.new_continuity),
@@ -661,7 +702,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }        
     }
     $scope.save_new_consistency = function(){
-        if($scope.validate_field_consistency()){
+        if($scope.validate_field_consistency()){            
             show_loader();
             params = { 
                 'function_details': angular.toJson($scope.new_consistency),
@@ -705,11 +746,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             'id': '',
             'function_name': '',
             'function_description': '',
-            'no_of_periods': '',
-            'minimum_value': '',
-            'period_1': '',
-            'period_2': '',
-            'period_3': '',
+            'no_of_periods': '',          
+            'periods': [],
             'select_head': '',
         }         
     }
@@ -721,8 +759,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             'function_description': '',
             'no_of_periods': '',
             'mean': '',
-            'period_1': '',
-            'period_2': '',
+            'periods': [],
             'select_head': '',
         }  
     }
@@ -757,18 +794,20 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.edit_continuity = function(id){
         var url = '/continuity_function/?id='+id;
-        $http.get(url).success(function(data) {
+        $http.get(url).success(function(data) {         
             $scope.continuity_list = data.continuity_objects;
+            $scope.periods_list = data.continuity_objects[0].periods;           
             $scope.select_type = 2;
             $scope.new_continuity.id = $scope.continuity_list[0].id;
             $scope.new_continuity.function_name = $scope.continuity_list[0].name;
             $scope.new_continuity.function_description = $scope.continuity_list[0].description;
-            $scope.new_continuity.no_of_periods = $scope.continuity_list[0].no_of_periods;
-            $scope.new_continuity.minimum_value = $scope.continuity_list[0].minimum_value;
-            $scope.new_continuity.period_1 = $scope.continuity_list[0].period_1;
-            $scope.new_continuity.period_2 = $scope.continuity_list[0].period_2;
-            $scope.new_continuity.period_3 = $scope.continuity_list[0].period_3;
-            /*$scope.select_category = $scope.continuity_list[0].category;*/
+            $scope.new_continuity.no_of_periods = $scope.continuity_list[0].no_of_periods;            
+            for(var i = 0; i < $scope.periods_list.length ; i++){
+                $scope.new_continuity.periods.push({
+                    'count': i+1,
+                    'period' : $scope.periods_list[i].id,
+                });
+            }         
             $scope.new_continuity.select_head = $scope.continuity_list[0].head;
         })
     }
@@ -776,14 +815,18 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/consistency_function/?id='+id;
         $http.get(url).success(function(data) {
             $scope.consistency_list = data.consistency_objects;
+            $scope.periods_list = data.consistency_objects[0].periods; 
             $scope.select_type = 3;
             $scope.new_consistency.id = $scope.consistency_list[0].id;
             $scope.new_consistency.function_name = $scope.consistency_list[0].name;
             $scope.new_consistency.function_description = $scope.consistency_list[0].description;
-            $scope.new_consistency.no_of_periods = $scope.consistency_list[0].no_of_periods;
-            $scope.new_consistency.minimum_value = $scope.consistency_list[0].minimum_value;
-            $scope.new_consistency.period_1 = $scope.consistency_list[0].period_1;
-            $scope.new_consistency.period_2 = $scope.consistency_list[0].period_2;
+            $scope.new_consistency.no_of_periods = $scope.consistency_list[0].no_of_periods;            
+            for(var i = 0; i < $scope.periods_list.length ; i++){
+                $scope.new_consistency.periods.push({
+                    'count': i+1,
+                    'period' : $scope.periods_list[i].id,
+                });
+            } 
             $scope.new_consistency.mean = $scope.consistency_list[0].mean;
             /*$scope.select_category = $scope.consistency_list[0].category;*/
             $scope.new_consistency.select_head = $scope.consistency_list[0].head;
@@ -795,6 +838,12 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.category_set = data.category_objects;
         })
     }*/
+    $scope.get_fields = function(){
+        var url = '/field_settings/';
+        $http.get(url).success(function(data) {
+            $scope.fields = data.fields;
+        })
+    }
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
@@ -986,7 +1035,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
-            $scope.anly_heads = data.head_objects;
+            $scope.anly_heads = data.head_objects;           
         })
     }
     $scope.get_model_details = function(id){
@@ -1002,7 +1051,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         var url = '/model_details/?id='+id;
         $http.get(url).success(function(data) {
             hide_loader();
-            $scope.analytical_heads = data.analytical_heads;
+            $scope.analytical_heads = data.analytical_heads;           
             for(i = 0; i< $scope.analytical_heads.length; i++) {
                 if($scope.analytical_heads[i].empty_functions.length > 0) {
                     $scope.analytical_heads[i].function_set.push({

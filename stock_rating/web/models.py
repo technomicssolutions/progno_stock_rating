@@ -108,16 +108,11 @@ class HardcodedFormula(Date):
 
 class ContinuityFunction(Function):
     number_of_periods = models.IntegerField('Number of Periods', max_length=3)
-    minimum_value = models.IntegerField('Minimum Value', max_length=3)
-    period_1 = models.IntegerField('Period 1', max_length=5)
-    period_2 = models.IntegerField('Period 2', max_length=5)
-    period_3 = models.IntegerField('Period 3', max_length=5)
+    period = models.ManyToManyField(DataField)
 
 class ConsistencyFunction(Function):
     number_of_periods = models.IntegerField('Number of Periods', max_length=3)
-    minimum_value = models.IntegerField('Minimum Value', max_length=3, default=0)
-    period_1 = models.IntegerField('Period 1', max_length=5, default=0)
-    period_2 = models.IntegerField('Period 2', max_length=5, default=0)
+    period = models.ManyToManyField(DataField)
     mean = models.IntegerField('Mean', max_length=5)
 
 class Industry(models.Model):

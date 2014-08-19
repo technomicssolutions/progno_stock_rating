@@ -14,30 +14,40 @@
 					<a href ="{% url 'companies' %}"> Companies </a>
 					<span class="companies"> > </span> 
 				</li>
-				<li> 
-					<a href ="{% url 'data_upload' %}"> Data Upload </a>
-					<span class="dataupload"> > </span> 
-				</li>
-				<li> 
-					<a href ="{% url 'field_mapping' %}"> Field Mapping </a>
-					<span class="field_mapping_arrow"> > </span> 
-				</li> 
-				<li> 
-					<a href ="{% url 'field_settings' %}"> Field Settings </a>
-					<span class="field_settings"> > </span> 
-				</li>
-				<li> 
-					<a href ="{% url 'analytical_heads' %}"> Analytical Heads </a>
-					<span class="analytical_heads"> > </span> 
-				</li>
-				<li> 
-					<a href ="{% url 'function_settings' %}"> Function Settings </a>
-					<span class="functionsettings"> > </span> 
-				</li>
-				<li> 
-					<a href ="{% url 'models' %}"> Models </a> 
-					<span class="model"> > </span>
-				</li>
+				{% if user_permission.data_upload %}
+					<li> 
+						<a href ="{% url 'data_upload' %}"> Data Upload </a>
+						<span class="dataupload"> > </span> 
+					</li>
+				{% endif %}
+				{% if user_permission.field_settings %}
+					<li> 
+						<a href ="{% url 'field_mapping' %}"> Field Mapping </a>
+						<span class="field_mapping_arrow"> > </span> 
+					</li> 
+					<li> 
+						<a href ="{% url 'field_settings' %}"> Field Settings </a>
+						<span class="field_settings"> > </span> 
+					</li>
+				{% endif %}	
+				{% if user_permission.analytical_heads %}			
+					<li> 
+						<a href ="{% url 'analytical_heads' %}"> Analytical Heads </a>
+						<span class="analytical_heads"> > </span> 
+					</li>
+				{% endif %}	
+				{% if user_permission.function_settings %}
+					<li> 
+						<a href ="{% url 'function_settings' %}"> Function Settings </a>
+						<span class="functionsettings"> > </span> 
+					</li>
+				{% endif %}	
+				{% if user_permission.score_settings %}
+					<li> 
+						<a href ="{% url 'models' %}"> Models </a> 
+						<span class="model"> > </span>
+					</li>
+				{% endif %}	
 			</ul>
 		</li>
 		

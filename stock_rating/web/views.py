@@ -24,7 +24,7 @@ class Dashboard(View):
         return render(request, 'dashboard.html', context)
 
 class Administration(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):        
         context = {}
         return render(request, 'administration.html', context)
 
@@ -108,6 +108,7 @@ class FunctionSettings(View):
         if request.is_ajax():
             function_details = ast.literal_eval(request.POST['function_details'])
             function_type = ast.literal_eval(request.POST['function_type'])
+            print function_details
             # function_category = ast.literal_eval(request.POST['function_category'])            
             # category=FunctionCategory.objects.get(id=function_category)
             if int(function_type) == 1:
@@ -155,16 +156,21 @@ class FunctionSettings(View):
                 continuity_function.function_type = 'continuity'
                 continuity_function.analytical_head = anly_head
                 continuity_function.number_of_periods = function_details['no_of_periods']
-                continuity_function.minimum_value = function_details['minimum_value']
-                continuity_function.period_1 = function_details['period_1']
-                continuity_function.period_2 = function_details['period_2']
-                continuity_function.period_3 = function_details['period_3']
+                
                 try:
                     continuity_function.save()
+                    if continuity_function.period:
+                        continuity_function.period.clear()
+                    periods = function_details['periods']
+                    for period in periods:
+                        datafield = DataField.objects.get(id=int(period['period']))
+                        continuity_function.period.add(datafield)
+
                     res = {
                       'result': 'ok',
                     }
-                except:
+                except Exception as ex:
+                    print str(ex)
                     res = {
                       'result': 'error',  
                     }
@@ -183,14 +189,21 @@ class FunctionSettings(View):
                 consistency_function.analytical_head = anly_head
                 consistency_function.number_of_periods = function_details['no_of_periods']
                 consistency_function.mean = function_details['mean']
-                consistency_function.period_1 = function_details['period_1']
-                consistency_function.period_2 = function_details['period_2']
+ 
                 try:
                     consistency_function.save()
+                    if consistency_function.period:
+                        consistency_function.period.clear()
+                    periods = function_details['periods']
+                    for period in periods:
+                        datafield = DataField.objects.get(id=int(period['period']))
+                        consistency_function.period.add(datafield)
+
                     res = {
                       'result': 'ok',
                     }
-                except:
+                except Exception as ex:
+                    print str(ex)
                     res = {
                       'result': 'error',  
                     }
@@ -270,6 +283,8 @@ class DataUpload(View):
         data_file.uploaded_by = request.user
         data_file.save()        
         sheets = process_data_file(data_file)
+        if sheets=='':
+            print EMPTY
         data_file.sheets = sheets
         data_file.save()
 
@@ -600,7 +615,8 @@ class SaveUser(View):
                 user = User()
             user.username = user_details['username']
             user.first_name = user_details['first_name']
-            user.set_password(user_details['password'])
+            if user_details['password']:
+                user.set_password(user_details['password'])
             try:
                 user.save()            
                 permission.user = user
@@ -765,16 +781,21 @@ class ContinuityFunctions(View):
     def get(self, request, *args, **kwargs):
         continuity_objects = ContinuityFunction.objects.get(id=request.GET.get('id'))
         continuity_set = []
+        periods_set = []
+        periods = continuity_objects.period.all()       
+        for period in periods:
+            periods_set.append({
+                'id': period.id,
+                })
+
         continuity_set.append({
                 'id':continuity_objects.id,
                 'name': continuity_objects.function_name,
                 'description': continuity_objects.description,
                 'head': continuity_objects.analytical_head.id,
-                'no_of_periods': continuity_objects.number_of_periods,
-                'minimum_value': continuity_objects.minimum_value,
-                'period_1': continuity_objects.period_1,
-                'period_2': continuity_objects.period_2,
-                'period_3': continuity_objects.period_3,
+                'no_of_periods': continuity_objects.number_of_periods,               
+                'periods': periods_set,
+
                 # 'category': continuity_objects.category.id,
             })
         if request.is_ajax():
@@ -789,15 +810,19 @@ class ConsistencyFunctions(View):
     def get(self, request, *args, **kwargs):
         consistency_objects = ConsistencyFunction.objects.get(id=request.GET.get('id'))
         consistency_set = []
+        periods_set = []
+        periods = consistency_objects.period.all()       
+        for period in periods:
+            periods_set.append({
+                'id': period.id,
+                })
         consistency_set.append({
                 'id':consistency_objects.id,
                 'name': consistency_objects.function_name,
                 'description': consistency_objects.description,
                 'head': consistency_objects.analytical_head.id,
-                'no_of_periods': consistency_objects.number_of_periods,
-                'minimum_value': consistency_objects.minimum_value,
-                'period_1': consistency_objects.period_1,
-                'period_2': consistency_objects.period_2,
+                'no_of_periods': consistency_objects.number_of_periods,              
+                'periods': periods_set,
                 'mean': consistency_objects.mean,
                 # 'category': consistency_objects.category.id,
             })

@@ -81,15 +81,14 @@
 				<label> Function Description: </label>
 				<input type="text" name="field_description" ng-model="new_continuity.function_description" />
 				<label> No of Periods: </label>
-				<input type="text" name="field_description" ng-model="new_continuity.no_of_periods" />
-				<label> Minimum Value: </label>
-				<input type="text" name="field_description" ng-model="new_continuity.minimum_value" />
-				<label> Period 1: </label>
-				<input type="text" name="field_description" ng-model="new_continuity.period_1" />
-				<label> Period 2: </label>
-				<input type="text" name="field_description" ng-model="new_continuity.period_2" />
-				<label> Period 3: </label>
-				<input type="text" name="field_description" ng-model="new_continuity.period_3" />
+				<input type="text" name="field_description" ng-model="new_continuity.no_of_periods" ng-change="add_periods_continuity(new_continuity)"/>
+				<div ng-repeat="period in new_continuity.periods">
+					<label> Period [[ period.count ]] : </label>				
+					<select name="continuity_period" ng-model="period.period">
+					<option value="" disabled="True">Select</option>
+					<option value="[[ field.id ]]" ng-selected="field.id == period.period" ng-repeat="field in fields">[[ field.name ]]</option>		
+					</select>
+				</div>
 				<label> Analytical Head: </label>
 		        <select name="continuity_select_head" ng-model="new_continuity.select_head">
 						 <option value="" disabled="True">Select</option>
@@ -107,13 +106,16 @@
 				<label> Function Description: </label>
 				<input type="text" name="function_description" ng-model="new_consistency.function_description" />
 				<label> No of Periods: </label>
-				<input type="text" name="no_of_periods" ng-model="new_consistency.no_of_periods" />
+				<input type="text" name="no_of_periods" ng-model="new_consistency.no_of_periods" ng-change="add_periods_consistency(new_consistency)"/>
 				<label> Mean: </label>
 				<input type="text" name="mean" ng-model="new_consistency.mean" />
-				<label> Period 1: </label>
-				<input type="text" name="period_1" ng-model="new_consistency.period_1" />
-				<label> Period 2: </label>
-				<input type="text" name="period_2" ng-model="new_consistency.period_2" />
+				<div ng-repeat="period in new_consistency.periods">				
+					<label> Period [[ period.count ]] : </label>				
+					<select name="consistency_period" ng-model="period.period">
+						<option value="" disabled="True">Select</option>
+						<option value="[[ field.id ]]" ng-selected="field.id == period.period" ng-repeat="field in fields">[[ field.name ]]</option>		
+					</select>
+				</div>				
 				<label> Analytical Head: </label>
 				<select name="consistency_select_head" ng-model="new_consistency.select_head">
 						 <option value="" disabled="True">Select</option>

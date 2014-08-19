@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'Date'
         db.create_table(u'web_date', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'])),
+            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User'], null=True, blank=True)),
             ('created_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
             ('updated_date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
         ))
@@ -65,24 +65,17 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'web', ['FieldMap'])
 
-        # Adding model 'FunctionCategory'
-        db.create_table(u'web_functioncategory', (
-            (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
-            ('category_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
-            ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-        ))
-        db.send_create_signal(u'web', ['FunctionCategory'])
-
         # Adding model 'Operator'
         db.create_table(u'web_operator', (
             (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
-            ('symbol', self.gf('django.db.models.fields.CharField')(max_length=1)),
+            ('symbol', self.gf('django.db.models.fields.CharField')(max_length=5)),
         ))
         db.send_create_signal(u'web', ['Operator'])
 
         # Adding model 'Formula'
         db.create_table(u'web_formula', (
             (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
+            ('formula_string', self.gf('django.db.models.fields.CharField')(max_length=500)),
         ))
         db.send_create_signal(u'web', ['Formula'])
 
@@ -105,7 +98,6 @@ class Migration(SchemaMigration):
         # Adding model 'Function'
         db.create_table(u'web_function', (
             (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
-            ('category', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.FunctionCategory'])),
             ('analytical_head', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.AnalyticalHead'])),
             ('function_name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=200)),
             ('description', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
@@ -127,22 +119,33 @@ class Migration(SchemaMigration):
             (u'function_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Function'], unique=True, primary_key=True)),
             ('number_of_periods', self.gf('django.db.models.fields.IntegerField')(max_length=3)),
             ('minimum_value', self.gf('django.db.models.fields.IntegerField')(max_length=3)),
-            ('period_1', self.gf('django.db.models.fields.IntegerField')(max_length=5)),
-            ('period_2', self.gf('django.db.models.fields.IntegerField')(max_length=5)),
-            ('period_3', self.gf('django.db.models.fields.IntegerField')(max_length=5)),
         ))
         db.send_create_signal(u'web', ['ContinuityFunction'])
+
+        # Adding M2M table for field period on 'ContinuityFunction'
+        db.create_table(u'web_continuityfunction_period', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('continuityfunction', models.ForeignKey(orm[u'web.continuityfunction'], null=False)),
+            ('datafield', models.ForeignKey(orm[u'web.datafield'], null=False))
+        ))
+        db.create_unique(u'web_continuityfunction_period', ['continuityfunction_id', 'datafield_id'])
 
         # Adding model 'ConsistencyFunction'
         db.create_table(u'web_consistencyfunction', (
             (u'function_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Function'], unique=True, primary_key=True)),
             ('number_of_periods', self.gf('django.db.models.fields.IntegerField')(max_length=3)),
             ('minimum_value', self.gf('django.db.models.fields.IntegerField')(default=0, max_length=3)),
-            ('period_1', self.gf('django.db.models.fields.IntegerField')(default=0, max_length=5)),
-            ('period_2', self.gf('django.db.models.fields.IntegerField')(default=0, max_length=5)),
             ('mean', self.gf('django.db.models.fields.IntegerField')(max_length=5)),
         ))
         db.send_create_signal(u'web', ['ConsistencyFunction'])
+
+        # Adding M2M table for field period on 'ConsistencyFunction'
+        db.create_table(u'web_consistencyfunction_period', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('consistencyfunction', models.ForeignKey(orm[u'web.consistencyfunction'], null=False)),
+            ('datafield', models.ForeignKey(orm[u'web.datafield'], null=False))
+        ))
+        db.create_unique(u'web_consistencyfunction_period', ['consistencyfunction_id', 'datafield_id'])
 
         # Adding model 'Industry'
         db.create_table(u'web_industry', (
@@ -227,6 +230,7 @@ class Migration(SchemaMigration):
         # Adding model 'StarRating'
         db.create_table(u'web_starrating', (
             (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
+            ('model', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.AnalysisModel'])),
             ('star_count', self.gf('django.db.models.fields.IntegerField')(max_length=1)),
             ('min_score', self.gf('django.db.models.fields.FloatField')(max_length=5)),
             ('max_score', self.gf('django.db.models.fields.FloatField')(max_length=5)),
@@ -239,7 +243,9 @@ class Migration(SchemaMigration):
             (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
             ('company', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.Company'])),
             ('function', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.Function'])),
-            ('score', self.gf('django.db.models.fields.FloatField')(max_length=5)),
+            ('score', self.gf('django.db.models.fields.FloatField')(max_length=5, null=True, blank=True)),
+            ('points', self.gf('django.db.models.fields.FloatField')(max_length=5, null=True, blank=True)),
+            ('comment', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
         ))
         db.send_create_signal(u'web', ['CompanyFunctionScore'])
 
@@ -248,10 +254,19 @@ class Migration(SchemaMigration):
             (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
             ('company', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.Company'])),
             ('analysis_model', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.AnalysisModel'])),
-            ('score', self.gf('django.db.models.fields.IntegerField')(max_length=5)),
-            ('star_rating', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.StarRating'])),
+            ('score', self.gf('django.db.models.fields.IntegerField')(max_length=5, null=True, blank=True)),
+            ('star_rating', self.gf('django.db.models.fields.CharField')(max_length=200, null=True, blank=True)),
+            ('comment', self.gf('django.db.models.fields.CharField')(max_length=500, null=True, blank=True)),
         ))
         db.send_create_signal(u'web', ['CompanyModelScore'])
+
+        # Adding model 'CompanyStockData'
+        db.create_table(u'web_companystockdata', (
+            (u'date_ptr', self.gf('django.db.models.fields.related.OneToOneField')(to=orm['web.Date'], unique=True, primary_key=True)),
+            ('company', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['web.Company'])),
+            ('stock_data', self.gf('jsonfield.fields.JSONField')(null=True, blank=True)),
+        ))
+        db.send_create_signal(u'web', ['CompanyStockData'])
 
     def backwards(self, orm):
         # Deleting model 'Date'
@@ -271,9 +286,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'FieldMap'
         db.delete_table(u'web_fieldmap')
-
-        # Deleting model 'FunctionCategory'
-        db.delete_table(u'web_functioncategory')
 
         # Deleting model 'Operator'
         db.delete_table(u'web_operator')
@@ -296,8 +308,14 @@ class Migration(SchemaMigration):
         # Deleting model 'ContinuityFunction'
         db.delete_table(u'web_continuityfunction')
 
+        # Removing M2M table for field period on 'ContinuityFunction'
+        db.delete_table('web_continuityfunction_period')
+
         # Deleting model 'ConsistencyFunction'
         db.delete_table(u'web_consistencyfunction')
+
+        # Removing M2M table for field period on 'ConsistencyFunction'
+        db.delete_table('web_consistencyfunction_period')
 
         # Deleting model 'Industry'
         db.delete_table(u'web_industry')
@@ -331,6 +349,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'CompanyModelScore'
         db.delete_table(u'web_companymodelscore')
+
+        # Deleting model 'CompanyStockData'
+        db.delete_table(u'web_companystockdata')
 
     models = {
         u'auth.group': {
@@ -400,18 +421,27 @@ class Migration(SchemaMigration):
         },
         u'web.companyfunctionscore': {
             'Meta': {'object_name': 'CompanyFunctionScore', '_ormbases': [u'web.Date']},
+            'comment': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Company']"}),
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'function': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Function']"}),
-            'score': ('django.db.models.fields.FloatField', [], {'max_length': '5'})
+            'points': ('django.db.models.fields.FloatField', [], {'max_length': '5', 'null': 'True', 'blank': 'True'}),
+            'score': ('django.db.models.fields.FloatField', [], {'max_length': '5', 'null': 'True', 'blank': 'True'})
         },
         u'web.companymodelscore': {
             'Meta': {'object_name': 'CompanyModelScore', '_ormbases': [u'web.Date']},
             'analysis_model': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.AnalysisModel']"}),
+            'comment': ('django.db.models.fields.CharField', [], {'max_length': '500', 'null': 'True', 'blank': 'True'}),
             'company': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Company']"}),
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
-            'score': ('django.db.models.fields.IntegerField', [], {'max_length': '5'}),
-            'star_rating': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.StarRating']"})
+            'score': ('django.db.models.fields.IntegerField', [], {'max_length': '5', 'null': 'True', 'blank': 'True'}),
+            'star_rating': ('django.db.models.fields.CharField', [], {'max_length': '200', 'null': 'True', 'blank': 'True'})
+        },
+        u'web.companystockdata': {
+            'Meta': {'object_name': 'CompanyStockData', '_ormbases': [u'web.Date']},
+            'company': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Company']"}),
+            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'stock_data': ('jsonfield.fields.JSONField', [], {'null': 'True', 'blank': 'True'})
         },
         u'web.consistencyfunction': {
             'Meta': {'object_name': 'ConsistencyFunction', '_ormbases': [u'web.Function']},
@@ -419,17 +449,14 @@ class Migration(SchemaMigration):
             'mean': ('django.db.models.fields.IntegerField', [], {'max_length': '5'}),
             'minimum_value': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '3'}),
             'number_of_periods': ('django.db.models.fields.IntegerField', [], {'max_length': '3'}),
-            'period_1': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '5'}),
-            'period_2': ('django.db.models.fields.IntegerField', [], {'default': '0', 'max_length': '5'})
+            'period': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['web.DataField']", 'symmetrical': 'False'})
         },
         u'web.continuityfunction': {
             'Meta': {'object_name': 'ContinuityFunction', '_ormbases': [u'web.Function']},
             u'function_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Function']", 'unique': 'True', 'primary_key': 'True'}),
             'minimum_value': ('django.db.models.fields.IntegerField', [], {'max_length': '3'}),
             'number_of_periods': ('django.db.models.fields.IntegerField', [], {'max_length': '3'}),
-            'period_1': ('django.db.models.fields.IntegerField', [], {'max_length': '5'}),
-            'period_2': ('django.db.models.fields.IntegerField', [], {'max_length': '5'}),
-            'period_3': ('django.db.models.fields.IntegerField', [], {'max_length': '5'})
+            'period': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['web.DataField']", 'symmetrical': 'False'})
         },
         u'web.datafield': {
             'Meta': {'object_name': 'DataField', '_ormbases': [u'web.Date']},
@@ -448,7 +475,7 @@ class Migration(SchemaMigration):
         },
         u'web.date': {
             'Meta': {'object_name': 'Date'},
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'}),
             'created_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'updated_date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
@@ -463,24 +490,18 @@ class Migration(SchemaMigration):
         u'web.formula': {
             'Meta': {'object_name': 'Formula', '_ormbases': [u'web.Date']},
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
+            'formula_string': ('django.db.models.fields.CharField', [], {'max_length': '500'}),
             'operands': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['web.DataField']", 'symmetrical': 'False'}),
             'operators': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['web.Operator']", 'symmetrical': 'False'})
         },
         u'web.function': {
             'Meta': {'object_name': 'Function', '_ormbases': [u'web.Date']},
             'analytical_head': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.AnalyticalHead']"}),
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.FunctionCategory']"}),
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'formula': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.Formula']", 'null': 'True', 'blank': 'True'}),
             'function_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
             'function_type': ('django.db.models.fields.CharField', [], {'max_length': '11'})
-        },
-        u'web.functioncategory': {
-            'Meta': {'object_name': 'FunctionCategory', '_ormbases': [u'web.Date']},
-            'category_name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '200'}),
-            u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         u'web.hardcodedformula': {
             'Meta': {'object_name': 'HardcodedFormula', '_ormbases': [u'web.Date']},
@@ -497,7 +518,7 @@ class Migration(SchemaMigration):
         u'web.operator': {
             'Meta': {'object_name': 'Operator', '_ormbases': [u'web.Date']},
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
-            'symbol': ('django.db.models.fields.CharField', [], {'max_length': '1'})
+            'symbol': ('django.db.models.fields.CharField', [], {'max_length': '5'})
         },
         u'web.parameterlimit': {
             'Meta': {'object_name': 'ParameterLimit', '_ormbases': [u'web.Date']},
@@ -530,6 +551,7 @@ class Migration(SchemaMigration):
             u'date_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['web.Date']", 'unique': 'True', 'primary_key': 'True'}),
             'max_score': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
             'min_score': ('django.db.models.fields.FloatField', [], {'max_length': '5'}),
+            'model': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['web.AnalysisModel']"}),
             'star_count': ('django.db.models.fields.IntegerField', [], {'max_length': '1'})
         },
         u'web.userpermission': {
