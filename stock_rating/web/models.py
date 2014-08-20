@@ -178,7 +178,7 @@ class StarRating(Date):
     model = models.ForeignKey(AnalysisModel)
     star_count = models.IntegerField('StarCount', max_length=1)
     min_score = models.FloatField('Min Score', max_length=5)
-    max_score = models.FloatField('Max Score', max_length=5)
+    max_score = models.FloatField('Max Score', max_length=5, null=True, blank=True)
     comment = models.CharField('Comment', max_length=200)
 
     def __unicode__(self):

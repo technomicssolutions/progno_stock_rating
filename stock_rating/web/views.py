@@ -1076,7 +1076,10 @@ class SaveModelStarRating(View):
                 rating.model = model
             rating.star_count = rating_details['star_count']
             rating.min_score = rating_details['min_score']
-            rating.max_score = rating_details['max_score']
+            if rating_details['max_score']:
+                rating.max_score = rating_details['max_score']
+            else:
+                rating.max_score = None
             rating.comment = rating_details['comment']
             rating.save()
         return HttpResponseRedirect(reverse("models"))

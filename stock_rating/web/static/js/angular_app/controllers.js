@@ -1048,6 +1048,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.create_model = false; 
         $scope.define_model = true; 
         $scope.msg = "";
+        $scope.error_msg = "";
+        $scope.rating_msg = "";
     }
     $scope.get_industries = function(){
         var url = '/industry/';
@@ -1067,7 +1069,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         if($scope.selected_model){
             var url = '/model/'+$scope.selected_model+'/star_rating/';
             $http.get(url).success(function(data) {
-                $scope.model_list = data.model_list;
+                $scope.msg = "Calculation completed Successfully";
             })
         } else {
             $scope.msg = "Please select a model";
@@ -1116,8 +1118,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     })
                 }
             }
-            
-            $scope.star_ratings = data.star_ratings;
+            $scope.star_ratings = data.star_ratings;  
             $scope.star_ratings.push({
                 'id': '',
                 'star_count': '',
@@ -1125,7 +1126,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
                 'max_score': '',
                 'comment': '',
                 'editorEnabled': true,
-            })
+            });
          })
     }
     $scope.add_function = function(model_id, function_id, parameters,entry){ 
@@ -1181,18 +1182,19 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.edit_rating = true;
         rating.editorEnabled = true;
     }
-    $scope.delete_rating = function(model_id,rating){      
-        show_loader();
-        var url = '/delete_rating/?rating_id='+rating.id;
-        $http.get(url).success(function(data){
-            hide_loader();
-            if(data.result == 'ok')
-                $scope.msg = "Rating deleted";
-            else 
-                $scope.msg = "Error";
-            $scope.get_model_details(model_id);              
-        })
-
+    $scope.delete_rating = function(model_id,rating){    
+        if(rating.id != ""){
+            show_loader();
+            var url = '/delete_rating/?rating_id='+rating.id;
+            $http.get(url).success(function(data){
+                hide_loader();
+                if(data.result == 'ok')
+                    $scope.msg = "Rating deleted";
+                else 
+                    $scope.msg = "Error";
+                $scope.get_model_details(model_id);              
+            })
+        }
     }
     $scope.delete_parameters = function(model_id, parameters){
         show_loader();
@@ -1377,15 +1379,35 @@ function ModelController($scope, $element, $http, $timeout, $location)
 
     }
     $scope.validate_rating = function(rating){
-        $scope.rating_msg = '';
+        $scope.rating_msg = '';        
+        var index = $scope.star_ratings.indexOf(rating);
+        for(var i = 0; i < $scope.star_ratings.length; i++){   
+            if(i != index ) {
+                if(rating.star_count == $scope.star_ratings[i].star_count){
+                    $scope.rating_msg = "Duplicate entry exists for the same star count";
+                    return false;
+                }
+            }
+            
+        }
+        console.log(rating.max_score, rating.min_score)
         if(!Number(rating.star_count) ) {
             $scope.rating_msg = "Invalid entry in Star Count";
             return false;
-        } else if(!Number(rating.min_score) ){
-            $scope.rating_msg = "Please enter in Min Score";
+        } else if(rating.star_count > 5){
+            $scope.rating_msg = "Maximum Star Count value is 5";
             return false;
-        } else if(!Number(rating.max_score) ) {
+        } else if(!Number(rating.min_score) ){
+            $scope.rating_msg = "Invalid entry in Min Score";
+            return false;
+        } else if(!Number(rating.max_score) &&  rating.star_count != 5) {
             $scope.rating_msg = "Invalid entry in Max Score";
+            return false;
+        } else if(rating.star_count == 5 && rating.max_score != '' && rating.max_score != null){
+            $scope.rating_msg = "Maximum score must be left blank for 5 star rating";
+            return false;
+        } else if(rating.star_count != 5 && (Number(rating.max_score) < Number(rating.min_score))){
+            $scope.rating_msg = "Maximum score must be greater than minimum score";
             return false;
         } else if(rating.comment == ''){
             $scope.rating_msg = "Please enter Comment";
@@ -1431,6 +1453,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.save_rating = function(rating){
         if($scope.validate_rating(rating)){
+            if(rating.max_score == null)
+                rating.max_score = "";
             show_loader();
             rating.editorEnabled = String(rating.editorEnabled);
             params = { 
