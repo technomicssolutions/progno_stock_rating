@@ -28,31 +28,50 @@ class Administration(View):
         context = {}
         return render(request, 'administration.html', context)
 
+class FieldsWithMapping(View):
+    def get(self, request, *args, **kwargs):
+        field_objects = DataField.objects.all()
+        fields = []
+        if request.is_ajax():
+            for field in field_objects:
+                try:
+                    f = FieldMap.objects.get(data_field=field)
+                    fields.append({
+                        'id': field.id,
+                        'name': field.name,
+                    })
+                except:
+                    continue
+            response = simplejson.dumps({
+                'result': 'OK',
+                'fields': fields
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
 class FieldSettings(View):
     def get(self, request, *args, **kwargs):
-        if request.is_ajax():
-            field_objects = DataField.objects.all()
-            fields = []
-            for field in field_objects:
-                if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
-                    status = "Modified"
-                    date = field.updated_date
-                else:
-                    status = "Created"
-                    date = field.created_date
-                fields.append({
-                    'id': field.id,
-                    'name': field.name,
-                    'description': field.description,
-                    'status': status,
-                    'date': date.strftime("%d/%m/%Y"),
-                })
-            if request.is_ajax():
-                response = simplejson.dumps({
-                    'result': 'OK',
-                    'fields': fields
-                })
-                return HttpResponse(response, status=200, mimetype='application/json')
+        field_objects = DataField.objects.all()
+        fields = []
+        for field in field_objects:
+            if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
+                status = "Modified"
+                date = field.updated_date
+            else:
+                status = "Created"
+                date = field.created_date
+            fields.append({
+                'id': field.id,
+                'name': field.name,
+                'description': field.description,
+                'status': status,
+                'date': date.strftime("%d/%m/%Y"),
+            })
+        if request.is_ajax():            
+            response = simplejson.dumps({
+                'result': 'OK',
+                'fields': fields
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
         context = {}
         return render(request, 'field_settings.html', context)
 
@@ -159,12 +178,12 @@ class FunctionSettings(View):
                 
                 try:
                     continuity_function.save()
-                    if continuity_function.period:
-                        continuity_function.period.clear()
+                    if continuity_function.periods:
+                        continuity_function.periods.clear()
                     periods = function_details['periods']
                     for period in periods:
                         datafield = DataField.objects.get(id=int(period['period']))
-                        continuity_function.period.add(datafield)
+                        continuity_function.periods.add(datafield)
 
                     res = {
                       'result': 'ok',
@@ -192,12 +211,12 @@ class FunctionSettings(View):
  
                 try:
                     consistency_function.save()
-                    if consistency_function.period:
-                        consistency_function.period.clear()
+                    if consistency_function.periods:
+                        consistency_function.periods.clear()
                     periods = function_details['periods']
                     for period in periods:
                         datafield = DataField.objects.get(id=int(period['period']))
-                        consistency_function.period.add(datafield)
+                        consistency_function.periods.add(datafield)
 
                     res = {
                       'result': 'ok',
@@ -312,6 +331,15 @@ class FieldMapping(View):
                     'mapping_id': mp.id                  
                 })
                 file_fields.append(mp.file_field)
+            for field in DataField.objects.all():
+                try:
+                    f = FieldMap.objects.get(data_field = field)
+                except:
+                    system_fields.append({
+                        'id': field.id,
+                        'name': field.name,  
+                        'mapping_id': '' ,
+                    })
             response = simplejson.dumps({
                 'result': 'Ok',
                 'file_fields': file_fields,
@@ -328,24 +356,30 @@ class FieldMapping(View):
             system_fields = ast.literal_eval(request.POST['system_fields'])
             file_fields = ast.literal_eval(request.POST['file_fields'])
             mappings = FieldMap.objects.count()
+            print "mappings = ", mappings
             if mappings > 0:
                 for system_field, file_field in zip(system_fields, file_fields):
-                    mapping = FieldMap.objects.get(id=system_field['mapping_id'])
                     if system_field['id'] != '':
                         system_field = DataField.objects.get(id=system_field['id'])
                     else:
                         system_field = None
-                    mapping.system_field = system_field
-                    mapping.file_field = file_field
+                    try:
+                        mapping = FieldMap.objects.get(id=system_field['mapping_id'])
+                        mapping.system_field = system_field
+                        mapping.file_field = file_field
+                    except:
+                        if file_field != '':
+                            mapping = FieldMap(data_file=data_file, data_field=system_field, file_field=file_field)
                     mapping.save()
             else:
                 for system_field, file_field in zip(system_fields, file_fields):
-                    if system_field['id'] != '':
-                        system_field = DataField.objects.get(id=system_field['id'])
-                    else:
-                        system_field = None
-                    mapping = FieldMap.objects.create(data_file=data_file, data_field=system_field, file_field=file_field)
-                    mapping.save()
+                    if len(file_field.strip()) > 0:
+                        if system_field['id'] != '':
+                            system_field = DataField.objects.get(id=system_field['id'])
+                        else:
+                            system_field = None
+                        mapping = FieldMap.objects.create(data_file=data_file, data_field=system_field, file_field=file_field)
+                        mapping.save()
             response = simplejson.dumps({
                 'result': 'Ok'
             })
@@ -993,15 +1027,15 @@ class ModelStarRating(View):
                             calculate_general_function_score(function, company)
                             fn_score = CompanyFunctionScore.objects.get(company=company, function=function)
                             print "function score= ", fn_score
-                            if fn_score.score <= parameterlimit.strong_min and fn_score <= parameterlimit.strong_max:
+                            if fn_score.score >= parameterlimit.strong_min and fn_score.score <= parameterlimit.strong_max:
                                 fn_score.points = parameterlimit.strong_points
                                 fn_score.comment = parameterlimit.strong_comment
                                 fn_score.save()
-                            elif fn_score.score <= parameterlimit.neutral_min and fn_score.score <= parameterlimit.neutral_max:
+                            elif fn_score.score >= parameterlimit.neutral_min and fn_score.score <= parameterlimit.neutral_max:
                                 fn_score.points = parameterlimit.neutral_points
                                 fn_score.comment = parameterlimit.neutral_comment
                                 fn_score.save()
-                            elif fn_score.score <= parameterlimit.weak_min and fn_score.score <= parameterlimit.weak_max:
+                            elif fn_score.score >= parameterlimit.weak_min and fn_score.score <= parameterlimit.weak_max:
                                 fn_score.points = parameterlimit.weak_points
                                 fn_score.comment = parameterlimit.weak_comment
                                 fn_score.save()
@@ -1017,8 +1051,17 @@ class ModelStarRating(View):
                         company_model_score.comment = rating.comment
                         company_model_score.save()
                         break;
+                    elif rating.star_count == 5:
+                        if company_model_score.score >= rating.min_score:
+                            company_model_score.star_rating = rating.star_count
+                            company_model_score.comment = rating.comment
+                            company_model_score.save()
+                            break;
+        response = simplejson.dumps({
+            'result': 'OK'
+        })
+        return HttpResponse(response, status=200, mimetype='application/json')
 
-        return HttpResponseRedirect(reverse("models"))
 
 class SaveModelStarRating(View):
 
@@ -1053,11 +1096,9 @@ class RatingReport(View):
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0:
                     model_score = model_score[0]
-                    print "model_score", model_score
-                    print "model_score rating", model_score.star_rating
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
-                        'star_rating': "*" * int(model_score.star_rating),
+                        'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                         'score': model_score.score,
                         'brief_comment': model_score.comment,
                     }

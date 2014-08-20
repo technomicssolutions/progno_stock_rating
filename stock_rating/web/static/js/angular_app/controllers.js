@@ -875,7 +875,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_operands = function(){
-        var url = '/field_settings/';
+        var url = '/fields_with_mapping/';
         $http.get(url).success(function(data) {
             $scope.operands = data.fields;
             $scope.fields = data.fields;
@@ -1749,6 +1749,7 @@ function CompanyController($scope, $element, $http, $timeout, $location)
         $scope.hide_dropdown();
         $scope.data_file = {};
         $scope.data_file.src = "";
+        $scope.range(5);
         $scope.get_companies();
         $scope.visible_list = [];
         $scope.page_interval = 30;

@@ -30,7 +30,11 @@
 					<td>[[rating.star_rating]]</td>
 					<td>[[rating.score]]</td>
 					<td>[[rating.brief_comment]]</td>
-					<td>[[rating.detailed_comment]]</td>
+					<td>
+						<ul>
+							<li ng-repeat="comment in rating.detailed_comment track by $index">[[comment]]</li>
+						</ul>
+					</td>
 				</tr>
 			</table>
 		</div>

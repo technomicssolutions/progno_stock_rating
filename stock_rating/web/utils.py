@@ -82,22 +82,23 @@ def process_company_file(data_file):
 def create_stock_data(data_file):
     for sheet in data_file.sheets:
         company_stock = None
-        labels = sheet['rows'][0]
-        for row in sheet['rows']:
-            for i in range(len(row)):
-                if i == 0:
-                    try:
-                        company = Company.objects.get(isin_code=row[i])
-                        company_stock, created = CompanyStockData.objects.get_or_create(company=company)
-                    except:
-                        continue
-                else:
-                    if company_stock:
-                        if company_stock.stock_data == None:
-                            company_stock.stock_data = {}
-                        company_stock.stock_data[labels[i]] = row[i]
-                        company_stock.created_by = data_file.uploaded_by
-                        company_stock.save()
+        if len(sheet['rows']) > 0:
+            labels = sheet['rows'][0]
+            for row in sheet['rows']:
+                for i in range(len(row)):
+                    if i == 0:
+                        try:
+                            company = Company.objects.get(isin_code=row[i])
+                            company_stock, created = CompanyStockData.objects.get_or_create(company=company)
+                        except:
+                            continue
+                    else:
+                        if company_stock:
+                            if company_stock.stock_data == None:
+                                company_stock.stock_data = {}
+                            company_stock.stock_data[labels[i]] = row[i]
+                            company_stock.created_by = data_file.uploaded_by
+                            company_stock.save()
     data_file.processing_completed = True
     data_file.save()
 
@@ -119,3 +120,42 @@ def calculate_general_function_score(function, company):
     except Exception as e:
         print e
     return function_value
+
+def calculate_consistency_function_score(function, company):
+    stock = CompanyStockData.objects.get(company=company)
+    function_operands = function.periods.all()
+    num_of_periods = function_operands.count()
+    operands_sum = 0
+    data_values = []
+    for operand in function_operands:
+        mapping = FieldMap.objects.get(data_field = operand)
+        key_name = mapping.file_field
+        operands_sum = operands_sum + float(stock[key_name])
+        data_values.append(float(stock[key_name]))
+    avg = operands_sum/num_of_periods
+    benchmark = (avg-1.5)
+    performance_count = 0
+    for value in data_values:
+        if value >= benchmark:
+            performance_count = performance_count + 1
+    performance_percentage = (performance_count/num_of_periods)*100
+    function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
+    function_score.score = performance_percentage 
+    function_score.save()
+
+def calculate_continuity_function_score(function, company):
+    stock = CompanyStockData.objects.get(company=company)
+    function_operands = function.periods.all()
+    num_of_periods = function_operands.count()
+    performance_count = 0
+    for operand in function_operands:
+        mapping = FieldMap.objects.get(data_field = operand)
+        key_name = mapping.file_field
+        if float(stock[key_name]) > 0:
+            performance_count = performance_count + 1            
+    performance_percentage = (performance_count/num_of_periods)*100
+    function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
+    function_score.score = performance_percentage 
+    function_score.save()
+
+

@@ -4,11 +4,11 @@
 
 // Demonstrate how to register services
 // In this case it is a simple value service.
-var estoppeleasy_serv = angular.module('stock.services', ['ngResource']);
+var stock_serv = angular.module('stock.services', ['ngResource']);
 
-estoppeleasy_serv.value('version', '0.1');
+stock_serv.value('version', '0.1');
 
-estoppeleasy_serv.factory('share', function()
+stock_serv.factory('share', function()
 {
     return {
         messages : {
