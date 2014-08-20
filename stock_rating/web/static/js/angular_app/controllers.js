@@ -421,7 +421,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.select_type = 1;  
         $scope.get_operands();
         $scope.get_operators();
-        $scope.get_fields();
         $scope.new_general = {
             'function_name': '',
             'function_description': '',
@@ -852,12 +851,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.category_set = data.category_objects;
         })
     }*/
-    $scope.get_fields = function(){
-        var url = '/function_settings/';
-        $http.get(url).success(function(data) {
-            $scope.fields = data.fields;
-        })
-    }
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
@@ -874,6 +867,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/fields_with_mapping/';
         $http.get(url).success(function(data) {
             $scope.operands = data.fields;
+            $scope.fields = data.fields;
         })  
     }
     $scope.get_operators = function(){

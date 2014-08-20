@@ -108,11 +108,11 @@ class HardcodedFormula(Date):
 
 class ContinuityFunction(Function):
     number_of_periods = models.IntegerField('Number of Periods', max_length=3)
-    period = models.ManyToManyField(DataField)
+    periods = models.ManyToManyField(DataField)
 
 class ConsistencyFunction(Function):
     number_of_periods = models.IntegerField('Number of Periods', max_length=3)
-    period = models.ManyToManyField(DataField)
+    periods = models.ManyToManyField(DataField)
     mean = models.IntegerField('Mean', max_length=5)
 
 class Industry(models.Model):

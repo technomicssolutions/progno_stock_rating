@@ -178,12 +178,12 @@ class FunctionSettings(View):
                 
                 try:
                     continuity_function.save()
-                    if continuity_function.period:
-                        continuity_function.period.clear()
+                    if continuity_function.periods:
+                        continuity_function.periods.clear()
                     periods = function_details['periods']
                     for period in periods:
                         datafield = DataField.objects.get(id=int(period['period']))
-                        continuity_function.period.add(datafield)
+                        continuity_function.periods.add(datafield)
 
                     res = {
                       'result': 'ok',
@@ -211,12 +211,12 @@ class FunctionSettings(View):
  
                 try:
                     consistency_function.save()
-                    if consistency_function.period:
-                        consistency_function.period.clear()
+                    if consistency_function.periods:
+                        consistency_function.periods.clear()
                     periods = function_details['periods']
                     for period in periods:
                         datafield = DataField.objects.get(id=int(period['period']))
-                        consistency_function.period.add(datafield)
+                        consistency_function.periods.add(datafield)
 
                     res = {
                       'result': 'ok',
@@ -1011,15 +1011,15 @@ class ModelStarRating(View):
                             calculate_general_function_score(function, company)
                             fn_score = CompanyFunctionScore.objects.get(company=company, function=function)
                             print "function score= ", fn_score
-                            if fn_score.score <= parameterlimit.strong_min and fn_score <= parameterlimit.strong_max:
+                            if fn_score.score >= parameterlimit.strong_min and fn_score.score <= parameterlimit.strong_max:
                                 fn_score.points = parameterlimit.strong_points
                                 fn_score.comment = parameterlimit.strong_comment
                                 fn_score.save()
-                            elif fn_score.score <= parameterlimit.neutral_min and fn_score.score <= parameterlimit.neutral_max:
+                            elif fn_score.score >= parameterlimit.neutral_min and fn_score.score <= parameterlimit.neutral_max:
                                 fn_score.points = parameterlimit.neutral_points
                                 fn_score.comment = parameterlimit.neutral_comment
                                 fn_score.save()
-                            elif fn_score.score <= parameterlimit.weak_min and fn_score.score <= parameterlimit.weak_max:
+                            elif fn_score.score >= parameterlimit.weak_min and fn_score.score <= parameterlimit.weak_max:
                                 fn_score.points = parameterlimit.weak_points
                                 fn_score.comment = parameterlimit.weak_comment
                                 fn_score.save()
@@ -1035,8 +1035,17 @@ class ModelStarRating(View):
                         company_model_score.comment = rating.comment
                         company_model_score.save()
                         break;
+                    elif rating.star_count == 5:
+                        if company_model_score.score >= rating.min_score:
+                            company_model_score.star_rating = rating.star_count
+                            company_model_score.comment = rating.comment
+                            company_model_score.save()
+                            break;
+        response = simplejson.dumps({
+            'result': 'OK'
+        })
+        return HttpResponse(response, status=200, mimetype='application/json')
 
-        return HttpResponseRedirect(reverse("models"))
 
 class SaveModelStarRating(View):
 
@@ -1071,11 +1080,9 @@ class RatingReport(View):
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0:
                     model_score = model_score[0]
-                    print "model_score", model_score
-                    print "model_score rating", model_score.star_rating
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
-                        'star_rating': "*" * int(model_score.star_rating),
+                        'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                         'score': model_score.score,
                         'brief_comment': model_score.comment,
                     }
