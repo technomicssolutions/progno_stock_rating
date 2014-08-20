@@ -839,7 +839,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }*/
     $scope.get_fields = function(){
-        var url = '/field_settings/';
+        var url = '/function_settings/';
         $http.get(url).success(function(data) {
             $scope.fields = data.fields;
         })
@@ -857,7 +857,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_operands = function(){
-        var url = '/field_settings/';
+        var url = '/fields_with_mapping/';
         $http.get(url).success(function(data) {
             $scope.operands = data.fields;
         })  

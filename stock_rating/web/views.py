@@ -28,31 +28,50 @@ class Administration(View):
         context = {}
         return render(request, 'administration.html', context)
 
+class FieldsWithMapping(View):
+    def get(self, request, *args, **kwargs):
+        field_objects = DataField.objects.all()
+        fields = []
+        if request.is_ajax():
+            for field in field_objects:
+                try:
+                    f = FieldMap.objects.get(data_field=field)
+                    fields.append({
+                        'id': field.id,
+                        'name': field.name,
+                    })
+                except:
+                    continue
+            response = simplejson.dumps({
+                'result': 'OK',
+                'fields': fields
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+
 class FieldSettings(View):
     def get(self, request, *args, **kwargs):
-        if request.is_ajax():
-            field_objects = DataField.objects.all()
-            fields = []
-            for field in field_objects:
-                if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
-                    status = "Modified"
-                    date = field.updated_date
-                else:
-                    status = "Created"
-                    date = field.created_date
-                fields.append({
-                    'id': field.id,
-                    'name': field.name,
-                    'description': field.description,
-                    'status': status,
-                    'date': date.strftime("%d/%m/%Y"),
-                })
-            if request.is_ajax():
-                response = simplejson.dumps({
-                    'result': 'OK',
-                    'fields': fields
-                })
-                return HttpResponse(response, status=200, mimetype='application/json')
+        field_objects = DataField.objects.all()
+        fields = []
+        for field in field_objects:
+            if field.created_date.strftime("%d/%m/%Y") < field.updated_date.strftime("%d/%m/%Y"):
+                status = "Modified"
+                date = field.updated_date
+            else:
+                status = "Created"
+                date = field.created_date
+            fields.append({
+                'id': field.id,
+                'name': field.name,
+                'description': field.description,
+                'status': status,
+                'date': date.strftime("%d/%m/%Y"),
+            })
+        if request.is_ajax():            
+            response = simplejson.dumps({
+                'result': 'OK',
+                'fields': fields
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
         context = {}
         return render(request, 'field_settings.html', context)
 
@@ -314,6 +333,15 @@ class FieldMapping(View):
                     'mapping_id': mp.id                  
                 })
                 file_fields.append(mp.file_field)
+            for field in DataField.objects.all():
+                try:
+                    f = FieldMap.objects.get(data_field = field)
+                except:
+                    system_fields.append({
+                        'id': field.id,
+                        'name': field.name,  
+                        'mapping_id': '' ,
+                    })
             response = simplejson.dumps({
                 'result': 'Ok',
                 'file_fields': file_fields,
@@ -330,24 +358,30 @@ class FieldMapping(View):
             system_fields = ast.literal_eval(request.POST['system_fields'])
             file_fields = ast.literal_eval(request.POST['file_fields'])
             mappings = FieldMap.objects.count()
+            print "mappings = ", mappings
             if mappings > 0:
                 for system_field, file_field in zip(system_fields, file_fields):
-                    mapping = FieldMap.objects.get(id=system_field['mapping_id'])
                     if system_field['id'] != '':
                         system_field = DataField.objects.get(id=system_field['id'])
                     else:
                         system_field = None
-                    mapping.system_field = system_field
-                    mapping.file_field = file_field
+                    try:
+                        mapping = FieldMap.objects.get(id=system_field['mapping_id'])
+                        mapping.system_field = system_field
+                        mapping.file_field = file_field
+                    except:
+                        if file_field != '':
+                            mapping = FieldMap(data_file=data_file, data_field=system_field, file_field=file_field)
                     mapping.save()
             else:
                 for system_field, file_field in zip(system_fields, file_fields):
-                    if system_field['id'] != '':
-                        system_field = DataField.objects.get(id=system_field['id'])
-                    else:
-                        system_field = None
-                    mapping = FieldMap.objects.create(data_file=data_file, data_field=system_field, file_field=file_field)
-                    mapping.save()
+                    if len(file_field.strip()) > 0:
+                        if system_field['id'] != '':
+                            system_field = DataField.objects.get(id=system_field['id'])
+                        else:
+                            system_field = None
+                        mapping = FieldMap.objects.create(data_file=data_file, data_field=system_field, file_field=file_field)
+                        mapping.save()
             response = simplejson.dumps({
                 'result': 'Ok'
             })
