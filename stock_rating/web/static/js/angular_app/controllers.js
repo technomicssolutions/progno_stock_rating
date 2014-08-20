@@ -446,6 +446,11 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         /*$scope.select_category = ''*/
         $scope.selected_operators = [];
         $scope.selected_operands = [];
+        $scope.left_bracket_count = 0;
+        $scope.right_bracket_count = 0;
+        $scope.last_symbol = '';
+        $scope.left_bracket_added = false;
+        $scope.right_bracket_added = false;
         $scope.test = ['sd', '+', 'dg'].join(' ');
     }
     $scope.change_type = function(type){
@@ -531,6 +536,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }  
     $scope.validate_field_general = function(){
         $scope.msg = '';
+        console.log($scope.left_bracket_count);
+        console.log($scope.right_bracket_count);
         if($scope.new_general.function_name == '') {
             $scope.msg = "Please enter Function Name";
             return false;
@@ -543,7 +550,14 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_general.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } /*else if($scope.select_category == '' ) {
+        } else if($scope.left_bracket_count != $scope.right_bracket_count){
+            $scope.msg = "Bracket mismatch in formula";
+            return false;
+        } else if($scope.operator_added == true && $scope.formula[$scope.formula.length-1] != ")"){
+            $scope.msg = "Incorrect formula";
+            return false;
+        }
+        /*else if($scope.select_category == '' ) {
             $scope.msg = "Please select category";
             return false;
         }*/ else {
@@ -736,7 +750,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             'id': '',
             'function_name': '',
             'function_description': '',
-            'function_formula': '',            
+            'function_formula': [],            
             'select_head': '',
         } 
     }
@@ -869,6 +883,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })  
     }
     $scope.add_operand = function(){
+        $scope.msg = '';
         $scope.error_msg = '';
         if($scope.new_general.function_formula.length == 0) {
             $scope.selected_operands = [];
@@ -893,25 +908,46 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.selected_operand = operand;
     }
     $scope.add_operator = function(){
+        $scope.msg = '';
         if($scope.new_general.function_formula.length == 0) {
             $scope.selected_operands = [];
             $scope.selected_operators = [];
-        }
+        }   
+        if(!angular.isUndefined($scope.formula))  
+            $scope.last_symbol = $scope.formula[$scope.formula.length-1]
         $scope.error_msg = '';
-        if($scope.operand_added || ($scope.new_general.function_formula.length == 0 && $scope.selected_operator.symbol == "(")){
+        if($scope.selected_operator.symbol == ")" && $scope.left_bracket_added == false){
+             $scope.error_msg = "Bracket mismatch in formula";
+        }
+        else if(($scope.operand_added || $scope.selected_operator.symbol == "(" || $scope.last_symbol == ')') || ($scope.new_general.function_formula.length == 0 && $scope.selected_operator.symbol == "(")){
             $scope.new_general.function_formula.push($scope.selected_operator.symbol);
             $scope.operand_added = false;
-            $scope.operator_added = true;
+            $scope.operator_added = true;   
+            if($scope.selected_operator.symbol == "("){
+                $scope.left_bracket_count =  $scope.left_bracket_count+1;
+                $scope.left_bracket_added = true;
+                $scope.right_bracket_added = false;
+            }                
+            else if($scope.selected_operator.symbol == ")"){
+                $scope.right_bracket_count =  $scope.right_bracket_count+1;                   
+                $scope.right_bracket_added = true;
+                if($scope.right_bracket_count == $scope.left_bracket_count)
+                    $scope.left_bracket_added = false;
+            }                
             $scope.selected_operators.push($scope.selected_operator);
             $scope.formula = $scope.new_general.function_formula.join(' ')
         } else {
             $scope.error_msg = "Please add an operand";
-        }
+        }     
     }
     $scope.clear = function(){
         $scope.error_msg = '';
+        $scope.msg = '';
+        $scope.last_symbol = '';
         $scope.new_general.function_formula.pop();
         $scope.formula = $scope.new_general.function_formula.join(' ')
+        $scope.left_bracket_count = 0;
+        $scope.right_bracket_count = 0;
         if($scope.operator_added){
             $scope.selected_operators.pop();
             $scope.operator_added = false;
