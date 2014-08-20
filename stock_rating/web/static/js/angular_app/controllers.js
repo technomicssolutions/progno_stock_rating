@@ -1692,6 +1692,7 @@ function CompanyController($scope, $element, $http, $timeout, $location)
         $scope.hide_dropdown();
         $scope.data_file = {};
         $scope.data_file.src = "";
+        $scope.range(5);
         $scope.get_companies();
         $scope.visible_list = [];
         $scope.page_interval = 30;

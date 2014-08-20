@@ -82,22 +82,23 @@ def process_company_file(data_file):
 def create_stock_data(data_file):
     for sheet in data_file.sheets:
         company_stock = None
-        labels = sheet['rows'][0]
-        for row in sheet['rows']:
-            for i in range(len(row)):
-                if i == 0:
-                    try:
-                        company = Company.objects.get(isin_code=row[i])
-                        company_stock, created = CompanyStockData.objects.get_or_create(company=company)
-                    except:
-                        continue
-                else:
-                    if company_stock:
-                        if company_stock.stock_data == None:
-                            company_stock.stock_data = {}
-                        company_stock.stock_data[labels[i]] = row[i]
-                        company_stock.created_by = data_file.uploaded_by
-                        company_stock.save()
+        if len(sheet['rows']) > 0:
+            labels = sheet['rows'][0]
+            for row in sheet['rows']:
+                for i in range(len(row)):
+                    if i == 0:
+                        try:
+                            company = Company.objects.get(isin_code=row[i])
+                            company_stock, created = CompanyStockData.objects.get_or_create(company=company)
+                        except:
+                            continue
+                    else:
+                        if company_stock:
+                            if company_stock.stock_data == None:
+                                company_stock.stock_data = {}
+                            company_stock.stock_data[labels[i]] = row[i]
+                            company_stock.created_by = data_file.uploaded_by
+                            company_stock.save()
     data_file.processing_completed = True
     data_file.save()
 
