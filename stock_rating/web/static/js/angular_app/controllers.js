@@ -421,7 +421,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.select_type = 1;  
         $scope.get_operands();
         $scope.get_operators();
-        $scope.get_fields();
         $scope.new_general = {
             'function_name': '',
             'function_description': '',
@@ -488,6 +487,11 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.add_periods_continuity = function(new_continuity){       
         var no_of_periods = new_continuity.no_of_periods;
         $scope.msg = '';
+        var diff = new_continuity.periods.length;
+        for (i=diff; i >0; i--){
+            last_index = new_continuity.periods.indexOf(new_continuity.periods[new_continuity.periods.length - 1]);
+            new_continuity.periods.splice(last_index, 1);
+        }
         if(no_of_periods > $scope.fields.length)
             $scope.msg = "No of periods should not be greater than number of fields";
         else if (no_of_periods > 0){
@@ -497,18 +501,23 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     'period' : '',
                 });
             }
-        }  else {
+        } /* else {
             var diff = new_continuity.periods.length - no_of_periods ;
             for (i=diff; i >0; i--){
                 last_index = new_continuity.periods.indexOf(new_continuity.periods[new_continuity.periods.length - 1]);
                 new_continuity.periods.splice(last_index, 1);
             }
-        }      
+        } */     
     }
 
     $scope.add_periods_consistency = function(new_consistency){        
         var no_of_periods = new_consistency.no_of_periods;
         $scope.msg = '';
+        var diff = new_consistency.periods.length;
+        for (i=diff; i >0; i--){
+            last_index = new_consistency.periods.indexOf(new_consistency.periods[new_consistency.periods.length - 1]);
+            new_consistency.periods.splice(last_index, 1);
+        }
         if(no_of_periods > $scope.fields.length)
             $scope.msg = "No of periods should not be greater than number of fields";
         else if (no_of_periods > 0){
@@ -518,13 +527,13 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     'period' : '',
                 });
             }
-        }  else {
+        } /* else {
             var diff = new_consistency.periods.length - no_of_periods ;
             for (i=diff; i >0; i--){
                 last_index = new_consistency.periods.indexOf(new_consistency.periods[new_consistency.periods.length - 1]);
                 new_consistency.periods.splice(last_index, 1);
             }
-        }    
+        }    */
 
     }
 
@@ -852,12 +861,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.category_set = data.category_objects;
         })
     }*/
-    $scope.get_fields = function(){
-        var url = '/field_settings/';
-        $http.get(url).success(function(data) {
-            $scope.fields = data.fields;
-        })
-    }
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
@@ -874,6 +877,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/field_settings/';
         $http.get(url).success(function(data) {
             $scope.operands = data.fields;
+            $scope.fields = data.fields;
         })  
     }
     $scope.get_operators = function(){
