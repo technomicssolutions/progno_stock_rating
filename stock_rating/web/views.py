@@ -283,8 +283,6 @@ class DataUpload(View):
         data_file.uploaded_by = request.user
         data_file.save()        
         sheets = process_data_file(data_file)
-        if sheets=='':
-            print EMPTY
         data_file.sheets = sheets
         data_file.save()
 
@@ -837,29 +835,30 @@ class DeleteField(View):
     def get(self, request, *args, **kwargs):
         field = DataField.objects.get(id=request.GET.get('id')) 
         if field.formula_set.all().count() == 0:
-                field.delete()
-                res = {
-                  'result': 'ok',
-                }
+            field.delete()
+            res = {
+              'result': 'ok',
+            }
         else:
-                res = {
-                   'result': 'error',  
-                   'message': 'This field is used in funtion Formula'
-                }
+            res = {
+               'result': 'error',  
+               'message': 'This field is used in funtion Formula'
+            }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
 
 class DeleteHead(View):
     def get(self, request, *args, **kwargs):
-        head = AnalyticalHead.objects.get(id=request.GET.get('id')) 
-        try:
+        head = AnalyticalHead.objects.get(id=request.GET.get('id'))        
+        if head.analysismodel_set.all().count() == 0:
             head.delete()
             res = {
                 'result': 'ok',
             }
-        except:
+        else:
             res = {
                 'result': 'error',  
+                'message': 'This head is used in one of the models'
             }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
@@ -909,6 +908,23 @@ class DeleteParameter(View):
             }
         response = simplejson.dumps(res)
         return HttpResponse(response, status=200, mimetype='application/json')
+
+
+class DeleteRating(View):
+    def get(self, request, *args, **kwargs):
+        star_rating = StarRating.objects.get(id=request.GET.get('rating_id'))       
+        try:
+            star_rating.delete()
+            res = {
+              'result': 'ok',
+            }
+        except:
+            res = {
+               'result': 'error',  
+            }
+        response = simplejson.dumps(res)
+        return HttpResponse(response, status=200, mimetype='application/json')
+
 
 class ResetPassword(View):
 

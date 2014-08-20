@@ -755,6 +755,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.reset_general = function(){
         $scope.msg = "";
+        $scope.formula = "";
         $scope.new_general = {
             'id': '',
             'function_name': '',
@@ -764,7 +765,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } 
     }
     $scope.reset_continuity = function(){
-        $scope.msg = "";
+        $scope.msg = "";       
         $scope.new_continuity = {
             'id': '',
             'function_name': '',
@@ -1180,6 +1181,19 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.edit_rating = true;
         rating.editorEnabled = true;
     }
+    $scope.delete_rating = function(model_id,rating){      
+        show_loader();
+        var url = '/delete_rating/?rating_id='+rating.id;
+        $http.get(url).success(function(data){
+            hide_loader();
+            if(data.result == 'ok')
+                $scope.msg = "Rating deleted";
+            else 
+                $scope.msg = "Error";
+            $scope.get_model_details(model_id);              
+        })
+
+    }
     $scope.delete_parameters = function(model_id, parameters){
         show_loader();
         var url = '/delete_parameters/?id='+parameters.parameter_id;
@@ -1437,7 +1451,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
                     }
                 else
                     $scope.reset_model(); 
-                    $scope.get_models();        
+                    $scope.get_models(); 
+                    $scope.get_model_details($scope.selected_model);       
              
               }).error(function(data, status){
                 $scope.message = data.message;
@@ -1712,6 +1727,8 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
             hide_loader();
             if(data.result == 'ok')
                 $scope.msg = "Analytical Head deleted";
+            else if(data.result == 'error')
+                $scope.msg = "Delete not possible. Analytical Head is used by one of the model."
             $scope.get_analytical_head();                    
         })
     }
