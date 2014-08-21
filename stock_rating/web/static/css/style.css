@@ -598,6 +598,9 @@ td.two{
 td.three{
 	 width:12%; text-align:left;
 }
+td.three_1{
+	 width:12.2%; text-align:left;
+}
 td.six{
 	 width:10%; text-align:left;
 }
@@ -606,6 +609,21 @@ td.four{
 }
 td.five{
 	width:5.6%; text-align:center;
+}
+td.five_1{
+	width:6%; text-align:center;
+}
+td.six_1{
+	width:3.9%; text-align:center;
+}
+td.points_head{
+	width:3.9%; text-align:center;
+}
+td.six_2{
+	width:4.8%; text-align:center;
+}
+td.points_column{
+	width:6.2%; text-align:center;
 }
 th.four{
 	 width:26%; text-align:center;

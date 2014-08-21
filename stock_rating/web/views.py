@@ -698,6 +698,9 @@ class ModelDetails(View):
                         'weak_min': parameter.weak_min,
                         'weak_max': parameter.weak_max,
                         'weak_points': parameter.weak_points,
+                        'weak_min_1': parameter.weak_min_1 ,
+                        'weak_max_1': parameter.weak_max_1 ,
+                        'weak_points_1': parameter.weak_points_1,
                         'strong_comment': parameter.strong_comment,
                         'weak_comment': parameter.weak_comment,
                         'neutral_comment': parameter.neutral_comment
@@ -753,7 +756,19 @@ class ModelDetails(View):
             parameterlimit.neutral_points = parameters['neutral_points']
             parameterlimit.weak_min = parameters['weak_min']
             parameterlimit.weak_max = parameters['weak_max']
-            parameterlimit.weak_points = parameters['weak_points']
+            parameterlimit.weak_points = parameters['weak_points'] 
+            if len(parameters['weak_min_1']) > 0:
+                parameterlimit.weak_min_1 = parameters['weak_min_1']
+            else:
+                parameterlimit.weak_min_1 = None
+            if len(parameters['weak_max_1']) > 0:
+                parameterlimit.weak_max_1 = parameters['weak_max_1']
+            else:
+                parameterlimit.weak_max_1 = None
+            if len(parameters['weak_points_1']) > 0:
+                parameterlimit.weak_points_1 = parameters['weak_points_1']
+            else:           
+                parameterlimit.weak_points_1 = None
             parameterlimit.strong_comment = parameters['strong_comment']
             parameterlimit.weak_comment = parameters['weak_comment']
             parameterlimit.neutral_comment = parameters['neutral_comment']
@@ -1019,19 +1034,7 @@ class ModelStarRating(View):
                         function = parameterlimit.function
                         try:
                             calculate_general_function_score(function, company)
-                            fn_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                            if fn_score.score >= parameterlimit.strong_min and fn_score.score <= parameterlimit.strong_max:
-                                fn_score.points = parameterlimit.strong_points
-                                fn_score.comment = parameterlimit.strong_comment
-                                fn_score.save()
-                            elif fn_score.score >= parameterlimit.neutral_min and fn_score.score <= parameterlimit.neutral_max:
-                                fn_score.points = parameterlimit.neutral_points
-                                fn_score.comment = parameterlimit.neutral_comment
-                                fn_score.save()
-                            elif fn_score.score >= parameterlimit.weak_min and fn_score.score <= parameterlimit.weak_max:
-                                fn_score.points = parameterlimit.weak_points
-                                fn_score.comment = parameterlimit.weak_comment
-                                fn_score.save()
+                            fn_score = CompanyFunctionScore.objects.get(company=company, function=function)                            
                             score = score + fn_score.score
                         except Exception as e:
                             print e

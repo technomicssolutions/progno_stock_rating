@@ -1087,6 +1087,9 @@ function ModelController($scope, $element, $http, $timeout, $location)
                             'weak_max': '',                                    
                             'weak_min': '',                                    
                             'weak_points': '',
+                            'weak_max_1': '',                                    
+                            'weak_min_1': '',                                    
+                            'weak_points_1': '',
                             'strong_comment': '',
                             'weak_comment': '',
                             'neutral_comment': '',
@@ -1122,9 +1125,15 @@ function ModelController($scope, $element, $http, $timeout, $location)
         }                       
     }
 
-    $scope.save_parameters = function(model_id, function_id, parameters){ 
+    $scope.save_parameters = function(model_id, function_id, parameters){
         if($scope.validate_parameters(function_id, parameters)){
             show_loader();
+            if(parameters.weak_max_1 == null)
+                parameters.weak_max_1 = ""
+            if(parameters.weak_min_1 == null)
+                parameters.weak_min_1 = ""
+            if(parameters.weak_points_1 == null)
+                parameters.weak_points_1 = ""
             params = { 
                 'model_id': angular.toJson(model_id),
                 'function_id': angular.toJson(function_id),
@@ -1280,59 +1289,41 @@ function ModelController($scope, $element, $http, $timeout, $location)
         if(angular.isUndefined(function_id) && !$scope.edit_parameters) {
             $scope.msg = "Please select a function";
             return false;
-        } else if(angular.isUndefined(parameters) || parameters.strong_min == ''){
-            $scope.msg = "Please enter Strong Minimum";
-            return false;
-        } else if(!Number(parameters.strong_min) ) {
+        } else if(!Number(parameters.strong_min) && (parseInt(parameters.strong_min)!= 0)) {
             $scope.msg = "Invalid entry in Strong Minimum";
             return false;
-        } else if(angular.isUndefined(parameters.strong_max) || parameters.strong_max == ''){
-            $scope.msg = "Please enter Strong Maximum";
-            return false;
-        } else if(!Number(parameters.strong_max) ) {
+        } else if(!Number(parameters.strong_max) && (parseInt(parameters.strong_max)!= 0)) {
             $scope.msg = "Invalid entry in Strong Maximum";
             return false;
-        } else if(angular.isUndefined(parameters.strong_points) || parameters.strong_points == ''){
-            $scope.msg = "Please enter Strong Points";
-            return false;
-        } else if(!Number(parameters.strong_points) ) {
+        } else if(!Number(parameters.strong_points) && (parseInt(parameters.strong_points)!= 0)) {
             $scope.msg = "Invalid entry in Strong Points";
             return false;
-        } else if(angular.isUndefined(parameters.neutral_min) || parameters.neutral_min == ''){
-            $scope.msg = "Please enter Neutral Minimum";
-            return false;
-        } else if(!Number(parameters.neutral_min) ) {
+        } else if(!Number(parameters.neutral_min) && (parseInt(parameters.neutral_min)!= 0)) {
             $scope.msg = "Invalid entry in Neutral Minimum";
             return false;
-        } else if(angular.isUndefined(parameters.neutral_max) || parameters.neutral_max == ''){
-            $scope.msg = "Please enter Neutral Maximum";
-            return false;
-        } else if(!Number(parameters.neutral_max) ) {
+        } else if(!Number(parameters.neutral_max) && (parseInt(parameters.neutral_max)!= 0)) {
             $scope.msg = "Invalid entry in Neutral Maximum";
             return false;
-        } else if(angular.isUndefined(parameters.neutral_points) || parameters.neutral_points == ''){
-            $scope.msg = "Please enter Neutral Points";
-            return false;
-        } else if(!Number(parameters.neutral_points) ) {
+        } else if(!Number(parameters.neutral_points) && (parseInt(parameters.neutral_points)!= 0)) {
             $scope.msg = "Invalid entry in Neutral Points";
             return false;
-        } else if(angular.isUndefined(parameters.weak_min) || parameters.weak_min == ''){
-            $scope.msg = "Please enter Weak Minimum";
+        } else if(!Number(parameters.weak_min) && (parseInt(parameters.weak_min)!= 0)) {
+            $scope.msg = "Invalid entry in Weak Minimum 1";
             return false;
-        }  else if(!Number(parameters.weak_min) ) {
-            $scope.msg = "Invalid entry in Weak Minimum";
+        } else if(!Number(parameters.weak_max) && (parseInt(parameters.weak_max)!= 0)) {
+            $scope.msg = "Invalid entry in Weak Maximum 1";
             return false;
-        } else if(angular.isUndefined(parameters.weak_max) || parameters.weak_max == ''){
-            $scope.msg = "Please enter Weak Maximum";
+        } else if(!Number(parameters.weak_points) && (parseInt(parameters.weak_points)!= 0)) {
+            $scope.msg = "Invalid entry in Weak Points 1";
             return false;
-        } else if(!Number(parameters.weak_max) ) {
-            $scope.msg = "Invalid entry in Weak Maximum";
+        } else if(parameters.weak_min_1 != null && parameters.weak_min_1.length > 0 && isNaN(parameters.weak_min_1)){
+            $scope.msg = "Invalid entry in Weak Minimum 2";
+            return false;                
+        } else if(parameters.weak_max_1 != null && parameters.weak_max_1.length > 0 && isNaN(parameters.weak_max_1)) {
+            $scope.msg = "Invalid entry in Weak Maximum 2";
             return false;
-        } else if(angular.isUndefined(parameters.weak_points) || parameters.weak_points == ''){
-            $scope.msg = "Please enter Weak Points";
-            return false;
-        } else if(!Number(parameters.weak_points) ) {
-            $scope.msg = "Invalid entry in Weak Points";
+        } else if(parameters.weak_points_1 != null && parameters.weak_points_1.length > 0 && isNaN(parameters.weak_points_1)) {
+            $scope.msg = "Invalid entry in Weak Points 2";
             return false;
         } else if(Number(parameters.strong_min) >= Number(parameters.strong_max)) {
             $scope.msg = "Strong Minimum should be less than Strong Maximum";
@@ -1366,16 +1357,16 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             
         }
-        if(!Number(rating.star_count) ) {
+        if(!Number(rating.star_count) && (parseInt(rating.star_count)!= 0)) {
             $scope.rating_msg = "Invalid entry in Star Count";
             return false;
         } else if(rating.star_count > 5){
             $scope.rating_msg = "Maximum Star Count value is 5";
             return false;
-        } else if(!Number(rating.min_score) ){
+        } else if(!Number(rating.min_score) && (parseInt(rating.min_score)!= 0)){
             $scope.rating_msg = "Invalid entry in Min Score";
             return false;
-        } else if(!Number(rating.max_score) &&  rating.star_count != 5) {
+        } else if(!Number(rating.max_score) &&  rating.star_count != 5 && (parseInt(rating.max_score)!= 0)) {
             $scope.rating_msg = "Invalid entry in Max Score";
             return false;
         } else if(rating.star_count == 5 && rating.max_score != '' && rating.max_score != null){

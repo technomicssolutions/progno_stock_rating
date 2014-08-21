@@ -61,7 +61,7 @@
 					<th class="three">Function/ Comments</th>
 					<th class="four" colspan="3">Strong</th>
 					<th class="four" colspan="3">Neutral</th>
-					<th class="four" colspan="3">Weak</th>
+					<th class="four" colspan="6">Weak</th>
 					<th class="four no_border" colspan="4"></th></tr>
 				</tr>
 				
@@ -70,7 +70,8 @@
 					<td class="three"></td>
 					<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
 					<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
-					<td class="five">Min</td><td class="five">Max</td><td class="five">Points</td>
+					<td class="six_1">Min1</td><td class="six_1">Max1</td><td class="points_head">Points1</td>
+					<td class="six_1">Min2</td><td class="six_1">Max2</td><td class="points_head">Points2</td>
 					<td class="five no_border"></td>
 					<td class="five no_border"></td>
 					<td class="five no_border"></td>
@@ -78,73 +79,89 @@
 				</tr>
 				<tr ng-repeat="analyt_head in analytical_heads">
 					<td class="six">[[ analyt_head.analytical_head_name ]]</td>
-					<td colspan="14">
+					<td colspan="17">
 						<table class="table table-stripped">
 							<tbody ng-repeat="function in analyt_head.function_set">
 								<tr>
-									<td class="three no_border_left">
+									<td class="three_1 no_border_left">
 										<p ng-hide="!function.function_name">[[ function.function_name ]]</p>
 										<select ng-show="function.function_name == ' '" ng-model="select_function">
 											<option value="" disabled="True">Select</option>
 											<option value="[[ function.id ]]" ng-repeat="function in analyt_head.empty_functions">[[ function.name ]]</option>	
 										</select>
 									</td>
-									<td class="five">
+									<td class="five_1">
 										<input type="text" ng-model="function.parameter_set.strong_min" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.strong_min]]</span>
 									</td>
-									<td class="five">
+									<td class="five_1">
 										<input type="text" ng-model="function.parameter_set.strong_max" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.strong_max]]</span>
 									</td>
-									<td class="five">
+									<td class="five_1">
 										<input type="text" ng-model="function.parameter_set.strong_points" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.strong_points]]</span>
 									</td>
-									<td class="five">
+									<td class="five_1">
 										<input type="text" ng-model="
 										function.parameter_set.neutral_min" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.neutral_min]]</span>
 									</td>
-									<td class="five">
+									<td class="five_1">
 										<input type="text" ng-model="
 										function.parameter_set.neutral_max" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.neutral_max]]</span>
 									</td>
-									<td class="five">
+									<td class="five_1">
 										<input type="text" ng-model="
 										function.parameter_set.neutral_points" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.neutral_points]]</span>
 									</td>
-									<td class="five">
+									<td class="six_2">
 										<input type="text" ng-model="
 										function.parameter_set.weak_min" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_min]]</span>
 									</td>
-									<td class="five">
+									<td class="six_2">
 										<input type="text" ng-model="
 										function.parameter_set.weak_max" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_max]]</span>
 									</td>
-									<td class="five">
+									<td class="points_column">
 										<input type="text" ng-model="
 										function.parameter_set.weak_points" ng-show="function.editorEnabled">
 										<span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_points]]</span>
 									</td>	
-									<input type="hidden" ng-model="function.parameter_set.id" />
-									<td class="five no_border"></td>
+									<td class="six_2">
+										<input type="text" ng-model="
+										function.parameter_set.weak_min_1" ng-show="function.editorEnabled">
+										<span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_min_1]]</span>
+									</td>
+									<td class="six_2">
+										<input type="text" ng-model="
+										function.parameter_set.weak_max_1" ng-show="function.editorEnabled">
+										<span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_max_1]]</span>
+									</td>
+									<td class="points_column">
+										<input type="text" ng-model="
+										function.parameter_set.weak_points_1" ng-show="function.editorEnabled">
+										<span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_points_1]]</span></td>
+
+									<input type="hidden" ng-model="function.parameter_set.id" />									
 									<td class="five no_border"><input type="button" value="Edit" ng-click="edit_function(function)"></td>
 									<td class="five no_border"><input type="button" value="Del" ng-click="delete_parameters(selected_model,function.parameter_set)"></td>
 									<td class="five no_border"><input type="button" value="Save" ng-click="save_parameters(selected_model,select_function,function.parameter_set)"></td>
+									<td class="five no_border"></td>
 								</tr>
 								<tr>
 									<td class="six">Comments </td>
 									<td class="five" colspan="3"><textarea place-holder="Comment" class="comment_textarea" ng-model="
 										function.parameter_set.strong_comment" ng-show="function.editorEnabled"></textarea><span ng-hide="function.editorEnabled">[[ function.parameter_set.strong_comment]]</span> </td>
 									<td class="five" colspan="3"><textarea place-holder="Comment" class="comment_textarea" ng-model="
-										function.parameter_set.weak_comment" ng-show="function.editorEnabled"></textarea><span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_comment]]</span> </td>
-									<td class="five" colspan="3"><textarea place-holder="Comment" class="comment_textarea" ng-model="
 										function.parameter_set.neutral_comment" ng-show="function.editorEnabled"></textarea><span ng-hide="function.editorEnabled">[[ function.parameter_set.neutral_comment]]</span> </td>
+									<td class="five" colspan="6"><textarea place-holder="Comment" class="comment_textarea" ng-model="
+										function.parameter_set.weak_comment" ng-show="function.editorEnabled"></textarea><span ng-hide="function.editorEnabled">[[ function.parameter_set.weak_comment]]</span> </td>
+		
 								<tr>
 							</tbody>
 						</table>
