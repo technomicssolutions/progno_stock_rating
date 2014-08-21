@@ -199,6 +199,7 @@
 		<h3 class="sub_heading"> Model List </h3>
 		<table class="table table-stripped">
 			<tr> 
+				<th> # </th>
 				<th> Model Name </th>
 				<th> Model Description </th>
 				<th> Industries </th>
@@ -207,6 +208,7 @@
 				<th> Action </th>
 			</tr>
 			<tr ng-repeat="model in model_list">
+				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
 				<td>[[ model.name ]]</td>
 				<td>[[ model.description ]]</td>
 				<td><div class="model_industry" ng-repeat="item in model.industry">[[ item.name ]]</div></td>
@@ -215,6 +217,9 @@
 				<td> <a href="" ng-click="edit_field(model)"> Modify </a> / <a href="" ng-click="delete_model(model)"> Delete </a>
 			</tr>
 		</table>
+	</div>
+	<div  ng-show="create_model">
+	{% include 'pagination.html' %}
 	</div>
 </div>
 

@@ -2,20 +2,20 @@
 
 function paginate(list, $scope, page_interval) {
     if(!page_interval)
-        var page_interval = 20;
+        $scope.page_interval = 20;
     $scope.current_page = 1;
-    $scope.pages = list.length / page_interval;
+    $scope.pages = list.length / $scope.page_interval;
     if($scope.pages > parseInt($scope.pages))
         $scope.pages = parseInt($scope.pages) + 1;
-    $scope.visible_list = list.slice(0, page_interval);
+    $scope.visible_list = list.slice(0, $scope.page_interval);
 }
     
 function select_page(page, list, $scope, page_interval) {
     if(!page_interval)
-        var page_interval = 20;
+        $scope.page_interval = 20;
     var last_page = page - 1;
-    var start = (last_page * page_interval);
-    var end = page_interval * page;
+    var start = (last_page * $scope.page_interval);
+    var end = $scope.page_interval * page;
     $scope.visible_list = list.slice(start, end);
     $scope.current_page = page;
 }
@@ -62,27 +62,6 @@ function DashboardController($scope, $element, $http, $timeout, $location)
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
     }
-    $scope.paginate = function(){
-        $scope.current_ques_page = 1;
-        $scope.que_pages = $scope.questionairs.length / $scope.ques_page_interval;
-        if($scope.que_pages > parseInt($scope.que_pages))
-            $scope.que_pages = parseInt($scope.que_pages) + 1;
-        $scope.visible_questionairs = $scope.questionairs.slice(0, $scope.ques_page_interval);
-    }
-
-    $scope.select_page = function(page) {
-        if(ques_page == 0){
-            ques_page = $scope.current_ques_page + 1;
-        } else if(ques_page == -1){
-            ques_page = $scope.current_ques_page - 1;
-        }
-        var last_ques_page = ques_page - 1;
-        var start = (last_ques_page * $scope.ques_page_interval) ;
-        var end = $scope.ques_page_interval * ques_page;
-        $scope.current_ques_page = ques_page;
-        $scope.visible_questionairs = $scope.questionairs.slice(start, end);
-    }
-
     $scope.hide_popup_divs = function(){
         $('#assign_mentee_mentor').css('display', 'none');
         $('#assign_mentee_saq').css('display', 'none');
@@ -192,7 +171,6 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
             $scope.new_user.score_settings = String($scope.new_user.score_settings)
             $scope.new_user.function_settings = String($scope.new_user.function_settings)
             $scope.new_user.analytical_heads = String($scope.new_user.analytical_heads)
-            console.log($scope.new_user);
             params = { 
                 'user_details': angular.toJson($scope.new_user),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -238,6 +216,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         var url = '/users/';
         $http.get(url).success(function(data) {
             $scope.users = data.users;
+            paginate($scope.users, $scope);
         })
     }
     $scope.range = function(n) {
@@ -255,27 +234,22 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
     }
-    $scope.paginate = function(){
-        $scope.current_ques_page = 1;
-        $scope.que_pages = $scope.questionairs.length / $scope.ques_page_interval;
-        if($scope.que_pages > parseInt($scope.que_pages))
-            $scope.que_pages = parseInt($scope.que_pages) + 1;
-        $scope.visible_questionairs = $scope.questionairs.slice(0, $scope.ques_page_interval);
+    $scope.select_page = function(page){
+        select_page(page, $scope.users, $scope);
     }
-
-    $scope.select_page = function(page) {
-        if(ques_page == 0){
-            ques_page = $scope.current_ques_page + 1;
-        } else if(ques_page == -1){
-            ques_page = $scope.current_ques_page - 1;
-        }
-        var last_ques_page = ques_page - 1;
-        var start = (last_ques_page * $scope.ques_page_interval) ;
-        var end = $scope.ques_page_interval * ques_page;
-        $scope.current_ques_page = ques_page;
-        $scope.visible_questionairs = $scope.questionairs.slice(start, end);
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.users, $scope);
     }
-
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.users, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
     $scope.hide_popup_divs = function(){
         $('#assign_mentee_mentor').css('display', 'none');
         $('#assign_mentee_saq').css('display', 'none');
@@ -315,6 +289,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
         var url = '/field_settings/';
         $http.get(url).success(function(data) {
             $scope.fields = data.fields;
+            paginate($scope.fields, $scope);
         })
     }
     $scope.validate_field = function(){
@@ -379,24 +354,21 @@ function FieldController($scope, $element, $http, $timeout, $location)
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
     }
-    $scope.paginate = function(){
-        $scope.current_ques_page = 1;
-        $scope.que_pages = $scope.questionairs.length / $scope.ques_page_interval;
-        if($scope.que_pages > parseInt($scope.que_pages))
-            $scope.que_pages = parseInt($scope.que_pages) + 1;
-        $scope.visible_questionairs = $scope.questionairs.slice(0, $scope.ques_page_interval);
+    $scope.select_page = function(page){
+        select_page(page, $scope.fields, $scope);
     }
-    $scope.select_page = function(page) {
-        if(ques_page == 0){
-            ques_page = $scope.current_ques_page + 1;
-        } else if(ques_page == -1){
-            ques_page = $scope.current_ques_page - 1;
-        }
-        var last_ques_page = ques_page - 1;
-        var start = (last_ques_page * $scope.ques_page_interval) ;
-        var end = $scope.ques_page_interval * ques_page;
-        $scope.current_ques_page = ques_page;
-        $scope.visible_questionairs = $scope.questionairs.slice(start, end);
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.fields, $scope);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.fields, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
     }
     $scope.hide_popup_divs = function(){
         $('#assign_mentee_mentor').css('display', 'none');
@@ -527,14 +499,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     'period' : '',
                 });
             }
-        } /* else {
-            var diff = new_consistency.periods.length - no_of_periods ;
-            for (i=diff; i >0; i--){
-                last_index = new_consistency.periods.indexOf(new_consistency.periods[new_consistency.periods.length - 1]);
-                new_consistency.periods.splice(last_index, 1);
-            }
-        }    */
-
+        }
     }
 
     $scope.show_dropdown = function(){
@@ -545,8 +510,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }  
     $scope.validate_field_general = function(){
         $scope.msg = '';
-        console.log($scope.left_bracket_count);
-        console.log($scope.right_bracket_count);
         if($scope.new_general.function_name == '') {
             $scope.msg = "Please enter Function Name";
             return false;
@@ -565,11 +528,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.operator_added == true && $scope.formula[$scope.formula.length-1] != ")"){
             $scope.msg = "Incorrect formula";
             return false;
-        }
-        /*else if($scope.select_category == '' ) {
-            $scope.msg = "Please select category";
-            return false;
-        }*/ else {
+        } else {
             return true;
         }  
     }
@@ -872,6 +831,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         var url = '/function_settings/';
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
+            paginate($scope.functions, $scope);
         })
     }
     $scope.get_operands = function(){
@@ -901,7 +861,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.operand_added = true;
             $scope.selected_operands.push($scope.selected_operand);
             $scope.formula = $scope.new_general.function_formula.join(' ')
-            console.log('$scope.formula', $scope.formula);
         } else {
             $scope.error_msg = "Please add an operator";
         }
@@ -983,6 +942,22 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.error_msg = "Please add an operator";
         }
     }
+    $scope.select_page = function(page){
+        select_page(page, $scope.functions, $scope);
+    }
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.functions, $scope);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.functions, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
 }
 
 function ModelController($scope, $element, $http, $timeout, $location)
@@ -1062,6 +1037,8 @@ function ModelController($scope, $element, $http, $timeout, $location)
         var url = '/models/';
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
+            paginate($scope.model_list, $scope);
+
         })
     }
     $scope.calculate_star_rating = function(){
@@ -1178,8 +1155,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             model_function.editorEnabled = true;
        }
     }
-    $scope.edit_rating = function(rating){
-        $scope.edit_rating = true;
+    $scope.edit_rating = function(rating){        
         rating.editorEnabled = true;
     }
     $scope.delete_rating = function(model_id,rating){    
@@ -1390,7 +1366,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             
         }
-        console.log(rating.max_score, rating.min_score)
         if(!Number(rating.star_count) ) {
             $scope.rating_msg = "Invalid entry in Star Count";
             return false;
@@ -1526,6 +1501,22 @@ function ModelController($scope, $element, $http, $timeout, $location)
                }
             $scope.get_models();                    
         })
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.model_list, $scope);
+    }
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.model_list, $scope);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.model_list, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -1687,7 +1678,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
-        $scope.get_analytical_head();
+        $scope.get_analytical_head();        
        }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -1699,6 +1690,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
+            paginate($scope.anly_heads, $scope);
         })
     }
     $scope.validate_head = function(){
@@ -1764,6 +1756,22 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
          'id': '',
          }         
     }
+    $scope.select_page = function(page){
+        select_page(page, $scope.anly_heads, $scope);
+    }
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.anly_heads, $scope);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.anly_heads, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
 }
 
 function CompanyController($scope, $element, $http, $timeout, $location)
@@ -1776,7 +1784,6 @@ function CompanyController($scope, $element, $http, $timeout, $location)
         $scope.range(5);
         $scope.get_companies();
         $scope.visible_list = [];
-        $scope.page_interval = 30;
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -1820,22 +1827,22 @@ function CompanyController($scope, $element, $http, $timeout, $location)
         show_loader();
         $http.get(url).success(function(data) {
             $scope.companies = data.companies;
-            paginate($scope.companies, $scope, $scope.page_interval);
+            paginate($scope.companies, $scope);
             hide_loader();
         })
     }
     $scope.select_page = function(page){
-        select_page(page, $scope.companies, $scope, $scope.page_interval);
+        select_page(page, $scope.companies, $scope);
     }
     $scope.select_next_page = function(){
         var page = $scope.current_page + 1;
         if(page != $scope.pages + 1)
-            select_page(page, $scope.companies, $scope, $scope.page_interval);
+            select_page(page, $scope.companies, $scope);
     }
     $scope.select_previous_page = function(){
         var page = $scope.current_page - 1
         if(page != 0)
-            select_page(page, $scope.companies, $scope, $scope.page_interval);
+            select_page(page, $scope.companies, $scope);
     }
     $scope.range = function(n) {
         return new Array(n);
@@ -1848,7 +1855,6 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
         $scope.csrf_token = csrf_token;
         hide_dropdown();
         $scope.visible_list = [];
-        $scope.page_interval = 30;
         $scope.ratings = [];
         $scope.companies = [];
         $scope.search_keys = [];
@@ -1879,7 +1885,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
             show_loader();
             $http.get(url).success(function(data) {
                 $scope.companies = data.companies;
-                paginate($scope.companies, $scope, $scope.page_interval);
+                paginate($scope.companies, $scope);
                 hide_loader();
                 $scope.show_suggestions();
             })

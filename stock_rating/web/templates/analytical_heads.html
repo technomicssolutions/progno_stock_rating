@@ -21,18 +21,21 @@
 		<h3 class="sub_heading"> Analytical Head List </h3>
 		<table class="table table-stripped">
 			<tr> 
+				<th> # </th>
 				<th> Name </th>
 				<th> Description </th>
 				<th> Created/Last Modified</th>
 				<th> Actions </th>
 			</tr>
-			<tr ng-repeat="head in anly_heads">
+			<tr ng-repeat="head in visible_list">
+				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
 				<td> [[head.title]] </td>
 				<td> [[head.description]] </td>
 				<td> [[head.status]] - [[head.date]]  </td>
 				<td> <a href="" ng-click="edit_head(head)"> Modify </a> / <a href="" ng-click="delete_head(head)"> Delete </a>
 			</tr>
 		</table>
+		{% include 'pagination.html' %}
 	</div>
 
 {% endblock content %}

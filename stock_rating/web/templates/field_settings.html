@@ -21,12 +21,14 @@
 		<h3 class="sub_heading"> Field List </h3>
 		<table class="table table-stripped">
 			<tr> 
+				<th> # </th>
 				<th> Field Name </th>
 				<th> Description </th>
 				<th> Created/Last Modified</th>
 				<th> Actions </th>
 			</tr>
-			<tr ng-repeat="field in fields">
+			<tr ng-repeat="field in visible_list">
+				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
 				<td> [[field.name]] </td>
 				<td> [[field.description]] </td>
 				<td> [[field.status]] - [[field.date]]  </td>
@@ -34,6 +36,7 @@
 			</tr>
 		</table>
 		<p class="error_msg"> [[error_msg]] </p>
+		{% include 'pagination.html' %}
 	</div>
 
 {% endblock content %}

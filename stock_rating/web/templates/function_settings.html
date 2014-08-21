@@ -129,6 +129,7 @@
 		<h3 class="sub_heading"> Functions List </h3>
 		<table class="table table-stripped">
 			<tr> 
+				<th> # </th>
 				<th> Function Name </th>
 				<th> Objective </th>
 				<!-- <th> Category</th> -->
@@ -137,6 +138,7 @@
 				<th> Action </th>
 			</tr>
 			<tr ng-repeat="function in functions">
+				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
 				<td>[[ function.name ]]</td>
 				<td>[[ function.head ]]</td>
 				<!-- <td>[[ function.category ]]</td> -->
@@ -148,6 +150,7 @@
 			</tr>
 		</table>
 		</div>
+		{% include 'pagination.html' %}
 	</div>
 {% endblock content %}
 

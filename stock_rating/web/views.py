@@ -127,9 +127,6 @@ class FunctionSettings(View):
         if request.is_ajax():
             function_details = ast.literal_eval(request.POST['function_details'])
             function_type = ast.literal_eval(request.POST['function_type'])
-            print function_details
-            # function_category = ast.literal_eval(request.POST['function_category'])            
-            # category=FunctionCategory.objects.get(id=function_category)
             if int(function_type) == 1:
                 operators = ast.literal_eval(request.POST['formula_operators'])
                 operands = ast.literal_eval(request.POST['formula_operands'])
@@ -356,7 +353,6 @@ class FieldMapping(View):
             system_fields = ast.literal_eval(request.POST['system_fields'])
             file_fields = ast.literal_eval(request.POST['file_fields'])
             mappings = FieldMap.objects.count()
-            print "mappings = ", mappings
             if mappings > 0:
                 for system_field, file_field in zip(system_fields, file_fields):
                     if system_field['id'] != '':
@@ -394,12 +390,13 @@ class FileFields(View):
             if request.is_ajax():
                 fields = []
                 for sheet in file_obj.sheets:
-                    fields.append(sheet['rows'][0])
+                    if len(sheet['rows']) > 0:
+                        fields.append(sheet['rows'][0])
                 fields = [x for y in fields for x in y]
                 response = simplejson.dumps({
                     'fields': list(OrderedDict.fromkeys(fields))
                 })
-            return HttpResponse(response, status=200, mimetype='application/json')
+                return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'field_mapping.html', {
             'fields' : file_obj.sheets if file_obj else []
         })
@@ -1011,10 +1008,8 @@ class ModelStarRating(View):
         analytical_heads = model.analytical_heads.all()
         companies = Company.objects.all()
         model_ratings = model.starrating_set.all()
-        print "industries=", industries
         for industry in industries:
             companies = industry.company_set.all()
-            print "companies = ", companies
             for company in companies:
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
                 for head in analytical_heads:
@@ -1022,11 +1017,9 @@ class ModelStarRating(View):
                     parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                     for parameterlimit in parameterlimits:
                         function = parameterlimit.function
-                        print "function=", function
                         try:
                             calculate_general_function_score(function, company)
                             fn_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                            print "function score= ", fn_score
                             if fn_score.score >= parameterlimit.strong_min and fn_score.score <= parameterlimit.strong_max:
                                 fn_score.points = parameterlimit.strong_points
                                 fn_score.comment = parameterlimit.strong_comment

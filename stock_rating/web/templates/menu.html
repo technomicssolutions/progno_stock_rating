@@ -10,11 +10,11 @@
 						<span class="administration"> > </span> 
 					</li>
 				{% endif %}
-				<li> 
-					<a href ="{% url 'companies' %}"> Companies </a>
-					<span class="companies"> > </span> 
-				</li>
 				{% if user_permission.data_upload %}
+					<li> 
+						<a href ="{% url 'companies' %}"> Companies </a>
+						<span class="companies"> > </span> 
+					</li>				
 					<li> 
 						<a href ="{% url 'data_upload' %}"> Data Upload </a>
 						<span class="dataupload"> > </span> 
