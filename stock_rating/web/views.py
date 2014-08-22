@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from models import (UserPermission, DataField, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
  FieldMap, Operator, Company, CompanyFile, Formula, CompanyFunctionScore, CompanyModelScore, \
- StarRating)
+ StarRating, CompanyModelFunctionPoint)
 
 from utils import process_data_file, process_company_file, calculate_general_function_score
 
@@ -365,7 +365,10 @@ class FieldMapping(View):
                         mapping.file_field = file_field
                     except:
                         if file_field != '':
-                            mapping = FieldMap(data_file=data_file, data_field=system_field, file_field=file_field)
+                            mapping, created = FieldMap.objects.get_or_create(data_field=system_field)
+                            mapping.data_file = data_file
+                            mapping.file_field = file_field 
+                            mapping.save()
                     mapping.save()
             else:
                 for system_field, file_field in zip(system_fields, file_fields):
@@ -700,7 +703,6 @@ class ModelDetails(View):
                         'weak_points': parameter.weak_points,
                         'weak_min_1': parameter.weak_min_1 if parameter.weak_min_1 is not None else '',
                         'weak_max_1': parameter.weak_max_1 if parameter.weak_max_1 is not None else '',
-                        'weak_points_1': parameter.weak_points_1 if parameter.weak_points_1 is not None else '',
                         'strong_comment': parameter.strong_comment,
                         'weak_comment': parameter.weak_comment,
                         'neutral_comment': parameter.neutral_comment
@@ -765,10 +767,6 @@ class ModelDetails(View):
                 parameterlimit.weak_max_1 = parameters['weak_max_1']
             else:
                 parameterlimit.weak_max_1 = None
-            if len(str(parameters['weak_points_1'])) > 0:
-                parameterlimit.weak_points_1 = parameters['weak_points_1']
-            else:           
-                parameterlimit.weak_points_1 = None
             parameterlimit.strong_comment = parameters['strong_comment']
             parameterlimit.weak_comment = parameters['weak_comment']
             parameterlimit.neutral_comment = parameters['neutral_comment']
@@ -1021,8 +1019,7 @@ class ModelStarRating(View):
         model = AnalysisModel.objects.get(id=kwargs['model_id'])
         industries = model.industries.all()
         analytical_heads = model.analytical_heads.all()
-        companies = Company.objects.all()
-        model_ratings = model.starrating_set.all()
+        model_ratings = model.starrating_set.all()        
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
@@ -1031,11 +1028,49 @@ class ModelStarRating(View):
                     score = 0
                     parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                     for parameterlimit in parameterlimits:
-                        function = parameterlimit.function
+                        function = parameterlimit.function                        
                         try:
                             calculate_general_function_score(function, company)
-                            fn_score = CompanyFunctionScore.objects.get(company=company, function=function)                            
-                            score = score + fn_score.score
+                            function_score = CompanyFunctionScore.objects.get(company=company, function=function)
+                            company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
+                            if not parameterlimit.strong_max.isdigit() and function_score.score >= parameterlimit.strong_min:
+                                company_model_function_point.points = parameterlimit.strong_points
+                                company_model_function_point.comment = parameterlimit.strong_comment
+                                company_model_function_point.save()                               
+                            elif function_score.score >= parameterlimit.strong_min and function_score.score <= parameterlimit.strong_max:
+                                company_model_function_point.points = parameterlimit.strong_points
+                                company_model_function_point.comment = parameterlimit.strong_comment
+                                company_model_function_point.save()
+                            elif function_score.score >= parameterlimit.neutral_min and function_score.score <= parameterlimit.neutral_max:
+                                company_model_function_point.points = parameterlimit.neutral_points
+                                company_model_function_point.comment = parameterlimit.neutral_comment
+                                company_model_function_point.save()
+                            elif not parameterlimit.weak_min.isdigit() and function_score.score <= parameterlimit.weak_max:
+                                company_model_function_point.points = parameterlimit.weak_points
+                                company_model_function_point.comment = parameterlimit.weak_comment
+                                company_model_function_point.save()
+                            elif function_score.score >= parameterlimit.weak_min and function_score.score <= parameterlimit.weak_max:
+                                company_model_function_point.points = parameterlimit.weak_points
+                                company_model_function_point.comment = parameterlimit.weak_comment
+                                company_model_function_point.save()
+                            elif parameterlimit.weak_min_1 is not None:
+                                if not parameterlimit.weak_min_1.isdigit() and function_score.score <= parameterlimit.weak_max_1:
+                                    company_model_function_point.points = parameterlimit.weak_points
+                                    company_model_function_point.comment = parameterlimit.weak_comment
+                                    company_model_function_point.save()
+                                elif not parameterlimit.weak_max_1.isdigit() and parameterlimit.weak_max_1 == "Above" and function_score.score >= parameterlimit.weak_min_1:
+                                    company_model_function_point.points = parameterlimit.weak_points
+                                    company_model_function_point.comment = parameterlimit.weak_comment
+                                    company_model_function_point.save()
+                                elif not parameterlimit.weak_max_1.isdigit() and parameterlimit.weak_max_1 == "Below" and function_score.score <= parameterlimit.weak_min_1:
+                                    company_model_function_point.points = parameterlimit.weak_points
+                                    company_model_function_point.comment = parameterlimit.weak_comment
+                                    company_model_function_point.save()
+                                elif function_score.score >= parameterlimit.weak_min_1 and function_score.score <= parameterlimit.weak_max_1:
+                                    company_model_function_point.points = parameterlimit.weak_points
+                                    company_model_function_point.comment = parameterlimit.weak_comment
+                                    company_model_function_point.save()                                    
+                            score = score + function_score.score
                         except Exception as e:
                             print e
                             continue
@@ -1106,7 +1141,7 @@ class RatingReport(View):
                     comments = []
                     for parameter in parameters:
                         function = parameter.function
-                        fun_score = CompanyFunctionScore.objects.filter(company=company, function=function)
+                        fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
                         if fun_score.count() > 0:
                             comments.append(fun_score[0].comment)
                     rating['detailed_comment'] = comments

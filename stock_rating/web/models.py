@@ -55,7 +55,6 @@ class DataFile(Date):
 
 class FieldMap(Date):
 
-    data_file = models.ForeignKey(DataFile)
     data_field = models.ForeignKey(DataField, null=True, blank=True)
     file_field = models.CharField('File Field', max_length=200, unique=False, null=True, blank=True)
 
@@ -159,17 +158,16 @@ class ParameterLimit(Date):
     analysis_model = models.ForeignKey('AnalysisModel')
     function = models.ForeignKey(Function)
     strong_min = models.FloatField('Strong Min', max_length=5)
-    strong_max = models.FloatField('Strong Max', max_length=5)
+    strong_max = models.CharField('Strong Max', max_length=30)
     strong_points = models.FloatField('Strong Points', max_length=5, default=0)
     neutral_min = models.FloatField('Neutral Min', max_length=5)
     neutral_max = models.FloatField('Neutral Max', max_length=5)
     neutral_points = models.FloatField('Neutral Points', max_length=5, default=0)
-    weak_min = models.FloatField('weak Min', max_length=5, default=0)
-    weak_min_1 = models.FloatField('weak Min 1', max_length=5, null=True, blank = True)
-    weak_max = models.FloatField('weak Max', max_length=5, default=0)
-    weak_max_1 = models.FloatField('weak Max 1', max_length=5, null=True, blank=True)
+    weak_min = models.CharField('weak Min', max_length=30, default=0)
+    weak_min_1 = models.CharField('weak Min 1', max_length=30, null=True, blank = True)
+    weak_max = models.CharField('weak Max', max_length=30, default=0)
+    weak_max_1 = models.CharField('weak Max 1', max_length=30, null=True, blank=True)
     weak_points = models.FloatField('weak Points', max_length=5, default=0)
-    weak_points_1 = models.FloatField('weak Points 1', max_length=5, null=True, blank=True)
     strong_comment = models.CharField('Strong Comment', max_length=200)
     neutral_comment = models.CharField('Neutral Comment', max_length=200)
     weak_comment = models.CharField('weak Comment', max_length=200, null=True)
@@ -188,15 +186,23 @@ class StarRating(Date):
         return str(self.star_count) + ' star'
 
 class CompanyFunctionScore(Date):
-
     company = models.ForeignKey(Company)
     function = models.ForeignKey(Function)
     score = models.FloatField('Function Score', max_length=5, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.company.company_name + " - " + self.function.function_name + " - " + str(self.score)
+
+
+class CompanyModelFunctionPoint(Date):
+    company = models.ForeignKey(Company)
+    model = models.ForeignKey(AnalysisModel)
+    function = models.ForeignKey(Function)
     points = models.FloatField('Function Point', max_length=5, null=True, blank=True)
     comment = models.CharField('Comment', max_length=500, null=True, blank=True)
 
     def __unicode__(self):
-        return self.company.company_name + " - " + self.function.function_name + " - " + str(self.score)
+        return self.company.company_name + " - " + self.function.function_name 
 
 class CompanyModelScore(Date):
     company = models.ForeignKey(Company)

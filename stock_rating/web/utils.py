@@ -116,23 +116,8 @@ def calculate_general_function_score(function, company):
         function_value = eval(formula)
         function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
         function_score.score = function_value 
-        function_score.save()
-        if function_score.score >= parameterlimit.strong_min and function_score.score <= parameterlimit.strong_max:
-            function_score.points = parameterlimit.strong_points
-            function_score.comment = parameterlimit.strong_comment
-            function_score.save()
-        elif function_score.score >= parameterlimit.neutral_min and function_score.score <= parameterlimit.neutral_max:
-            function_score.points = parameterlimit.neutral_points
-            function_score.comment = parameterlimit.neutral_comment
-            function_score.save()
-        elif function_score.score >= parameterlimit.weak_min and function_score.score <= parameterlimit.weak_max:
-            function_score.points = parameterlimit.weak_points
-            function_score.comment = parameterlimit.weak_comment
-            function_score.save()
-        elif parameter.weak_min_1 is not None and function_score.score >= parameterlimit.weak_min_1 and function_score.score <= parameterlimit.weak_max_1:
-            function_score.points = parameterlimit.weak_points_1
-            function_score.comment = parameterlimit.weak_comment
-            function_score.save()
+        function_score.save()        
+
         function_score.save()
     except Exception as e:
         print e
