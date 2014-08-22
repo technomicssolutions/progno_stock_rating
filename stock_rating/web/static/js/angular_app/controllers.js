@@ -987,6 +987,9 @@ function ModelController($scope, $element, $http, $timeout, $location)
                             'weak_max': '',                                    
                             'weak_min': '',                                    
                             'weak_points': '',
+                            'weak_max_1': '',                                    
+                            'weak_min_1': '',                                    
+                            'weak_points_1': '',
                             'strong_comment': '',
                             'weak_comment': '',
                             'neutral_comment': '',
@@ -1070,6 +1073,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         show_loader();
         var url = '/model_details/?id='+id;
         $http.get(url).success(function(data) {
+            console.log(data);
             hide_loader();
             $scope.analytical_heads = data.analytical_heads;           
             for(i = 0; i< $scope.analytical_heads.length; i++) {
@@ -1127,6 +1131,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
 
     $scope.save_parameters = function(model_id, function_id, parameters){
         if($scope.validate_parameters(function_id, parameters)){
+            console.log($scope.validate_parameters(function_id, parameters));
             show_loader();
             if(parameters.weak_max_1 == null)
                 parameters.weak_max_1 = ""
@@ -1334,16 +1339,24 @@ function ModelController($scope, $element, $http, $timeout, $location)
         } else if(parameters.weak_min >= parameters.weak_max) {
             $scope.msg = "Weak Minimum should be less than Weak Maximum";
             return false;
-        } if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
+        } else if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
             $scope.msg = "Please select a function";
             return false;
-        } if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
-            $scope.msg = "Please select a function";
-            return false;
-        } else {
-            return true;
-        }
-
+        } 
+        console.log(parameters.weak_min_1, parameters.weak_max_1, parameters.weak_points_1);
+        if(parameters.weak_min_1 !== ""  || parameters.weak_max_1 !== "" || parameters.weak_points_1 !== ""){
+            if(parameters.weak_min_1 === ""){
+                $scope.msg = "Please enter Weak Minimum 2";
+                return false;
+            } else if(parameters.weak_max_1 === ""){
+                $scope.msg = "Please enter Weak Maximum 2";
+                return false;
+            } else if(parameters.weak_points_1 === ""){
+                $scope.msg = "Please enter Weak Points 2";
+                return false;
+            }
+        }     
+        return true;    
     }
     $scope.validate_rating = function(rating){
         $scope.rating_msg = '';        

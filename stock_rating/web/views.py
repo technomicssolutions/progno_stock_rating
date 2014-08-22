@@ -698,9 +698,9 @@ class ModelDetails(View):
                         'weak_min': parameter.weak_min,
                         'weak_max': parameter.weak_max,
                         'weak_points': parameter.weak_points,
-                        'weak_min_1': parameter.weak_min_1 ,
-                        'weak_max_1': parameter.weak_max_1 ,
-                        'weak_points_1': parameter.weak_points_1,
+                        'weak_min_1': parameter.weak_min_1 if parameter.weak_min_1 is not None else '',
+                        'weak_max_1': parameter.weak_max_1 if parameter.weak_max_1 is not None else '',
+                        'weak_points_1': parameter.weak_points_1 if parameter.weak_points_1 is not None else '',
                         'strong_comment': parameter.strong_comment,
                         'weak_comment': parameter.weak_comment,
                         'neutral_comment': parameter.neutral_comment
@@ -757,15 +757,15 @@ class ModelDetails(View):
             parameterlimit.weak_min = parameters['weak_min']
             parameterlimit.weak_max = parameters['weak_max']
             parameterlimit.weak_points = parameters['weak_points'] 
-            if len(parameters['weak_min_1']) > 0:
+            if len(str(parameters['weak_min_1'])) > 0:
                 parameterlimit.weak_min_1 = parameters['weak_min_1']
             else:
                 parameterlimit.weak_min_1 = None
-            if len(parameters['weak_max_1']) > 0:
+            if len(str(parameters['weak_max_1'])) > 0:
                 parameterlimit.weak_max_1 = parameters['weak_max_1']
             else:
                 parameterlimit.weak_max_1 = None
-            if len(parameters['weak_points_1']) > 0:
+            if len(str(parameters['weak_points_1'])) > 0:
                 parameterlimit.weak_points_1 = parameters['weak_points_1']
             else:           
                 parameterlimit.weak_points_1 = None
