@@ -214,9 +214,11 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_users = function(){
         var url = '/users/';
+        show_loader();
         $http.get(url).success(function(data) {
             $scope.users = data.users;
             paginate($scope.users, $scope);
+            hide_loader();
         })
     }
     $scope.range = function(n) {
@@ -287,9 +289,11 @@ function FieldController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_fields = function(){
         var url = '/field_settings/';
+        show_loader();
         $http.get(url).success(function(data) {
             $scope.fields = data.fields;
             paginate($scope.fields, $scope);
+            hide_loader();
         })
     }
     $scope.validate_field = function(){
@@ -829,9 +833,11 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_functions = function(){
         var url = '/function_settings/';
+        show_loader();
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
             paginate($scope.functions, $scope);
+            hide_loader();
         })
     }
     $scope.get_operands = function(){
@@ -1038,9 +1044,11 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_models = function(){
         var url = '/models/';
+        show_loader();
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
             paginate($scope.model_list, $scope);
+            hide_loader();
 
         })
     }
@@ -1073,7 +1081,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
         show_loader();
         var url = '/model_details/?id='+id;
         $http.get(url).success(function(data) {
-            console.log(data);
             hide_loader();
             $scope.analytical_heads = data.analytical_heads;           
             for(i = 0; i< $scope.analytical_heads.length; i++) {
@@ -1131,7 +1138,6 @@ function ModelController($scope, $element, $http, $timeout, $location)
 
     $scope.save_parameters = function(model_id, function_id, parameters){
         if($scope.validate_parameters(function_id, parameters)){
-            console.log($scope.validate_parameters(function_id, parameters));
             show_loader();
             if(parameters.weak_max_1 == null)
                 parameters.weak_max_1 = ""
@@ -1336,14 +1342,13 @@ function ModelController($scope, $element, $http, $timeout, $location)
         } else if(Number(parameters.neutral_min) >= Number(parameters.neutral_max)) {
             $scope.msg = "Neutral Minimum should be less than Neutral Maximum";
             return false;
-        } else if(parameters.weak_min >= parameters.weak_max) {
-            $scope.msg = "Weak Minimum should be less than Weak Maximum";
+        } else if(Number(parameters.weak_min) >= Number(parameters.weak_max)) {
+            $scope.msg = "Weak Minimum 1 should be less than Weak Maximum 1";
             return false;
         } else if(angular.isUndefined(function_id) && angular.isUndefined(parameters.parameter_id)) {
             $scope.msg = "Please select a function";
             return false;
         } 
-        console.log(parameters.weak_min_1, parameters.weak_max_1, parameters.weak_points_1);
         if(parameters.weak_min_1 !== ""  || parameters.weak_max_1 !== "" || parameters.weak_points_1 !== ""){
             if(parameters.weak_min_1 === ""){
                 $scope.msg = "Please enter Weak Minimum 2";
@@ -1355,7 +1360,13 @@ function ModelController($scope, $element, $http, $timeout, $location)
                 $scope.msg = "Please enter Weak Points 2";
                 return false;
             }
-        }     
+        }   
+        if(parameters.weak_min_1 !== ""  && parameters.weak_max_1 !== "" && parameters.weak_points_1 !== ""){
+            if(Number(parameters.weak_min_1) >= Number(parameters.weak_max_1)) {
+                $scope.msg = "Weak Minimum 2 should be less than Weak Maximum 2";
+                return false;
+            }  
+        }  
         return true;    
     }
     $scope.validate_rating = function(rating){
@@ -1692,9 +1703,11 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
+        show_loader();
         $http.get(url).success(function(data) {
-            $scope.anly_heads = data.head_objects;
+            $scope.anly_heads = data.head_objects;            
             paginate($scope.anly_heads, $scope);
+            hide_loader();
         })
     }
     $scope.validate_head = function(){

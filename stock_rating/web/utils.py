@@ -129,7 +129,7 @@ def calculate_general_function_score(function, company):
             function_score.points = parameterlimit.weak_points
             function_score.comment = parameterlimit.weak_comment
             function_score.save()
-        elif len(parameterlimit.weak_min_1) > 0 and function_score.score >= parameterlimit.weak_min_1 and function_score.score <= parameterlimit.weak_max_1:
+        elif parameter.weak_min_1 is not None and function_score.score >= parameterlimit.weak_min_1 and function_score.score <= parameterlimit.weak_max_1:
             function_score.points = parameterlimit.weak_points_1
             function_score.comment = parameterlimit.weak_comment
             function_score.save()
