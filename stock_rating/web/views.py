@@ -134,7 +134,9 @@ class FunctionSettings(View):
                 try:
                     general_function = Function.objects.get(id=function_details['id'])
                     if general_function.formula:
-                        general_function.formula.delete()
+                        general_function.formula.operands.clear()
+                        general_function.formula.operators.clear()
+                        general_function.formula.save()
                         general_function.save()
                 except:
                     general_function = Function()
