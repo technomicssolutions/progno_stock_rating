@@ -1026,7 +1026,7 @@ class ModelStarRating(View):
             parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
             for parameterlimit in parameterlimits:
                 function = parameterlimit.function
-                model_max_point = model_max_point + function.strong_points  
+                model_max_point = model_max_point + parameterlimit.strong_points  
         model.max_points = model_max_point
         model.save()
         model_ratings = model.starrating_set.all() 
@@ -1040,7 +1040,6 @@ class ModelStarRating(View):
                     parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                     for parameterlimit in parameterlimits:
                         function = parameterlimit.function
-                        model_max_point = model_max_point + parameterlimit.strong_points                        
                         try:
                             calculate_general_function_score(function, company)
                             function_score = CompanyFunctionScore.objects.get(company=company, function=function)
