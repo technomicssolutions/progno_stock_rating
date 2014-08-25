@@ -1034,6 +1034,7 @@ class ModelStarRating(View):
                         try:
                             calculate_general_function_score(function, company)
                             function_score = CompanyFunctionScore.objects.get(company=company, function=function)
+                            print "function_score", function_score
                             company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
                             if not parameterlimit.strong_max.isdigit() and function_score.score >= parameterlimit.strong_min:
                                 company_model_function_point.points = parameterlimit.strong_points
@@ -1076,6 +1077,8 @@ class ModelStarRating(View):
                         except Exception as e:
                             print e
                             continue
+                
+                print "company", company, score
                 company_model_score.score = score
                 company_model_score.save()
                 for rating in model_ratings:
