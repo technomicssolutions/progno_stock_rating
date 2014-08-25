@@ -25,6 +25,7 @@ admin.site.register(CompanyFunctionScore)
 admin.site.register(CompanyModelScore)
 admin.site.register(CompanyFile)
 admin.site.register(CompanyStockData)
+admin.site.register(CompanyModelFunctionPoint)
 
 
 
