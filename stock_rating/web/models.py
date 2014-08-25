@@ -112,7 +112,7 @@ class ContinuityFunction(Function):
 class ConsistencyFunction(Function):
     number_of_periods = models.IntegerField('Number of Periods', max_length=3)
     periods = models.ManyToManyField(DataField)
-    mean = models.IntegerField('Mean', max_length=5)
+    mean = models.FloatField('Mean', max_length=5)
 
 class Industry(models.Model):
     industry_name = models.CharField('Industry', max_length=200, unique=True)
@@ -207,7 +207,7 @@ class CompanyModelFunctionPoint(Date):
 class CompanyModelScore(Date):
     company = models.ForeignKey(Company)
     analysis_model = models.ForeignKey(AnalysisModel)
-    score = models.IntegerField('Model Score', max_length=5, null=True, blank=True)
+    score = models.FloatField('Model Score', max_length=5, null=True, blank=True)
     star_rating = models.CharField('Star Rating', max_length=200 , null=True, blank=True)
     comment = models.CharField('Comment', max_length=500, null=True, blank=True)
 
