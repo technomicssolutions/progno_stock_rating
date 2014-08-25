@@ -1025,9 +1025,9 @@ class ModelStarRating(View):
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
+                score = 0
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
                 for head in analytical_heads:
-                    score = 0
                     parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                     for parameterlimit in parameterlimits:
                         function = parameterlimit.function                        
