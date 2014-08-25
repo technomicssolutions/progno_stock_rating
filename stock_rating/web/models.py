@@ -149,6 +149,7 @@ class AnalysisModel(Date):
     description = models.TextField('Description')
     industries = models.ManyToManyField(Industry)
     analytical_heads = models.ManyToManyField(AnalyticalHead)
+    max_points = models.FloatField('Total points', default=0)
 
     def __unicode__(self):
         return self.name
@@ -208,6 +209,7 @@ class CompanyModelScore(Date):
     company = models.ForeignKey(Company)
     analysis_model = models.ForeignKey(AnalysisModel)
     score = models.FloatField('Model Score', max_length=5, null=True, blank=True)
+    points = models.IntegerField('Model Points in percentage terms', default=0)
     star_rating = models.CharField('Star Rating', max_length=200 , null=True, blank=True)
     comment = models.CharField('Comment', max_length=500, null=True, blank=True)
 

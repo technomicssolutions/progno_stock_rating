@@ -1020,17 +1020,27 @@ class ModelStarRating(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=kwargs['model_id'])
         industries = model.industries.all()
+        model_max_point = 0
         analytical_heads = model.analytical_heads.all()
-        model_ratings = model.starrating_set.all()        
+        for head in analytical_heads:
+            parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
+            for parameterlimit in parameterlimits:
+                function = parameterlimit.function
+                model_max_point = model_max_point + function.strong_points  
+        model.max_points = model_max_point
+        model.save()
+        model_ratings = model.starrating_set.all() 
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
+                model_point = 0
                 score = 0
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
                 for head in analytical_heads:
                     parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                     for parameterlimit in parameterlimits:
-                        function = parameterlimit.function                        
+                        function = parameterlimit.function
+                        model_max_point = model_max_point + function.strong_points                        
                         try:
                             calculate_general_function_score(function, company)
                             function_score = CompanyFunctionScore.objects.get(company=company, function=function)
@@ -1074,21 +1084,25 @@ class ModelStarRating(View):
                                     company_model_function_point.comment = parameterlimit.weak_comment
                                     company_model_function_point.save()                                    
                             score = score + function_score.score
+                            model_point = model_point + company_model_function_point.points
                         except Exception as e:
                             print e
                             continue
                 
                 print "company", company, score
                 company_model_score.score = score
+                point = (model_point/model.max_points)*100
+                round_function = lambda point: int(point + 1) if int(point) != point else int(point)
+                company_model_score.points = round_function(point)
                 company_model_score.save()
                 for rating in model_ratings:
-                    if company_model_score.score >= rating.min_score and company_model_score.score <= rating.max_score:
+                    if company_model_score.points >= rating.min_score and company_model_score.points <= rating.max_score:
                         company_model_score.star_rating = rating.star_count
                         company_model_score.comment = rating.comment
                         company_model_score.save()
                         break;
                     elif rating.star_count == 5:
-                        if company_model_score.score >= rating.min_score:
+                        if company_model_score.points >= rating.min_score:
                             company_model_score.star_rating = rating.star_count
                             company_model_score.comment = rating.comment
                             company_model_score.save()
