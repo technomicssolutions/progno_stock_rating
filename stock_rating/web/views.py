@@ -1151,7 +1151,7 @@ class RatingReport(View):
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
-                        'score': model_score.score,
+                        'score': model_score.points,
                         'brief_comment': model_score.comment,
                     }
                     model = model_score.analysis_model
