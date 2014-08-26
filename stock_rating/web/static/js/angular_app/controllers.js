@@ -1912,6 +1912,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
         $scope.ratings = [];
         $scope.companies = [];
         $scope.search_keys = [];
+        $scope.star_ratings = [];
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -1962,7 +1963,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
                 }
             }).success(function(data, status) {  
                 hide_loader();
-                $scope.star_ratings = data.star_ratings;   
+                $scope.star_ratings = $scope.star_ratings.concat(data.star_ratings);   
                 $scope.search_keys = [];
                 $scope.search_text = '';
             }).error(function(data, status){
