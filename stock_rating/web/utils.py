@@ -167,5 +167,5 @@ def get_file_fields():
     file_fileds = []
     for d_file in data_files:
         for sheet in d_file.sheets:
-            file_fileds.append(sheet['rows'][0])
+            file_fileds = list(set(file_fileds + sheet['rows'][0]))
     return file_fileds
