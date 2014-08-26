@@ -1185,7 +1185,8 @@ class RatingReport(View):
                     rating['detailed_comment'] = comments
                 else:
                     rating = {
-                        'company_name': 'No rating Available',
+                        'company_name': company.company_name + ' - ' + company.isin_code,
+                        'star_rating': 'No Rating available'
                     }
                 ratings.append(rating)
             response = simplejson.dumps({
