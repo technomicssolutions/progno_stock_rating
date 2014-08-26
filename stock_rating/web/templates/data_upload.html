@@ -30,5 +30,29 @@
 		<p class='error_msg'>[[error_msg]]</p>
 		<input type="submit" name="upload" value="Upload" ng-click="submit_file();"/>
 	</div>
+	<div class="tab_list" ng-show="visible_list.length > 0">
+		<h3 class="sub_heading"> Files Uploaded </h3>
+		<table class="table table-stripped">
+			<tr> 
+				<th> # </th>
+				<th> Name </th>
+				<th> Uploaded by </th>
+				<th> Uploaded Date </th>
+				<th> &nbsp; </th> 
+
+			</tr>
+			<tr ng-repeat="file in visible_list">
+				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
+				<td> <a href="/site_media/[[file.path]]">[[file.path]]</a> </td>
+				<td> [[file.uploaded_by]] </td>
+				<td> [[file.uploaded_date]] </td>
+				<td> 
+					<a href="/delete_data_file/[[file.id]]/"> Delete </a> 
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="clear"></div>
+	{% include 'pagination.html' %}
 </div>
 {% endblock content %}

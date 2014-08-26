@@ -1559,12 +1559,21 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
         $scope.hide_dropdown();
         $scope.data_file = {};
         $scope.data_file.src = "";
+        $scope.get_data_files();
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
     $scope.hide_dropdown = function(){
         $('#dropdown_menu').css('display', 'none');
+    }
+    $scope.get_data_files = function(){
+        $scope.error_msg = '';  
+        var url = '/data_upload/';
+        $http.get(url).success(function(data) {
+            $scope.data_files = data.data_files;
+             paginate($scope.data_files, $scope);
+        })   
     }
     $scope.submit_file = function(){
         $scope.error_msg = '';
@@ -1596,6 +1605,23 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
             $scope.error_msg = "Please upload an excel file";
         }
         
+    }
+
+    $scope.select_page = function(page){
+        select_page(page, $scope.companies, $scope);
+    }
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.companies, $scope);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.companies, $scope);
+    }
+    $scope.range = function(n) {
+        return new Array(n);
     }
 }
 function FieldMappingController($scope, $element, $http, $timeout, $location)
@@ -1936,10 +1962,25 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
                 }
             }).success(function(data, status) {  
                 hide_loader();
-                $scope.star_ratings = data.star_ratings;                    
+                $scope.star_ratings = data.star_ratings;   
+                $scope.search_keys = [];
+                $scope.search_text = '';
             }).error(function(data, status){
                 $scope.message = data.message;
             });
        }
+    }
+    $scope.remove_search_result = function(index){
+        $scope.star_ratings.splice(index, 1);
+    }
+    $scope.expand_long_comment = function(index){
+        $('#long_comment_'+index).css('display', 'block');
+        $('#expand_button_'+index).css('display', 'none');
+        $('#shrink_button_'+index).css('display', 'block');
+    }
+    $scope.shrink_long_comment = function(index){
+        $('#long_comment_'+index).css('display', 'none');
+        $('#expand_button_'+index).css('display', 'block');
+        $('#shrink_button_'+index).css('display', 'none');
     }
 }

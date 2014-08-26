@@ -24,6 +24,7 @@
 					<th> Score </th>
 					<th> Brief Comment </th>
 					<th> Detailed Comment </th>
+					<th> &nbsp; </th>
 				</tr>
 				<tr ng-repeat="rating in star_ratings">
 					<td>[[rating.company_name]]</td>
@@ -31,10 +32,18 @@
 					<td>[[rating.score]]</td>
 					<td>[[rating.brief_comment]]</td>
 					<td>
-						<ul>
+						<ul id="long_comment_[[$index]]" style="display: none; float: left;">
 							<li ng-repeat="comment in rating.detailed_comment track by $index">[[comment]]</li>
+							<li> jhfkjh </li>
+							<li> jhfkjh </li>
+							<li> jhfkjh </li>
+							<li> jhfkjh </li>
+							<li> jhfkjh </li>
 						</ul>
+						<input type="button" value="+" ng-click="expand_long_comment($index)" id="expand_button_[[$index]]" style="display: block; float: right;"/>
+						<input type="button" value="-" ng-click="shrink_long_comment($index)" id="shrink_button_[[$index]]" style="display: none; float: right;" />
 					</td>
+					<td> <input type="button" value="X" ng-click="remove_search_result($index)" /> </td>
 				</tr>
 			</table>
 		</div>

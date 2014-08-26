@@ -289,6 +289,20 @@ class DataUpload(View):
                 process_data_file(data_file)
         else:
             data_file = None
+        file_list = []
+        if request.is_ajax():
+            for data_file in data_files:
+                file_list.append({
+                    'id': data_file.id,
+                    'uploaded_by': data_file.uploaded_by.username,
+                    'uploaded_date': data_file.created_date.strftime('%d/%m/%Y'),
+                    'path': data_file.uploaded_file.name
+                })
+                response = simplejson.dumps({
+                   'data_files': file_list,
+                })
+                return HttpResponse(response, status=200, mimetype='application/json')
+
         return render(request, 'data_upload.html', {
             'data_file': data_file,
             'status': ('Processing Completed' if data_file.processing_completed else 'Processing Pending') if data_file else '',
@@ -1015,6 +1029,12 @@ class DeleteFunction(View):
         function = Function.objects.get(id=kwargs['function_id'])
         function.delete()
         return HttpResponseRedirect(reverse('function_settings'))
+
+class DeleteDataFile(View):
+    def get(self, request, *args, **kwargs):
+        data_file = DataFile.objects.get(id=kwargs['file_id'])
+        data_file.delete()
+        return HttpResponseRedirect(reverse('data_upload'))
 
 class ModelStarRating(View):
     def get(self, request, *args, **kwargs):

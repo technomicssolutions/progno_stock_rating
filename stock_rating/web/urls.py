@@ -9,7 +9,7 @@ from views import (Login,Logout, Dashboard, Administration, Users, SaveUser, Res
     ConsistencyFunctions, DeleteField, Model, IndustryDetails, DeleteModel, DeleteUser, \
     ModelDetails, DeleteParameter, DataUpload, AnalyticalHeads, DeleteHead, FieldMapping, \
     FileFields, OperatorsView, Companies, DeleteFunction, ModelStarRating, SaveModelStarRating, \
-    RatingReport, DeleteRating, FieldsWithMapping, )
+    RatingReport, DeleteRating, FieldsWithMapping, DeleteDataFile)
 
 urlpatterns = patterns('',
 
@@ -26,6 +26,7 @@ urlpatterns = patterns('',
     url(r'data_upload/$', login_required(DataUpload.as_view()), name="data_upload"),
     url(r'field_mapping/$', login_required(FieldMapping.as_view()), name="field_mapping"),
     url(r'file_fields/$', login_required(FileFields.as_view()), name="file_fields"),
+    url(r'delete_data_file/(?P<file_id>\d+)/$', login_required(DeleteDataFile.as_view()), name="delete_data_file"),
 
     url(r'analytical_heads/$', login_required(AnalyticalHeads.as_view()), name="analytical_heads"),
     url(r'models/$', login_required(Model.as_view()), name="models"),
@@ -54,9 +55,7 @@ urlpatterns = patterns('',
     url(r'model/(?P<model_id>\d+)/star_rating/$', login_required(ModelStarRating.as_view()), name="star_rating"),
     url(r'model/(?P<model_id>\d+)/save_star_rating/$', login_required(SaveModelStarRating.as_view()), name="save_star_rating"),
     url(r'rating_report/$', login_required(RatingReport.as_view()), name="rating_report"),
-    url(r'fields_with_mapping/$', login_required(FieldsWithMapping.as_view()), name="fields_with_mapping"),
-
-    
+    url(r'fields_with_mapping/$', login_required(FieldsWithMapping.as_view()), name="fields_with_mapping"),    
 )
 
 
