@@ -283,10 +283,12 @@ class DataUpload(View):
         data_files = DataFile.objects.all()
         if data_files.count() > 0:
             data_file = DataFile.objects.latest('id')
-            if data_file.processing_completed:
-                pass
-            else:
-                process_data_file(data_file)
+            d_files = DataFile.objects.filter(processing_completed=False)
+            for d_file in d_files:        
+                if d_file.processing_completed:
+                    pass
+                else:
+                    process_data_file(d_file)
         else:
             data_file = None
         file_list = []
