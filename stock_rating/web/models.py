@@ -59,7 +59,7 @@ class FieldMap(Date):
     file_field = models.CharField('File Field', max_length=200, unique=False, null=True, blank=True)
 
     def __unicode__(self):
-        return str(self.data_file) + ' - ' + self.file_field
+        return str(self.data_field) + ' - ' + self.file_field
 
 # class FunctionCategory(Date):
 
