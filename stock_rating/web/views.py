@@ -16,7 +16,8 @@ from models import (UserPermission, DataField, AnalyticalHead, Function,\
  FieldMap, Operator, Company, CompanyFile, Formula, CompanyFunctionScore, CompanyModelScore, \
  StarRating, CompanyModelFunctionPoint)
 
-from utils import process_data_file, process_company_file, calculate_general_function_score
+from utils import process_data_file, process_company_file, \
+    calculate_general_function_score, get_file_fields
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -330,6 +331,7 @@ class DataUpload(View):
 
 class FieldMapping(View):
     def get(self, request, *args, **kwargs):
+        total_file_fields = get_file_fields()
         mappings = FieldMap.objects.count()
         if mappings > 0:
             mapping_status = 'exists'
@@ -355,6 +357,9 @@ class FieldMapping(View):
                         'name': field.name,  
                         'mapping_id': '' ,
                     })
+            for field in total_file_fields:
+                if field not in file_fields:
+                    file_fields.append(field)
             response = simplejson.dumps({
                 'result': 'Ok',
                 'file_fields': file_fields,

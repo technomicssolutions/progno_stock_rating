@@ -2,7 +2,8 @@
 import xlrd
 from django.conf import settings
 from collections import OrderedDict
-from models import Company, Industry, CompanyStockData, CompanyFunctionScore, FieldMap
+from models import Company, Industry, CompanyStockData, CompanyFunctionScore, \
+ FieldMap, DataFile
 
 def process_data_file(data_file):
     sheets = []
@@ -161,3 +162,10 @@ def calculate_continuity_function_score(function, company):
     function_score.save()
 
 
+def get_file_fields():
+    data_files = DataFile.objects.all()
+    file_fileds = []
+    for d_file in data_files:
+        for sheet in d_file.sheets:
+            file_fileds.append(sheet['rows'][0])
+    return file_fileds
