@@ -298,10 +298,10 @@ class DataUpload(View):
                     'uploaded_date': data_file.created_date.strftime('%d/%m/%Y'),
                     'path': data_file.uploaded_file.name
                 })
-                response = simplejson.dumps({
-                   'data_files': file_list,
-                })
-                return HttpResponse(response, status=200, mimetype='application/json')
+            response = simplejson.dumps({
+               'data_files': file_list,
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
 
         return render(request, 'data_upload.html', {
             'data_file': data_file,
