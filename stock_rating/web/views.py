@@ -142,7 +142,6 @@ class FunctionSettings(View):
                 except:
                     general_function = Function()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
-                # general_function.category = category
                 general_function.function_name = function_details['function_name']
                 general_function.description = function_details['function_description']
                 general_function.function_type = 'general'
@@ -169,29 +168,33 @@ class FunctionSettings(View):
                 except:
                     continuity_function = ContinuityFunction()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
-                # continuity_function.category = category
                 continuity_function.function_name = function_details['function_name']
                 continuity_function.description = function_details['function_description']
                 continuity_function.function_type = 'continuity'
                 continuity_function.analytical_head = anly_head
-                continuity_function.number_of_periods = function_details['no_of_periods']
-                
+                continuity_function.number_of_fields = function_details['no_of_fields']
+                continuity_function.number_of_functions = function_details['no_of_functions']
                 try:
                     continuity_function.save()
-                    if continuity_function.periods:
-                        continuity_function.periods.clear()
-                    periods = function_details['periods']
-                    for period in periods:
-                        datafield = DataField.objects.get(id=int(period['period']))
-                        continuity_function.periods.add(datafield)
-
+                    if continuity_function.fields:
+                        continuity_function.fields.clear()
+                    fields = function_details['fields']
+                    for field in fields:
+                        datafield = DataField.objects.get(id=int(field['field']))
+                        continuity_function.fields.add(datafield)
+                    if continuity_function.functions:
+                        continuity_function.functions.clear()
+                    functions = function_details['functions']
+                    for function in functions:
+                        datafunction = Function.objects.get(id=int(function['function']))
+                        continuity_function.functions.add(datafunction)
                     res = {
                       'result': 'ok',
                     }
                 except Exception as ex:
-                    print str(ex)
                     res = {
                       'result': 'error',  
+                      'message': str(ex)
                     }
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
@@ -201,23 +204,26 @@ class FunctionSettings(View):
                 except:
                     consistency_function = ConsistencyFunction()
                 anly_head = AnalyticalHead.objects.get(id=function_details['select_head'])
-                # consistency_function.category = category
                 consistency_function.function_name = function_details['function_name']
                 consistency_function.description = function_details['function_description']
                 consistency_function.function_type = 'consistency'
                 consistency_function.analytical_head = anly_head
-                consistency_function.number_of_periods = function_details['no_of_periods']
-                consistency_function.mean = function_details['mean']
- 
+                consistency_function.number_of_fields = function_details['no_of_fields']
+                consistency_function.number_of_functions = function_details['no_of_functions']
                 try:
                     consistency_function.save()
-                    if consistency_function.periods:
-                        consistency_function.periods.clear()
-                    periods = function_details['periods']
-                    for period in periods:
-                        datafield = DataField.objects.get(id=int(period['period']))
-                        consistency_function.periods.add(datafield)
-
+                    if consistency_function.fields:
+                        consistency_function.fields.clear()
+                    fields = function_details['fields']
+                    for field in fields:
+                        datafield = DataField.objects.get(id=int(field['field']))
+                        consistency_function.fields.add(datafield)
+                    if consistency_function.functions:
+                        consistency_function.functions.clear()
+                    functions = function_details['functions']
+                    for function in functions:
+                        datafunction = Function.objects.get(id=int(function['function']))
+                        consistency_function.functions.add(datafunction)
                     res = {
                       'result': 'ok',
                     }
@@ -225,6 +231,7 @@ class FunctionSettings(View):
                     print str(ex)
                     res = {
                       'result': 'error',  
+                      'message': str(ex)
                     }
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
@@ -846,26 +853,31 @@ class ContinuityFunctions(View):
     def get(self, request, *args, **kwargs):
         continuity_objects = ContinuityFunction.objects.get(id=request.GET.get('id'))
         continuity_set = []
-        periods_set = []
-        periods = continuity_objects.period.all()       
-        for period in periods:
-            periods_set.append({
-                'id': period.id,
-                })
-
-        continuity_set.append({
-                'id':continuity_objects.id,
-                'name': continuity_objects.function_name,
-                'description': continuity_objects.description,
-                'head': continuity_objects.analytical_head.id,
-                'no_of_periods': continuity_objects.number_of_periods,               
-                'periods': periods_set,
-
-                # 'category': continuity_objects.category.id,
+        field_set = []
+        fields = continuity_objects.fields.all()       
+        for field in fields:
+            field_set.append({
+                'field': field.id,
             })
+        function_set = []
+        functions = continuity_objects.functions.all()       
+        for function in functions:
+            function_set.append({
+                'function': function.id,
+            })    
+        continuity_fucntion = {
+            'id':continuity_objects.id,
+            'function_name': continuity_objects.function_name,
+            'function_description': continuity_objects.description,
+            'select_head': continuity_objects.analytical_head.id,
+            'no_of_fields': continuity_objects.number_of_fields, 
+            'no_of_functions': continuity_objects.number_of_functions,              
+            'fields': field_set,
+            'functions': function_set
+        }
         if request.is_ajax():
             response = simplejson.dumps({
-               'continuity_objects': continuity_set
+               'continuity_fucntion': continuity_fucntion
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
@@ -874,26 +886,31 @@ class ConsistencyFunctions(View):
 
     def get(self, request, *args, **kwargs):
         consistency_objects = ConsistencyFunction.objects.get(id=request.GET.get('id'))
-        consistency_set = []
-        periods_set = []
-        periods = consistency_objects.period.all()       
-        for period in periods:
-            periods_set.append({
-                'id': period.id,
-                })
-        consistency_set.append({
-                'id':consistency_objects.id,
-                'name': consistency_objects.function_name,
-                'description': consistency_objects.description,
-                'head': consistency_objects.analytical_head.id,
-                'no_of_periods': consistency_objects.number_of_periods,              
-                'periods': periods_set,
-                'mean': consistency_objects.mean,
-                # 'category': consistency_objects.category.id,
+        field_set = []
+        function_set = []
+        fields = consistency_objects.fields.all()       
+        for field in fields:
+            field_set.append({
+                'field': field.id,
             })
+        functions = consistency_objects.functions.all()       
+        for function in functions:
+            function_set.append({
+                'function': function.id,
+            })
+        consistency_function = {
+            'id':consistency_objects.id,
+            'function_name': consistency_objects.function_name,
+            'function_description': consistency_objects.description,
+            'select_head': consistency_objects.analytical_head.id,
+            'no_of_fields': consistency_objects.number_of_fields, 
+            'no_of_functions': consistency_objects.number_of_functions,              
+            'fields': field_set,
+            'functions': function_set,
+        }
         if request.is_ajax():
             response = simplejson.dumps({
-               'consistency_objects': consistency_set
+               'consistency_function': consistency_function
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 

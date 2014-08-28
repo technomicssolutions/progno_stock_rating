@@ -388,7 +388,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
         $scope.change_type();
-        /*$scope.get_category();*/
         $scope.get_analytical_head();
         $scope.get_functions();
         $scope.show_general = true;
@@ -406,19 +405,21 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.new_continuity = {
             'function_name': '',
             'function_description': '',
-            'no_of_periods': '',           
-            'periods': [],               
+            'no_of_fields': '',
+            'no_of_functions': '',            
+            'fields': [],               
             'select_head': '',
+            'functions': []
         }
         $scope.new_consistency = {
             'function_name': '',
             'function_description': '',
-            'no_of_periods': '',
-            'mean': '',
-            'periods': [],          
+            'no_of_fields': '',
+            'no_of_functions': '', 
+            'fields': [],          
             'select_head': '',
+            'functions': []
         }
-        /*$scope.select_category = ''*/
         $scope.selected_operators = [];
         $scope.selected_operands = [];
         $scope.left_bracket_count = 0;
@@ -429,6 +430,8 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.test = ['sd', '+', 'dg'].join(' ');
     }
     $scope.change_type = function(type){
+        console.log('type', type);
+        $scope.select_type = type;
         if(type == 1)
         {
          $scope.show_general = true;
@@ -436,7 +439,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_consistency = false;
          $scope.reset_continuity();
          $scope.reset_consistency();
-         /*$scope.select_category = ''*/
          $scope.msg = '';
         }
        if(type == 2)
@@ -446,7 +448,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_consistency = false;
          $scope.reset_general();
          $scope.reset_consistency();
-         /*$scope.select_category = ''*/
          $scope.msg = '';
         }       
        if(type == 3)
@@ -456,56 +457,102 @@ function FunctionController($scope, $element, $http, $timeout, $location)
          $scope.show_consistency = true;
          $scope.reset_general();
          $scope.reset_continuity();
-         /*$scope.select_category = ''*/
          $scope.msg = '';
         }       
     }
-    $scope.add_periods_continuity = function(new_continuity){       
-        var no_of_periods = new_continuity.no_of_periods;
-        $scope.msg = '';
-        var diff = new_continuity.periods.length;
-        for (i=diff; i >0; i--){
-            last_index = new_continuity.periods.indexOf(new_continuity.periods[new_continuity.periods.length - 1]);
-            new_continuity.periods.splice(last_index, 1);
-        }
-        if(no_of_periods > $scope.fields.length)
-            $scope.msg = "No of periods should not be greater than number of fields";
-        else if (no_of_periods > 0){
-            for(var i = 0; i < no_of_periods; i++){
-                new_continuity.periods.push({
-                    'count': i+1,
-                    'period' : '',
-                });
+    $scope.add_fields_in_continuity = function(){  
+        if($scope.new_continuity.no_of_fields != '')     {
+            var no_of_fields = $scope.new_continuity.no_of_fields;
+            $scope.msg = '';
+            var diff = $scope.new_continuity.no_of_fields - $scope.new_continuity.fields.length;
+            if(no_of_fields > $scope.fields.length){
+                $scope.msg = "No of fields should not be greater than number of system fields";
+                return;
             }
-        } /* else {
-            var diff = new_continuity.periods.length - no_of_periods ;
-            for (i=diff; i >0; i--){
-                last_index = new_continuity.periods.indexOf(new_continuity.periods[new_continuity.periods.length - 1]);
-                new_continuity.periods.splice(last_index, 1);
-            }
-        } */     
-    }
-
-    $scope.add_periods_consistency = function(new_consistency){        
-        var no_of_periods = new_consistency.no_of_periods;
-        $scope.msg = '';
-        var diff = new_consistency.periods.length;
-        for (i=diff; i >0; i--){
-            last_index = new_consistency.periods.indexOf(new_consistency.periods[new_consistency.periods.length - 1]);
-            new_consistency.periods.splice(last_index, 1);
-        }
-        if(no_of_periods > $scope.fields.length)
-            $scope.msg = "No of periods should not be greater than number of fields";
-        else if (no_of_periods > 0){
-            for(var i = 0; i < no_of_periods; i++){
-                new_consistency.periods.push({
-                    'count': i+1,
-                    'period' : '',
-                });
-            }
+            if(diff < 0){
+                for (i=Math.abs(diff); i >0; i--){
+                    last_index = $scope.new_continuity.fields.indexOf($scope.new_continuity.fields[$scope.new_continuity.fields.length - 1]);
+                    $scope.new_continuity.fields.splice(last_index, 1);
+                }
+            } else {
+                for (i=0; i < diff; i++){
+                    $scope.new_continuity.fields.push({
+                        'filed' : '',
+                    });
+                }
+            }    
         }
     }
-
+    $scope.add_functions_in_continuity = function(){
+        if($scope.new_continuity.no_of_functions != '') {      
+            var no_of_functions = $scope.new_continuity.no_of_functions;
+            $scope.msg = '';
+            if(no_of_functions > $scope.functions.length){
+                $scope.msg = "No of functions should not be greater than number of system functions";
+                return;
+            }
+            var diff = $scope.new_continuity.no_of_functions - $scope.new_continuity.functions.length;
+            if(diff < 0){
+                for (i=Math.abs(diff); i >0; i--){
+                    last_index = $scope.new_continuity.functions.indexOf($scope.new_continuity.functions[$scope.new_continuity.functions.length - 1]);
+                    $scope.new_continuity.functions.splice(last_index, 1);
+                }
+            } else {
+                for(var i = 0; i < diff; i++){
+                    $scope.new_continuity.functions.push({
+                        'function' : '',
+                    });
+                }
+            }
+        }
+    }
+    $scope.add_fields_in_consistency = function(){    
+        if($scope.new_consistency.no_of_fields != ''){
+            var no_of_fields = $scope.new_consistency.no_of_fields;
+            $scope.msg = '';
+            var diff = $scope.new_consistency.no_of_fields - $scope.new_consistency.fields.length;
+            if(no_of_fields > $scope.fields.length){
+                $scope.msg = "No of fields should not be greater than number of system fields";
+                return;
+            }
+            if(diff < 0) {
+                for (i=Math.abs(diff); i >0; i--){
+                    last_index = $scope.new_consistency.fields.indexOf($scope.new_consistency.fields[$scope.new_consistency.fields.length - 1]);
+                    $scope.new_consistency.fields.splice(last_index, 1);
+                }
+            } else {
+                for(var i = 0; i < diff; i++){
+                    $scope.new_consistency.fields.push({
+                        'filed' : '',
+                    });
+                }
+            }
+        }
+    }
+    $scope.add_functions_in_consistency = function(new_consistency){
+        if($scope.new_consistency.no_of_functions != ''){
+            var no_of_functions = $scope.new_consistency.no_of_functions;
+            $scope.msg = '';
+            if(no_of_functions > $scope.functions.length){
+                $scope.msg = "No of function should not be greater than number of system functions";
+                return;
+            }
+            var diff = $scope.new_consistency.no_of_functions - $scope.new_consistency.functions.length;
+            if(diff < 0){
+                for (i=Math.abs(diff); i >0; i--){
+                    last_index = $scope.new_consistency.functions.indexOf($scope.new_consistency.functions[$scope.new_consistency.functions.length - 1]);
+                    $scope.new_consistency.functions.splice(last_index, 1);
+                }
+            } else if (no_of_functions > 0){
+                for(var i = 0; i < diff; i++){
+                    $scope.new_consistency.functions.push({
+                        'functions' : '',
+                    });
+                }
+            } 
+        }
+        
+    }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
@@ -548,26 +595,47 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_continuity.no_of_periods == '' ) {
             $scope.msg = "Please enter Number of periods";
             return false;
-        } else if(!Number($scope.new_continuity.no_of_periods) ) {
-            $scope.msg = "Invalid entry in field No of Periods";
+        } else if(!Number($scope.new_continuity.no_of_fields) ) {
+            $scope.msg = "Invalid entry in field No of Fields";
+            return false;
+        }else if(!Number($scope.new_continuity.no_of_functions) ) {
+            $scope.msg = "Invalid entry in field No of Functions";
             return false;
         } else if($scope.new_continuity.select_head == '' ) {
             $scope.msg = "Please select analytical head";
             return false;
-        } else if($scope.new_continuity.no_of_periods > $scope.fields.length){
+        } else if($scope.new_continuity.no_of_fields > $scope.fields.length){
             $scope.msg = "No of periods should not be greater than number of fields";
             return false;
-        } else if($scope.new_continuity.no_of_periods > 0){
-            for(var i = 1; i <= $scope.new_continuity.no_of_periods; i++){
-                if($scope.new_continuity.periods[i-1].period == ''){
+        } else if($scope.new_continuity.no_of_fields > 0){
+            for(var i = 1; i <= $scope.new_continuity.no_of_fields; i++){
+                if($scope.new_continuity.fields[i-1].field == ''){
                     $scope.flag = 0;
-                    $scope.msg = "please choose the value for period "+ i;
+                    $scope.msg = "please choose the value for fields "+ i;
                     break;
                 }
-                for(var j = i+1; j <= $scope.new_continuity.no_of_periods; j++){
-                    if($scope.new_continuity.periods[i-1].period == $scope.new_continuity.periods[j-1].period){
+                for(var j = i+1; j <= $scope.new_continuity.no_of_fields; j++){
+                    if($scope.new_continuity.fields[i-1].field == $scope.new_continuity.fields[j-1].field){
                         $scope.flag = 0;
-                        $scope.msg = "Duplicate values in periods is not allowed";
+                        $scope.msg = "Duplicate values in fields is not allowed";
+                        break;
+                    }                        
+                }
+            }  
+        } else if($scope.new_continuity.no_of_functions > $scope.functions.length){
+            $scope.msg = "No of periods should not be greater than number of fields";
+            return false;
+        } else if($scope.new_continuity.no_of_functions > 0){
+            for(var i = 1; i <= $scope.new_continuity.no_of_functions; i++){
+                if($scope.new_continuity.funstions[i-1].function == ''){
+                    $scope.flag = 0;
+                    $scope.msg = "please choose the value for function "+ i;
+                    break;
+                }
+                for(var j = i+1; j <= $scope.new_continuity.no_of_funstions; j++){
+                    if($scope.new_continuity.funstions[i-1].funstion == $scope.new_continuity.funstions[j-1].funstion){
+                        $scope.flag = 0;
+                        $scope.msg = "Duplicate values in functions is not allowed";
                         break;
                     }                        
                 }
@@ -590,14 +658,11 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_consistency.no_of_periods == '' ) {
             $scope.msg = "Please enter Number of periods";
             return false;
-        } else if(!Number($scope.new_consistency.no_of_periods) ) {
-            $scope.msg = "Invalid entry in field No of Periods";
+        } else if(!Number($scope.new_consistency.no_of_fields) ) {
+            $scope.msg = "Invalid entry in field No of fields";
             return false;
-        } else if($scope.new_consistency.mean == '' ) {
-            $scope.msg = "Please enter Mean";
-            return false;
-        } else if(!Number($scope.new_consistency.mean) ) {
-            $scope.msg = "Invalid entry in field mean";
+        }else if(!Number($scope.new_consistency.no_of_functions) ) {
+            $scope.msg = "Invalid entry in field No of functions";
             return false;
         } else if($scope.new_consistency.select_head == '' ) {
             $scope.msg = "Please select analytical head";
@@ -605,15 +670,33 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_consistency.no_of_periods > $scope.fields.length){
             $scope.msg = "No of periods should not be greater than number of fields";
             return false;
-        } else if($scope.new_consistency.no_of_periods > 0){
-            for(var i = 1; i <= $scope.new_consistency.no_of_periods; i++){
-                if($scope.new_consistency.periods[i-1].period == ''){
+        } else if($scope.new_consistency.no_of_fields > 0){
+            for(var i = 1; i <= $scope.new_consistency.no_of_fields; i++){
+                if($scope.new_consistency.fields[i-1].field == ''){
                     $scope.flag = 0;
                     $scope.msg = "please choose the value for period "+ i;
                     break;
                 }
-                for(var j = i+1; j <= $scope.new_consistency.no_of_periods; j++){
-                    if($scope.new_consistency.periods[i-1].period == $scope.new_consistency.periods[j-1].period){
+                for(var j = i+1; j <= $scope.new_consistency.no_of_fields; j++){
+                    if($scope.new_consistency.fields[i-1].field == $scope.new_consistency.fields[j-1].field){
+                        $scope.flag = 0;
+                        $scope.msg = "Duplicate values in fields is not allowed";
+                        break;
+                    }                        
+                }
+            }
+        } else if($scope.new_consistency.no_of_functions > $scope.functions.length){
+            $scope.msg = "No of periods should not be greater than number of fields";
+            return false;
+        } else if($scope.new_consistency.no_of_functions > 0){
+            for(var i = 1; i <= $scope.new_consistency.no_of_functions; i++){
+                if($scope.new_consistency.functions[i-1].function == ''){
+                    $scope.flag = 0;
+                    $scope.msg = "please choose the value for function "+ i;
+                    break;
+                }
+                for(var j = i+1; j <= $scope.new_consistency.no_of_functions; j++){
+                    if($scope.new_consistency.functions[i-1].function == $scope.new_consistency.functions[j-1].function){
                         $scope.flag = 0;
                         $scope.msg = "Duplicate values in periods is not allowed";
                         break;
@@ -632,7 +715,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             params = { 
                 'function_details': angular.toJson($scope.new_general),
                 'function_type' : angular.toJson($scope.select_type),
-                /* 'function_category' : angular.toJson($scope.select_category),*/  
                 'formula_operands': angular.toJson($scope.selected_operands),
                 'formula_operators': angular.toJson($scope.selected_operators),
                 'formula_string': $scope.formula,
@@ -664,7 +746,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             params = { 
                 'function_details': angular.toJson($scope.new_continuity),
                 'function_type' : angular.toJson($scope.select_type),
-                /*'function_category' : angular.toJson($scope.select_category),*/
                 "csrfmiddlewaretoken" : $scope.csrf_token,
             }
             $http({
@@ -693,7 +774,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             params = { 
                 'function_details': angular.toJson($scope.new_consistency),
                 'function_type' : angular.toJson($scope.select_type),
-                /*'function_category' : angular.toJson($scope.select_category),*/
                 "csrfmiddlewaretoken" : $scope.csrf_token,
             }
             $http({
@@ -730,38 +810,42 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.reset_continuity = function(){
         $scope.msg = "";       
         $scope.new_continuity = {
-            'id': '',
             'function_name': '',
             'function_description': '',
-            'no_of_periods': '',          
-            'periods': [],
+            'no_of_fields': '',
+            'no_of_functions': '',            
+            'fields': [],               
             'select_head': '',
+            'functions': []
         }         
     }
     $scope.reset_consistency = function(){
         $scope.msg = "";
         $scope.new_consistency = {
-            'id': '',
             'function_name': '',
             'function_description': '',
-            'no_of_periods': '',
-            'mean': '',
-            'periods': [],
+            'no_of_fields': '',
+            'no_of_functions': '', 
+            'fields': [],          
             'select_head': '',
-        }  
+            'functions': []
+        }
     }
-    $scope.edit_function = function(field){
-        if(field.function_type == 'general'){
+    $scope.edit_function = function(fun){
+        if(fun.function_type == 'general'){
             $scope.change_type('1');
-            $scope.edit_general(field.id);          
+            console.log('general');
+            $scope.edit_general(fun.id);          
         }
-        else if(field.function_type == 'continuity'){
+        else if(fun.function_type == 'continuity'){
             $scope.change_type('2');
-            $scope.edit_continuity(field.id);          
+            console.log('continuity');
+            $scope.edit_continuity(fun.id);          
         }
-        else if(field.function_type == 'consistency'){
+        else if(fun.function_type == 'consistency'){
             $scope.change_type('3');
-            $scope.edit_consistency(field.id);             
+            console.log('consistency');
+            $scope.edit_consistency(fun.id);             
         }   
     }
     $scope.edit_general = function(id){
@@ -773,7 +857,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             $scope.new_general.function_name = $scope.selected_general_function.name;
             $scope.new_general.function_description = $scope.selected_general_function.description;
             $scope.formula = $scope.selected_general_function.formula;
-            /*$scope.select_category = $scope.selected_general_function.category;*/
             $scope.new_general.select_head = $scope.selected_general_function.head;
             $scope.selected_operands = data.general_function.formula_operands;
             $scope.selected_operators = data.general_function.formula_operators;
@@ -782,49 +865,16 @@ function FunctionController($scope, $element, $http, $timeout, $location)
     $scope.edit_continuity = function(id){
         var url = '/continuity_function/?id='+id;
         $http.get(url).success(function(data) {         
-            $scope.continuity_list = data.continuity_objects;
-            $scope.periods_list = data.continuity_objects[0].periods;           
-            $scope.select_type = 2;
-            $scope.new_continuity.id = $scope.continuity_list[0].id;
-            $scope.new_continuity.function_name = $scope.continuity_list[0].name;
-            $scope.new_continuity.function_description = $scope.continuity_list[0].description;
-            $scope.new_continuity.no_of_periods = $scope.continuity_list[0].no_of_periods;            
-            for(var i = 0; i < $scope.periods_list.length ; i++){
-                $scope.new_continuity.periods.push({
-                    'count': i+1,
-                    'period' : $scope.periods_list[i].id,
-                });
-            }         
-            $scope.new_continuity.select_head = $scope.continuity_list[0].head;
+            $scope.new_continuity = data.continuity_fucntion;
         })
     }
     $scope.edit_consistency = function(id){
         var url = '/consistency_function/?id='+id;
         $http.get(url).success(function(data) {
-            $scope.consistency_list = data.consistency_objects;
-            $scope.periods_list = data.consistency_objects[0].periods; 
-            $scope.select_type = 3;
-            $scope.new_consistency.id = $scope.consistency_list[0].id;
-            $scope.new_consistency.function_name = $scope.consistency_list[0].name;
-            $scope.new_consistency.function_description = $scope.consistency_list[0].description;
-            $scope.new_consistency.no_of_periods = $scope.consistency_list[0].no_of_periods;            
-            for(var i = 0; i < $scope.periods_list.length ; i++){
-                $scope.new_consistency.periods.push({
-                    'count': i+1,
-                    'period' : $scope.periods_list[i].id,
-                });
-            } 
-            $scope.new_consistency.mean = $scope.consistency_list[0].mean;
-            /*$scope.select_category = $scope.consistency_list[0].category;*/
-            $scope.new_consistency.select_head = $scope.consistency_list[0].head;
+            $scope.new_consistency = data.consistency_function;
         })
     }
-    /*$scope.get_category = function(){
-        var url = '/category/';
-        $http.get(url).success(function(data) {
-            $scope.category_set = data.category_objects;
-        })
-    }*/
+    
     $scope.get_analytical_head = function(){
         var url = '/analytical_heads/';
         $http.get(url).success(function(data) {

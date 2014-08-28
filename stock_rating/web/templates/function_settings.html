@@ -7,29 +7,18 @@
 {% block content%}
 	<div class="function_settings">
 		<h3 class="function_heading"> Function Settings </h3>
-			<div class="function_row">
-				<div class="function_text">
-					<label>Select Type</label>
-				</div>
-				<div class="function_input">
-					<select name="function_type" ng-selected="value == select_type"  ng-model="select_type" ng-change="change_type(select_type)">
-				   	<option value="1" selected="selected">General</option>
-				    <option value="2">Continuity</option>
-				    <option value="3">Consistency</option>
-					</select>
-				</div>
+		<div class="function_row">
+			<div class="function_text">
+				<label>Select Type</label>
 			</div>
-			<!-- <div class="function_row">
-				<div class="function_text">
-					<label>Select Category</label>
-				</div>
-				<div class="function_input">
-					<select name="select_category" ng-model="select_category" >
-						 <option value="" disabled="True">Select</option>
-						 <option ng-repeat="entry in category_set" ng-selected="entry.id == select_category" value="[[entry.id]]">[[entry.category]]</option>
-				   	</select>
-				</div>
-			</div> -->
+			<div class="function_input">
+				<select name="function_type" ng-selected="value == select_type"  ng-model="select_type" ng-change="change_type(select_type)">
+			   	<option value="1" selected="selected">General</option>
+			    <option value="2">Continuity</option>
+			    <option value="3">Consistency</option>
+				</select>
+			</div>
+		</div>
 		<div class="function_set" ng-show="show_general">
 			<h3 class="sub_heading"> General </h3>
 				<input type="hidden" ng-model="new_general.id" />
@@ -80,14 +69,26 @@
 				<input type="text" name="field_name" ng-model="new_continuity.function_name" />
 				<label> Function Description: </label>
 				<input type="text" name="field_description" ng-model="new_continuity.function_description" />
-				<label> No of Periods: </label>
-				<input type="text" name="field_description" ng-model="new_continuity.no_of_periods" ng-change="add_periods_continuity(new_continuity)"/>
-				<div ng-repeat="period in new_continuity.periods">
-					<label> Period [[ period.count ]] : </label>				
-					<select name="continuity_period" ng-model="period.period">
-					<option value="" disabled="True">Select</option>
-					<option value="[[ field.id ]]" ng-selected="field.id == period.period" ng-repeat="field in fields">[[ field.name ]]</option>		
-					</select>
+				<label> No of Fields: </label>
+				<input type="text" name="field_description" ng-model="new_continuity.no_of_fields" ng-change="add_fields_in_continuity()"/>
+				<label> No of functions: </label>
+				<input type="text" name="field_description" ng-model="new_continuity.no_of_functions" ng-change="add_functions_in_continuity()"/>
+				
+				<div ng-repeat="fld in new_continuity.fields">
+					<p>
+						<label> Field [[ $index+1 ]] : </label>				
+						<select name="continuity_period" ng-model="fld.field">
+						<option value="" disabled="True">Select</option>
+						<option value="[[ field.id ]]" ng-selected="field.id == fld.field" ng-repeat="field in fields">[[ field.name ]]</option>		
+						</select>
+					</p>
+				</div>
+				<div ng-repeat="function in new_continuity.functions">
+					<p>
+						<label> Function [[ $index+1 ]] : </label>
+						<select ng-model="function.function" ng-options="function.id as function.name for function in functions" ng-change="">							
+						</select>
+					</p>
 				</div>
 				<label> Analytical Head: </label>
 		        <select name="continuity_select_head" ng-model="new_continuity.select_head">
@@ -105,17 +106,26 @@
 				<input type="text" name="function_name" ng-model="new_consistency.function_name" />
 				<label> Function Description: </label>
 				<input type="text" name="function_description" ng-model="new_consistency.function_description" />
-				<label> No of Periods: </label>
-				<input type="text" name="no_of_periods" ng-model="new_consistency.no_of_periods" ng-change="add_periods_consistency(new_consistency)"/>
-				<label> Mean: </label>
-				<input type="text" name="mean" ng-model="new_consistency.mean" />
-				<div ng-repeat="period in new_consistency.periods">				
-					<label> Period [[ period.count ]] : </label>				
-					<select name="consistency_period" ng-model="period.period">
+				<label> No of Fields: </label>
+				<input type="text" name="no_of_periods" ng-model="new_consistency.no_of_fields" ng-change="add_fields_in_consistency()"/>
+				<label> No of Functions </label>
+				<input type="text" name="no_of_periods" ng-model="new_consistency.no_of_functions" ng-change="add_functions_in_consistency()"/>
+				<div ng-repeat="fld in new_consistency.fields">				
+					<p>
+						<label> Field [[ $index+1 ]] : </label>				
+						<select name="consistency_period" ng-model="fld.field">
 						<option value="" disabled="True">Select</option>
-						<option value="[[ field.id ]]" ng-selected="field.id == period.period" ng-repeat="field in fields">[[ field.name ]]</option>		
-					</select>
-				</div>				
+						<option value="[[ field.id ]]" ng-selected="field.id == fld.field" ng-repeat="field in fields">[[ field.name ]]</option>	
+						</select>
+					</p>
+				</div>	
+				<div ng-repeat="function in new_consistency.functions">
+					<p>
+						<label> Function [[ $index+1 ]] : </label>	
+						<select ng-model="function.function" ng-options="function.id as function.name for function in functions" ng-change="">		
+						</select>
+					</p>
+				</div>			
 				<label> Analytical Head: </label>
 				<select name="consistency_select_head" ng-model="new_consistency.select_head">
 						 <option value="" disabled="True">Select</option>
