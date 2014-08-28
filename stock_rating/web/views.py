@@ -17,7 +17,8 @@ from models import (UserPermission, DataField, AnalyticalHead, Function,\
  StarRating, CompanyModelFunctionPoint)
 
 from utils import process_data_file, process_company_file, \
-    calculate_general_function_score, get_file_fields
+    calculate_general_function_score, get_file_fields, calculate_consistency_function_score, \
+    calculate_continuity_function_score
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -1085,9 +1086,13 @@ class ModelStarRating(View):
                     for parameterlimit in parameterlimits:
                         function = parameterlimit.function
                         try:
-                            calculate_general_function_score(function, company)
+                            if function.function_type == 'general':
+                                calculate_general_function_score(function, company)
+                            elif function.function_type == 'consistency':
+                                calculate_consistency_function_score(function, company)
+                            elif function.function_type == 'continuity':
+                                calculate_continuity_function_score(function, company)
                             function_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                            print "function_score", function_score
                             company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
                             if not parameterlimit.strong_max.isdigit() and function_score.score >= parameterlimit.strong_min:
                                 company_model_function_point.points = parameterlimit.strong_points
@@ -1129,10 +1134,9 @@ class ModelStarRating(View):
                             score = score + function_score.score
                             model_point = model_point + company_model_function_point.points
                         except Exception as e:
+                            print "error in model score calculation"
                             print e
                             continue
-                
-                print "company", company, score
                 company_model_score.score = score
                 point = (model_point/model.max_points)*100
                 round_function = lambda point: int(point + 1) if int(point) != point else int(point)

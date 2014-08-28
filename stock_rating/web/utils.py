@@ -105,9 +105,9 @@ def create_stock_data(data_file):
 
 def calculate_general_function_score(function, company):
     stock = CompanyStockData.objects.get(company=company)
+    stock = stock.stock_data
     function_operands = function.formula.operands.all()
     formula = function.formula.formula_string    
-    stock = stock.stock_data
     function_value = ''
     for operand in function_operands:
         mapping = FieldMap.objects.get(data_field = operand)
@@ -118,7 +118,6 @@ def calculate_general_function_score(function, company):
         function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
         function_score.score = function_value 
         function_score.save()        
-
         function_score.save()
     except Exception as e:
         print e
@@ -126,22 +125,22 @@ def calculate_general_function_score(function, company):
 
 def calculate_consistency_function_score(function, company):
     stock = CompanyStockData.objects.get(company=company)
-    function_operands = function.fields.all()
-    num_of_periods = function.number_of_fields + function.number_of_functions
+    function_operands = function.consistencyfunction.fields.all()
+    num_of_periods = function.consistencyfunction.number_of_fields + function.consistencyfunction.number_of_functions
     operands_sum = 0
     data_values = []
     for operand in function_operands:
         mapping = FieldMap.objects.get(data_field = operand)
         key_name = mapping.file_field
-        operands_sum = operands_sum + float(stock[key_name])
-        data_values.append(float(stock[key_name]))
-    for fun in function.functions.all():
+        operands_sum = operands_sum + float(stock.stock_data[key_name])
+        data_values.append(float(stock.stock_data[key_name]))
+    for fun in function.consistencyfunction.functions.all():
         try:
-            value = CompanyFunctionScore.objects.get(function=fun, company=company)
-            operands_sum = operands_sum + value.score
-            data_values.append(value.score)
+            value = CompanyFunctionScore.objects.get(function=fun, company=company)            
         except:
-            pass
+            value = calculate_general_function_score(fun, company)
+        operands_sum = operands_sum + value.score
+        data_values.append(value.score)
     avg = operands_sum/num_of_periods
     benchmark = (avg-1.5)
     performance_count = 0
@@ -155,21 +154,21 @@ def calculate_consistency_function_score(function, company):
 
 def calculate_continuity_function_score(function, company):
     stock = CompanyStockData.objects.get(company=company)
-    function_operands = function.fields.all()
-    num_of_periods = function.number_of_fields + function.number_of_functions
+    num_of_periods = function.continuityfunction.number_of_fields + function.continuityfunction.number_of_functions
     performance_count = 0
-    for operand in function_operands:
+    for fun in function.continuityfunction.functions.all():
+        try:
+            value = CompanyFunctionScore.objects.get(function=fun, company=company)            
+        except:
+            value = calculate_general_function_score(fun, company)
+        if value.score > 0:
+            performance_count = performance_count + 1
+    for operand in function.continuityfunction.fields.all():
         mapping = FieldMap.objects.get(data_field = operand)
         key_name = mapping.file_field
-        if float(stock[key_name]) > 0:
+        if float(stock.stock_data[key_name]) > 0:
             performance_count = performance_count + 1 
-    for fun in function.functions.all():
-        try:
-            value = CompanyFunctionScore.objects.get(function=fun, company=company)
-            if value.score > 0:
-                performance_count = performance_count + 1
-        except:
-            pass
+    
     performance_percentage = (performance_count/num_of_periods)*100
     function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
     function_score.score = performance_percentage 

@@ -108,13 +108,13 @@ class HardcodedFormula(Date):
 class ContinuityFunction(Function):
     number_of_fields = models.IntegerField('Number of Periods', max_length=3)
     number_of_functions = models.IntegerField('Number of Functions', max_length=3)
-    fields = models.ManyToManyField(DataField)
+    fields = models.ManyToManyField(DataField, related_name="fields_in_continuity")
     functions = models.ManyToManyField(Function, related_name="functions_in_continuity")
 
 class ConsistencyFunction(Function):
     number_of_fields = models.IntegerField('Number of Periods', max_length=3)
     number_of_functions = models.IntegerField('Number of Functions', max_length=3)
-    fields = models.ManyToManyField(DataField)
+    fields = models.ManyToManyField(DataField, related_name="fields_in_consistency")
     functions = models.ManyToManyField(Function, related_name="functions_in_consistency")
 
 class Industry(models.Model):
