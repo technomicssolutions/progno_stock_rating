@@ -595,10 +595,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_continuity.no_of_periods == '' ) {
             $scope.msg = "Please enter Number of periods";
             return false;
-        } else if(!Number($scope.new_continuity.no_of_fields) ) {
+        } else if(!parseInt($scope.new_continuity.no_of_fields) && $scope.new_continuity.no_of_fields != 0 || $scope.new_continuity.no_of_fields == '') {
             $scope.msg = "Invalid entry in field No of Fields";
             return false;
-        }else if(!Number($scope.new_continuity.no_of_functions) ) {
+        }else if(!parseInt($scope.new_continuity.no_of_functions) && $scope.new_continuity.no_of_functions != 0 || $scope.new_continuity.no_of_functions == '') {
             $scope.msg = "Invalid entry in field No of Functions";
             return false;
         } else if($scope.new_continuity.select_head == '' ) {
@@ -658,10 +658,10 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         } else if($scope.new_consistency.no_of_periods == '' ) {
             $scope.msg = "Please enter Number of periods";
             return false;
-        } else if(!Number($scope.new_consistency.no_of_fields) ) {
+        } else if(!parseInt($scope.new_consistency.no_of_fields) && $scope.new_consistency.no_of_fields != 0 || $scope.new_consistency.no_of_fields == '') {
             $scope.msg = "Invalid entry in field No of fields";
             return false;
-        }else if(!Number($scope.new_consistency.no_of_functions) ) {
+        }else if(!parseInt($scope.new_consistency.no_of_functions) && $scope.new_consistency.no_of_functions != 0 || $scope.new_consistency.no_of_functions == '') {
             $scope.msg = "Invalid entry in field No of functions";
             return false;
         } else if($scope.new_consistency.select_head == '' ) {
