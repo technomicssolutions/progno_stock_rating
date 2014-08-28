@@ -627,13 +627,13 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             return false;
         } else if($scope.new_continuity.no_of_functions > 0){
             for(var i = 1; i <= $scope.new_continuity.no_of_functions; i++){
-                if($scope.new_continuity.funstions[i-1].function == ''){
+                if($scope.new_continuity.functions[i-1].function == ''){
                     $scope.flag = 0;
                     $scope.msg = "please choose the value for function "+ i;
                     break;
                 }
                 for(var j = i+1; j <= $scope.new_continuity.no_of_funstions; j++){
-                    if($scope.new_continuity.funstions[i-1].funstion == $scope.new_continuity.funstions[j-1].funstion){
+                    if($scope.new_continuity.functions[i-1].funstion == $scope.new_continuity.functions[j-1].funstion){
                         $scope.flag = 0;
                         $scope.msg = "Duplicate values in functions is not allowed";
                         break;
