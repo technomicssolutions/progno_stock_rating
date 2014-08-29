@@ -120,7 +120,6 @@ def calculate_general_function_score(function, company):
         function_score.save()        
         function_score.save()
     except Exception as e:
-        print e
     return function_value
 
 def calculate_consistency_function_score(function, company):

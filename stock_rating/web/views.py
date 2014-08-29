@@ -229,7 +229,6 @@ class FunctionSettings(View):
                       'result': 'ok',
                     }
                 except Exception as ex:
-                    print str(ex)
                     res = {
                       'result': 'error',  
                       'message': str(ex)
@@ -1134,8 +1133,6 @@ class ModelStarRating(View):
                             score = score + function_score.score
                             model_point = model_point + company_model_function_point.points
                         except Exception as e:
-                            print "error in model score calculation"
-                            print e
                             continue
                 company_model_score.score = score
                 point = (model_point/model.max_points)*100
