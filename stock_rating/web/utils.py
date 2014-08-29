@@ -136,11 +136,12 @@ def calculate_consistency_function_score(function, company):
         data_values.append(float(stock.stock_data[key_name]))
     for fun in function.consistencyfunction.functions.all():
         try:
-            value = CompanyFunctionScore.objects.get(function=fun, company=company)            
+            value = CompanyFunctionScore.objects.get(function=fun, company=company)     
+            value = value.score       
         except:
             value = calculate_general_function_score(fun, company)
-        operands_sum = operands_sum + value.score
-        data_values.append(value.score)
+        operands_sum = operands_sum + value
+        data_values.append(value)
     avg = operands_sum/num_of_periods
     benchmark = (avg-1.5)
     performance_count = 0
@@ -158,10 +159,11 @@ def calculate_continuity_function_score(function, company):
     performance_count = 0
     for fun in function.continuityfunction.functions.all():
         try:
-            value = CompanyFunctionScore.objects.get(function=fun, company=company)            
+            value = CompanyFunctionScore.objects.get(function=fun, company=company) 
+            value = value.score           
         except:
             value = calculate_general_function_score(fun, company)
-        if value.score > 0:
+        if value > 0:
             performance_count = performance_count + 1
     for operand in function.continuityfunction.fields.all():
         mapping = FieldMap.objects.get(data_field = operand)

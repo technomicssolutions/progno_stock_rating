@@ -1103,10 +1103,12 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.calculate_star_rating = function(){
         $scope.msg = '';
+        show_loader();
         if($scope.selected_model){
             var url = '/model/'+$scope.selected_model+'/star_rating/';
             $http.get(url).success(function(data) {
                 $scope.msg = "Calculation completed Successfully";
+                hide_loader();
             })
         } else {
             $scope.msg = "Please select a model";
