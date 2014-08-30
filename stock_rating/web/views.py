@@ -1065,12 +1065,10 @@ class ModelStarRating(View):
         model = AnalysisModel.objects.get(id=kwargs['model_id'])
         industries = model.industries.all()
         model_max_point = 0
-        analytical_heads = model.analytical_heads.all()
-        for head in analytical_heads:
-            parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
-            for parameterlimit in parameterlimits:
-                function = parameterlimit.function
-                model_max_point = model_max_point + parameterlimit.strong_points  
+        parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
+        for parameterlimit in parameterlimits:
+            function = parameterlimit.function
+            model_max_point = model_max_point + parameterlimit.strong_points  
         model.max_points = model_max_point
         model.save()
         model_ratings = model.starrating_set.all() 
@@ -1080,62 +1078,61 @@ class ModelStarRating(View):
                 model_point = 0
                 score = 0
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
-                for head in analytical_heads:
-                    parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
-                    for parameterlimit in parameterlimits:
-                        function = parameterlimit.function
-                        try:
-                            if function.function_type == 'general':
-                                calculate_general_function_score(function, company)
-                            elif function.function_type == 'consistency':
-                                calculate_consistency_function_score(function, company)
-                            elif function.function_type == 'continuity':
-                                calculate_continuity_function_score(function, company)
-                            function_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                            company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
-                            if not parameterlimit.strong_max.isdigit() and function_score.score >= parameterlimit.strong_min:
-                                company_model_function_point.points = parameterlimit.strong_points
-                                company_model_function_point.comment = parameterlimit.strong_comment
-                                company_model_function_point.save()                               
-                            elif function_score.score >= parameterlimit.strong_min and function_score.score <= parameterlimit.strong_max:
-                                company_model_function_point.points = parameterlimit.strong_points
-                                company_model_function_point.comment = parameterlimit.strong_comment
-                                company_model_function_point.save()
-                            elif function_score.score >= parameterlimit.neutral_min and function_score.score <= parameterlimit.neutral_max:
-                                company_model_function_point.points = parameterlimit.neutral_points
-                                company_model_function_point.comment = parameterlimit.neutral_comment
-                                company_model_function_point.save()
-                            elif not parameterlimit.weak_min.isdigit() and function_score.score <= parameterlimit.weak_max:
+                parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
+                for parameterlimit in parameterlimits:
+                    function = parameterlimit.function
+                    try:
+                        if function.function_type == 'general':
+                            calculate_general_function_score(function, company)
+                        elif function.function_type == 'consistency':
+                            calculate_consistency_function_score(function, company)
+                        elif function.function_type == 'continuity':
+                            calculate_continuity_function_score(function, company)
+                        function_score = CompanyFunctionScore.objects.get(company=company, function=function)
+                        company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
+                        if not parameterlimit.strong_max.isdigit() and function_score.score >= parameterlimit.strong_min:
+                            company_model_function_point.points = parameterlimit.strong_points
+                            company_model_function_point.comment = parameterlimit.strong_comment
+                            company_model_function_point.save()                               
+                        elif function_score.score >= parameterlimit.strong_min and function_score.score <= parameterlimit.strong_max:
+                            company_model_function_point.points = parameterlimit.strong_points
+                            company_model_function_point.comment = parameterlimit.strong_comment
+                            company_model_function_point.save()
+                        elif function_score.score >= parameterlimit.neutral_min and function_score.score <= parameterlimit.neutral_max:
+                            company_model_function_point.points = parameterlimit.neutral_points
+                            company_model_function_point.comment = parameterlimit.neutral_comment
+                            company_model_function_point.save()
+                        elif not parameterlimit.weak_min.isdigit() and function_score.score <= parameterlimit.weak_max:
+                            company_model_function_point.points = parameterlimit.weak_points
+                            company_model_function_point.comment = parameterlimit.weak_comment
+                            company_model_function_point.save()
+                        elif function_score.score >= parameterlimit.weak_min and function_score.score <= parameterlimit.weak_max:
+                            company_model_function_point.points = parameterlimit.weak_points
+                            company_model_function_point.comment = parameterlimit.weak_comment
+                            company_model_function_point.save()
+                        elif parameterlimit.weak_min_1 is not None:
+                            if not parameterlimit.weak_min_1.isdigit() and function_score.score <= parameterlimit.weak_max_1:
                                 company_model_function_point.points = parameterlimit.weak_points
                                 company_model_function_point.comment = parameterlimit.weak_comment
                                 company_model_function_point.save()
-                            elif function_score.score >= parameterlimit.weak_min and function_score.score <= parameterlimit.weak_max:
+                            elif not parameterlimit.weak_max_1.isdigit() and parameterlimit.weak_max_1 == "Above" and function_score.score >= parameterlimit.weak_min_1:
                                 company_model_function_point.points = parameterlimit.weak_points
                                 company_model_function_point.comment = parameterlimit.weak_comment
                                 company_model_function_point.save()
-                            elif parameterlimit.weak_min_1 is not None:
-                                if not parameterlimit.weak_min_1.isdigit() and function_score.score <= parameterlimit.weak_max_1:
-                                    company_model_function_point.points = parameterlimit.weak_points
-                                    company_model_function_point.comment = parameterlimit.weak_comment
-                                    company_model_function_point.save()
-                                elif not parameterlimit.weak_max_1.isdigit() and parameterlimit.weak_max_1 == "Above" and function_score.score >= parameterlimit.weak_min_1:
-                                    company_model_function_point.points = parameterlimit.weak_points
-                                    company_model_function_point.comment = parameterlimit.weak_comment
-                                    company_model_function_point.save()
-                                elif not parameterlimit.weak_max_1.isdigit() and parameterlimit.weak_max_1 == "Below" and function_score.score <= parameterlimit.weak_min_1:
-                                    company_model_function_point.points = parameterlimit.weak_points
-                                    company_model_function_point.comment = parameterlimit.weak_comment
-                                    company_model_function_point.save()
-                                elif function_score.score >= parameterlimit.weak_min_1 and function_score.score <= parameterlimit.weak_max_1:
-                                    company_model_function_point.points = parameterlimit.weak_points
-                                    company_model_function_point.comment = parameterlimit.weak_comment
-                                    company_model_function_point.save()                                    
-                            score = score + function_score.score
-                            model_point = model_point + company_model_function_point.points
-                        except Exception as e:
-                            continue
+                            elif not parameterlimit.weak_max_1.isdigit() and parameterlimit.weak_max_1 == "Below" and function_score.score <= parameterlimit.weak_min_1:
+                                company_model_function_point.points = parameterlimit.weak_points
+                                company_model_function_point.comment = parameterlimit.weak_comment
+                                company_model_function_point.save()
+                            elif function_score.score >= parameterlimit.weak_min_1 and function_score.score <= parameterlimit.weak_max_1:
+                                company_model_function_point.points = parameterlimit.weak_points
+                                company_model_function_point.comment = parameterlimit.weak_comment
+                                company_model_function_point.save()                                    
+                        score = score + function_score.score
+                        model_point = model_point + company_model_function_point.points
+                    except:
+                        continue
                 company_model_score.score = score
-                point = (model_point/model.max_points)*100
+                point = float(model_point)/float(model.max_points)*100
                 round_function = lambda point: int(point + 1) if int(point) != point else int(point)
                 company_model_score.points = round_function(point)
                 company_model_score.save()

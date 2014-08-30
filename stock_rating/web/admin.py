@@ -5,7 +5,7 @@ class UserPermissionAdmin(admin.ModelAdmin):
 	search_fields = ['username']
 
 class CompanyAdmin(admin.ModelAdmin):
-	search_fields = ['company_name']
+	search_fields = ['industry__industry_name']
 
 class IndustryAdmin(admin.ModelAdmin):
 	search_fields = ['industry_name']
@@ -14,7 +14,7 @@ class CompanyFunctionScoreAdmin(admin.ModelAdmin):
 	search_fields = ['company__company_name', 'function__function_name']
 
 class CompanyModelScoreAdmin(admin.ModelAdmin):
-	search_fields = ['company__company_name', 'function__function_name', 'model__name']
+	search_fields = ['company__company_name', 'analysis_model__name']
 
 class CompanyStockDataAdmin(admin.ModelAdmin):
 	search_fields = ['company__company_name']

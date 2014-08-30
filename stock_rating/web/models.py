@@ -197,7 +197,7 @@ class CompanyModelFunctionPoint(Date):
     comment = models.CharField('Comment', max_length=500, null=True, blank=True)
 
     def __unicode__(self):
-        return self.company.company_name + " - " + self.function.function_name 
+        return self.company.company_name + " - " + self.function.function_name + " - " + str(self.points)
 
 class CompanyModelScore(Date):
     company = models.ForeignKey(Company)

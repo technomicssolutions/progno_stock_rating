@@ -32,8 +32,6 @@ def process_data_file(data_file):
                     row.append(x)
             while curr_cell < num_cells:
                 curr_cell += 1
-                # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-                #cell_type = worksheet.cell_type(curr_row, curr_cell)
                 cell_value = worksheet.cell_value(curr_row, curr_cell)
                 if curr_row != 0 :
                     field_name = worksheet.cell_value(0, curr_cell)
@@ -77,8 +75,6 @@ def process_company_file(data_file):
             company.save()
     data_file.processing_completed = True
     data_file.save()
-    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-    #cell_type = worksheet.cell_type(curr_row, curr_cell)
 
 def create_stock_data(data_file):
     for sheet in data_file.sheets:
@@ -112,14 +108,18 @@ def calculate_general_function_score(function, company):
     for operand in function_operands:
         mapping = FieldMap.objects.get(data_field = operand)
         key_name = mapping.file_field
-        vars()[operand.name] = stock[key_name]
+        if stock[key_name] != '':
+            vars()[operand.name] = float(stock[key_name])
+        else:
+            vars()[operand.name] = stock[key_name]
     try:
         function_value = eval(formula)
         function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
         function_score.score = function_value 
         function_score.save()        
         function_score.save()
-    except Exception as e:
+    except Exception as e:       
+        pass
     return function_value
 
 def calculate_consistency_function_score(function, company):
@@ -128,35 +128,35 @@ def calculate_consistency_function_score(function, company):
     num_of_periods = function.consistencyfunction.number_of_fields + function.consistencyfunction.number_of_functions
     operands_sum = 0
     data_values = []
-    for operand in function_operands:
+    for operand in function_operands:       
         mapping = FieldMap.objects.get(data_field = operand)
         key_name = mapping.file_field
-        operands_sum = operands_sum + float(stock.stock_data[key_name])
-        data_values.append(float(stock.stock_data[key_name]))
-    for fun in function.consistencyfunction.functions.all():
+        operands_sum = operands_sum + stock.stock_data[key_name]
+        data_values.append(stock.stock_data[key_name])
+    for fun in function.consistencyfunction.functions.all():        
         try:
             value = CompanyFunctionScore.objects.get(function=fun, company=company)     
             value = value.score       
         except:
-            value = calculate_general_function_score(fun, company)
+            value = calculate_general_function_score(fun, company)        
         operands_sum = operands_sum + value
-        data_values.append(value)
-    avg = operands_sum/num_of_periods
+        data_values.append(value)   
+    avg = float(operands_sum)/float(num_of_periods)
     benchmark = (avg-1.5)
     performance_count = 0
     for value in data_values:
         if value >= benchmark:
             performance_count = performance_count + 1
-    performance_percentage = (performance_count/num_of_periods)*100
+    performance_percentage = float(performance_count)/float(num_of_periods)*100
     function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
-    function_score.score = performance_percentage 
+    function_score.score = performance_percentage     
     function_score.save()
 
 def calculate_continuity_function_score(function, company):
     stock = CompanyStockData.objects.get(company=company)
     num_of_periods = function.continuityfunction.number_of_fields + function.continuityfunction.number_of_functions
     performance_count = 0
-    for fun in function.continuityfunction.functions.all():
+    for fun in function.continuityfunction.functions.all():       
         try:
             value = CompanyFunctionScore.objects.get(function=fun, company=company) 
             value = value.score           
@@ -170,7 +170,7 @@ def calculate_continuity_function_score(function, company):
         if float(stock.stock_data[key_name]) > 0:
             performance_count = performance_count + 1 
     
-    performance_percentage = (performance_count/num_of_periods)*100
+    performance_percentage = float(performance_count)/float(num_of_periods)*100
     function_score, created = CompanyFunctionScore.objects.get_or_create(company=company, function=function)
     function_score.score = performance_percentage 
     function_score.save()
