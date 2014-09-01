@@ -1072,13 +1072,13 @@ class ModelStarRating(View):
         model.max_points = model_max_point
         model.save()
         model_ratings = model.starrating_set.all() 
+        parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
                 model_point = 0
                 score = 0
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
-                parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
                 for parameterlimit in parameterlimits:
                     function = parameterlimit.function
                     try:
