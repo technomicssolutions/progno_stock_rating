@@ -36,7 +36,8 @@ def process_data_file(data_file):
                 if curr_row != 0 :
                     field_name = worksheet.cell_value(0, curr_cell)
                     index = rows[0].index(field_name)
-                    row[index] = cell_value
+                    if cell_value != '':
+                        row[index] = cell_value
                 else:
                     row.append(cell_value)
             if curr_row == 0:

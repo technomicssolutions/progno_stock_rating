@@ -5,7 +5,7 @@ class UserPermissionAdmin(admin.ModelAdmin):
 	search_fields = ['username']
 
 class CompanyAdmin(admin.ModelAdmin):
-	search_fields = ['industry__industry_name']
+	search_fields = ['industry__industry_name', 'company_name']
 
 class IndustryAdmin(admin.ModelAdmin):
 	search_fields = ['industry_name']
