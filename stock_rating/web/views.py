@@ -626,23 +626,6 @@ class Users(View):
             'users': user_objects
         })
 
-# class Category(View):
-
-#     def get(self, request, *args, **kwargs):
-#         category_objects = FunctionCategory.objects.all()
-#         category_set = []
-#         for category in category_objects:
-#             category_set.append({
-#                 'id':category.id,
-#                 'category': category.category_name
-#             })
-#         #if request.is_ajax():
-#         response = simplejson.dumps({
-#            'category_objects': category_set
-#         })
-#         return HttpResponse(response, status=200, mimetype='application/json')
-
-
 class IndustryDetails(View):
 
     def get(self, request, *args, **kwargs):
@@ -1091,15 +1074,15 @@ class ModelStarRating(View):
                             calculate_continuity_function_score(function, company)
                         function_score = CompanyFunctionScore.objects.get(company=company, function=function)
                         company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
-                        if not parameterlimit.strong_max.replace('.','',1).replace('-','',1).isdigit() and function_score.score > float(parameterlimit.strong_min):
+                        if not parameterlimit.strong_max.replace('.','',1).replace('-','',1).isdigit() and function_score.score >= float(parameterlimit.strong_min):
                             company_model_function_point.points = parameterlimit.strong_points
                             company_model_function_point.comment = parameterlimit.strong_comment
                             company_model_function_point.save()                               
-                        elif function_score.score >= float(parameterlimit.strong_min) and function_score.score <= float(parameterlimit.strong_max):
+                        elif function_score.score >= float(parameterlimit.strong_min) and function_score.score < float(parameterlimit.strong_max):
                             company_model_function_point.points = parameterlimit.strong_points                                
                             company_model_function_point.comment = parameterlimit.strong_comment
                             company_model_function_point.save()
-                        elif function_score.score >= float(parameterlimit.neutral_min) and function_score.score <= float(parameterlimit.neutral_max):
+                        elif function_score.score >= float(parameterlimit.neutral_min) and function_score.score < float(parameterlimit.neutral_max):
                             company_model_function_point.points = parameterlimit.neutral_points
                             company_model_function_point.comment = parameterlimit.neutral_comment
                             company_model_function_point.save()
@@ -1107,11 +1090,11 @@ class ModelStarRating(View):
                             company_model_function_point.points = parameterlimit.weak_points
                             company_model_function_point.comment = parameterlimit.weak_comment
                             company_model_function_point.save()
-                        elif not parameterlimit.weak_max.replace('.','',1).replace('-','',1).isdigit() and function_score.score > float(parameterlimit.weak_min):
+                        elif not parameterlimit.weak_max.replace('.','',1).replace('-','',1).isdigit() and function_score.score >= float(parameterlimit.weak_min):
                             company_model_function_point.points = parameterlimit.weak_points
                             company_model_function_point.comment = parameterlimit.weak_comment
                             company_model_function_point.save()
-                        elif function_score.score >= float(parameterlimit.weak_min) and function_score.score <= float(parameterlimit.weak_max):
+                        elif function_score.score >= float(parameterlimit.weak_min) and function_score.score < float(parameterlimit.weak_max):
                             company_model_function_point.points = parameterlimit.weak_points
                             company_model_function_point.comment = parameterlimit.weak_comment
                             company_model_function_point.save()
@@ -1123,7 +1106,7 @@ class ModelStarRating(View):
                                     company_model_function_point.save()
                             elif not parameterlimit.weak_max_1.replace('.','',1).replace('-','',1).isdigit():
                                 if parameterlimit.weak_max_1 == "Above":
-                                    if function_score.score > float(parameterlimit.weak_min_1):
+                                    if function_score.score >= float(parameterlimit.weak_min_1):
                                         company_model_function_point.points = parameterlimit.weak_points
                                         company_model_function_point.comment = parameterlimit.weak_comment
                                         company_model_function_point.save()
@@ -1132,7 +1115,7 @@ class ModelStarRating(View):
                                         company_model_function_point.points = parameterlimit.weak_points
                                         company_model_function_point.comment = parameterlimit.weak_comment
                                         company_model_function_point.save()
-                            elif function_score.score >= float(parameterlimit.weak_min_1) and function_score.score <= float(parameterlimit.weak_max_1):
+                            elif function_score.score >= float(parameterlimit.weak_min_1) and function_score.score < float(parameterlimit.weak_max_1):
                                 company_model_function_point.points = parameterlimit.weak_points
                                 company_model_function_point.comment = parameterlimit.weak_comment
                                 company_model_function_point.save()                                    
