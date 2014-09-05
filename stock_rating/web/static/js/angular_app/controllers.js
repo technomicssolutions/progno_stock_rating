@@ -1098,13 +1098,12 @@ function ModelController($scope, $element, $http, $timeout, $location)
             $scope.model_list = data.model_list;
             paginate($scope.model_list, $scope);
             hide_loader();
-
         })
     }
     $scope.calculate_star_rating = function(){
         $scope.msg = '';
-        show_loader();
         if($scope.selected_model){
+            show_loader();
             var url = '/model/'+$scope.selected_model+'/star_rating/';
             $http.get(url).success(function(data) {
                 $scope.msg = "Calculation completed Successfully";
@@ -1965,6 +1964,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
         $scope.companies = [];
         $scope.search_keys = [];
         $scope.star_ratings = [];
+        $scope.isin_list = [];
     }
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
@@ -2018,6 +2018,57 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
                 $scope.star_ratings = $scope.star_ratings.concat(data.star_ratings);   
                 $scope.search_keys = [];
                 $scope.search_text = '';
+                $scope.isin_list = $scope.isin_list.concat(data.isin_list);
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+       }
+    }
+    $scope.search_companies_by_rating = function(){
+        if($scope.rating_count.length > 0) {
+            show_loader();
+            var url = '/rating_report_by_starcount/';
+            params = { 
+                'star_count': $scope.rating_count,
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : url,
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                hide_loader();
+                $scope.star_ratings = data.star_ratings;   
+                $scope.search_keys = [];
+                $scope.search_text = '';
+                $scope.isin_list = data.isin_list;
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+       }
+    }
+    $scope.export_rating_xml = function(){
+        if($scope.isin_list.length > 0) {
+            show_loader();
+            var url = '/rating_xml/';
+            params = { 
+                'isin_list': angular.toJson($scope.isin_list),
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : url,
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {  
+                hide_loader();
+                $scope.show_download  = true;
+                $scope.file_name = data.file_name;   
             }).error(function(data, status){
                 $scope.message = data.message;
             });

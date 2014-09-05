@@ -39,7 +39,10 @@
 				</div>
 			</div>
 
-		<p class="error_msg"> [[msg]] </p>
+		<p class="error_msg" ng-show="msg"> 
+			<a href="" ng-click="msg=''"> X </a>
+			[[msg]] 
+		</p>
 		<div class="model_row">
 			<input type="submit" name="submit" value="Reset" ng-click="reset_model()"/>
 			<input type="submit" name="submit" value="Save" ng-click="save_model()"/>
@@ -167,7 +170,10 @@
 				</tr>
 			</table>
 		</div>
-		<p class="error_msg"> [[msg]] </p>
+		<p class="error_msg" ng-show="msg"> 
+			<a href="" ng-click="msg=''"> X </a>
+			[[msg]] 
+		</p>
 		<div class="tab_def_model">
 			<h3 class="sub_heading"> Start Rating </h3>
 			<table class="table table-stripped">
@@ -207,7 +213,10 @@
 					</td>
 				</tr>
 			</table>
-		<p class="error_msg"> [[rating_msg]] </p>
+		<p class="error_msg" ng-show="rating_msg"> 
+			<a href="" ng-click="rating_msg=''"> X </a>
+			[[rating_msg]] 
+		</p>		
 		</div>
 	</div>
 	<div class="tab_list" ng-show="create_model">

@@ -902,4 +902,32 @@ input[type="submit"] {
 	background-color: #FFFFFF !important;
 	outline: none;
 }
+#models .error_msg, .show_download {
+	background-color: #FFFFFF;
+    border: 1px solid #C3C3C3;
+    border-radius: 10px;
+    color: #FF0000;
+    display: block;
+    font-weight: bold;
+    height: 100px;
+    padding-top: 35px;
+    position: fixed;
+    text-align: center;
+    vertical-align: middle;
+    width: 50%;
+    top: 50%;
+    left: 33%;
+}
+#models .error_msg a, .show_download .close_button {
+	border: 1px solid #C3C3C3;
+    border-radius: 15px;
+    display: block;
+    padding: 2px;
+    position: absolute;
+    right: 0;
+    text-align: center !important;
+    text-decoration: none;
+    top: 0;
+    width: 20px;
+}
 /*********************** Rating Report styles end *************/

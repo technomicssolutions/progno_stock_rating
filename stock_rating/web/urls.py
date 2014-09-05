@@ -9,7 +9,8 @@ from views import (Login,Logout, Dashboard, Administration, Users, SaveUser, Res
     ConsistencyFunctions, DeleteField, Model, IndustryDetails, DeleteModel, DeleteUser, \
     ModelDetails, DeleteParameter, DataUpload, AnalyticalHeads, DeleteHead, FieldMapping, \
     FileFields, OperatorsView, Companies, DeleteFunction, ModelStarRating, SaveModelStarRating, \
-    RatingReport, DeleteRating, FieldsWithMapping, DeleteDataFile)
+    RatingReport, DeleteRating, FieldsWithMapping, DeleteDataFile, RatingReportByStarCount, \
+    RatingXML)
 
 urlpatterns = patterns('',
 
@@ -54,8 +55,10 @@ urlpatterns = patterns('',
     url(r'companies/$', login_required(Companies.as_view()), name="companies"),
     url(r'model/(?P<model_id>\d+)/star_rating/$', login_required(ModelStarRating.as_view()), name="star_rating"),
     url(r'model/(?P<model_id>\d+)/save_star_rating/$', login_required(SaveModelStarRating.as_view()), name="save_star_rating"),
+    url(r'rating_report_by_starcount/$', login_required(RatingReportByStarCount.as_view()), name="rating_report_by_starcount"),
     url(r'rating_report/$', login_required(RatingReport.as_view()), name="rating_report"),
-    url(r'fields_with_mapping/$', login_required(FieldsWithMapping.as_view()), name="fields_with_mapping"),    
+    url(r'fields_with_mapping/$', login_required(FieldsWithMapping.as_view()), name="fields_with_mapping"),
+    url(r'rating_xml/$', login_required(RatingXML.as_view()), name="rating_xml"),        
 )
 
 

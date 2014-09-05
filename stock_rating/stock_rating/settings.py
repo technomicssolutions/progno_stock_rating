@@ -1,8 +1,9 @@
 # Django settings for stock_rating project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-
+fillpath = lambda x: os.path.join(os.path.dirname(__file__), x)
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
@@ -50,7 +51,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/var/www/example.com/media/"
-MEDIA_ROOT = 'media'
+MEDIA_ROOT = fillpath('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.

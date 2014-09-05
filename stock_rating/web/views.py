@@ -1,6 +1,8 @@
 
 import simplejson
 import ast
+import lxml.etree as ET
+
 from collections import OrderedDict
 from math import sqrt
 
@@ -10,6 +12,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
+from django.conf import settings
 
 from models import (UserPermission, DataField, AnalyticalHead, Function,\
  ContinuityFunction, ConsistencyFunction, Industry, AnalysisModel, ParameterLimit, DataFile, \
@@ -1177,13 +1180,16 @@ class RatingReport(View):
         if request.is_ajax():
             search_keys = ast.literal_eval(request.POST['search_keys'])
             ratings = []
+            isin_list = []
             for key in search_keys:
                 company = Company.objects.get(isin_code=key)
+                isin_list.append(company.isin_code)
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0:
                     model_score = model_score[0]
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
+                        'industry': company.industry.industry_name,
                         'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                         'score': model_score.points,
                         'brief_comment': model_score.comment,
@@ -1204,9 +1210,96 @@ class RatingReport(View):
                     }
                 ratings.append(rating)
             response = simplejson.dumps({
-                'star_ratings': ratings
+                'star_ratings': ratings,
+                'isin_list': isin_list
             })
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'rating_report.html', {})
             
+class RatingReportByStarCount(View):
+    
+    def get(self, request, *args, **kwargs):
+        return render(request, 'rating_report.html', {
+            
+        })
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            star_count = ast.literal_eval(request.POST['star_count'])
+            ratings = []
+            isin_list = []
+            model_scores = CompanyModelScore.objects.filter(star_rating=star_count)
+            for model_score in model_scores:
+                model = model_score.analysis_model
+                company = model_score.company
+                isin_list.append(company.isin_code)
+                parameters = model.parameterlimit_set.all()
+                comments = []
+                for parameter in parameters:
+                    function = parameter.function
+                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                    if fun_score.count() > 0:
+                        comments.append(fun_score[0].comment)
+                ratings.append({
+                    'company_name': company.company_name + ' - ' + company.isin_code,
+                    'industry': company.industry.industry_name,
+                    'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+                    'score': model_score.points,
+                    'brief_comment': model_score.comment,
+                    'detailed_comment': comments
+                })
+            response = simplejson.dumps({
+                'star_ratings': ratings,
+                'isin_list': isin_list
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'rating_report.html', {})
 
+class RatingXML(View):
+    
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            isin_list = ast.literal_eval(request.POST['isin_list'])
+            root = ET.Element("ratings")
+            for code in isin_list:
+                company = Company.objects.get(isin_code=code)
+                model_score = CompanyModelScore.objects.filter(company=company)
+                if model_score.count() > 0:
+                    model_score = model_score[0]
+                    doc = ET.SubElement(root, "rating")
+
+                    field1 = ET.SubElement(doc, "company_name")
+                    field1.text = company.company_name
+
+                    field2 = ET.SubElement(doc, "isin_code")
+                    field2.text = company.isin_code
+
+                    field3 = ET.SubElement(doc, "industry")
+                    field3.text = company.industry.industry_name
+                    field4 = ET.SubElement(doc, "star_rating")
+                    field4.text = model_score.star_rating
+                    field5 = ET.SubElement(doc, "score")
+                    field5.text = str(model_score.points)
+                    field6 = ET.SubElement(doc, "brief_comment")
+                    field6.text = model_score.comment
+
+                    model = model_score.analysis_model
+                    parameters = model.parameterlimit_set.all()
+                    comments = []
+                    for parameter in parameters:
+                        function = parameter.function
+                        fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                        if fun_score.count() > 0:
+                            if fun_score[0].comment:
+                                comments.append(fun_score[0].comment)
+                    field6 = ET.SubElement(doc, "detailed_comment")
+                    field6.text = ', '.join(comments)
+                else:
+                    doc = ET.SubElement(root, "rating")
+                    doc.text = "No rating available"
+            tree = ET.ElementTree(root)
+            tree.write(settings.MEDIA_ROOT+"/rating.xml")
+            response = simplejson.dumps({
+                'file_name': "rating.xml"
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'rating_report.html', {})

@@ -36,6 +36,21 @@
           
     {% block extrahead %}
     {% endblock extrahead %}
+    <script type="text/javascript">
+        $("'[placeholder]'").focus(function() {
+          var input = $(this);
+          if (input.val() == input.attr("'placeholder'")) {
+            input.val("''");
+            input.removeClass("'placeholder'");
+          }
+        }).blur(function() {
+          var input = $(this);
+          if (input.val() == "''" || input.val() == input.attr("'placeholder'")) {
+            input.addClass("'placeholder'");
+            input.val(input.attr("'placeholder'"));
+          }
+        }).blur();
+    </script>
     </head>
     <body id="{% block body_id %}base{% endblock %}" {% block controller %}{% endblock controller %}>
         {% block body %}

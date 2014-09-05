@@ -9,17 +9,40 @@
 		<div class="search_div">
 			<p class="search_box">
 				<span class="search_text">[[search_text]]</span>
-				<input type="text" name='companies'  ng-model="search_key" ng-change="search_companies()" /> 
+				<input type="text" name='companies' placeholder="Company Name"  ng-model="search_key" ng-change="search_companies()" /> 
 			</p>
 			<input type="button" name="search" value="Search" ng-click="search_rating()"/>
 			<ul id="suggestions">
 				<li ng-repeat="company in companies" ng-click="hide_suggestions(company)"> [[company.name]] - [[company.isin_code]] </li>
 			</ul>
+			<div class="clear">
+				<br /> 
+				<p> <h4>Search By star count</h4> </p>
+				<span class=""> 
+					<label>Star Count:</label>  
+					<select ng-model="rating_count">
+						<option value="5">5</option>
+						<option value="4">4</option>
+						<option value="3">3</option>
+						<option value="2">2</option>
+						<option value="1">1</option>
+					</select>
+					<button ng-click="search_companies_by_rating()">Submit </button>
+				</span>
+			</div>
+			<div class="clear">
+				<button ng-click="export_rating_xml()">Export xml</button>
+			</div>
+			<p class="show_download" ng-show="show_download"> 
+				<a href="" ng-click="show_download=''" class="close_button"> X </a>
+				<a href="/site_media/[[file_name]]"> Download </a>
+			</p>
 		</div>
 		<div class="rating_container">
 			<table class="table">
 				<tr>
 					<th> Company Name </th>
+					<th> Industry </th>
 					<th> Star Rating </th>
 					<th> Score </th>
 					<th> Brief Comment </th>
@@ -28,6 +51,7 @@
 				</tr>
 				<tr ng-repeat="rating in star_ratings">
 					<td>[[rating.company_name]]</td>
+					<td>[[rating.industry]]</td>
 					<td>[[rating.star_rating]]</td>
 					<td>[[rating.score]]</td>
 					<td>[[rating.brief_comment]]</td>
