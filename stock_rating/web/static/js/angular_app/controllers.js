@@ -198,7 +198,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_user = function(user){
         show_loader();
-        var url = '/delete_user/?id='+user.id;
+        var url = '/progno/delete_user/?id='+user.id;
         $http.get(url).success(function(data){
         if(data.result == 'ok'){
             hide_loader();
@@ -212,7 +212,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_users = function(){
-        var url = '/users/';
+        var url = '/progno/users/';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.users = data.users;
@@ -276,7 +276,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
         $scope.new_field.id = field.id;
     }
     $scope.delete_field = function(field){
-        var url = '/delete_field/?id='+field.id;
+        var url = '/progno/delete_field/?id='+field.id;
         $http.get(url).success(function(data){
             if(data.result == 'ok'){
                 $scope.msg = "Field deleted";
@@ -287,7 +287,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_fields = function(){
-        var url = '/field_settings/';
+        var url = '/progno/field_settings/';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.fields = data.fields;
@@ -848,7 +848,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }   
     }
     $scope.edit_general = function(id){
-        var url = '/general_function/?id='+id;
+        var url = '/progno/general_function/?id='+id;
         $http.get(url).success(function(data) {
             $scope.selected_general_function = data.general_function;
             $scope.select_type = 1;
@@ -862,26 +862,26 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.edit_continuity = function(id){
-        var url = '/continuity_function/?id='+id;
+        var url = '/progno/continuity_function/?id='+id;
         $http.get(url).success(function(data) {         
             $scope.new_continuity = data.continuity_fucntion;
         })
     }
     $scope.edit_consistency = function(id){
-        var url = '/consistency_function/?id='+id;
+        var url = '/progno/consistency_function/?id='+id;
         $http.get(url).success(function(data) {
             $scope.new_consistency = data.consistency_function;
         })
     }
     
     $scope.get_analytical_head = function(){
-        var url = '/analytical_heads/';
+        var url = '/progno/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
         })
     }
     $scope.get_functions = function(){
-        var url = '/function_settings/';
+        var url = '/progno/function_settings/';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
@@ -890,14 +890,14 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_operands = function(){
-        var url = '/fields_with_mapping/';
+        var url = '/progno/fields_with_mapping/';
         $http.get(url).success(function(data) {
             $scope.operands = data.fields;
             $scope.fields = data.fields;
         })  
     }
     $scope.get_operators = function(){
-        var url = '/operators/';
+        var url = '/progno/operators/';
         $http.get(url).success(function(data) {
             $scope.operators = data.operators;
         })  
@@ -1084,14 +1084,14 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.rating_msg = "";
     }
     $scope.get_industries = function(){
-        var url = '/industry/';
+        var url = '/progno/industry/';
         $http.get(url).success(function(data) {
             $scope.industry_list = data.industry_list;
             $scope.industry_select = '';
         }) 
     }
     $scope.get_models = function(){
-        var url = '/models/';
+        var url = '/progno/models/';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
@@ -1103,7 +1103,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.msg = '';
         if($scope.selected_model){
             show_loader();
-            var url = '/model/'+$scope.selected_model+'/star_rating/';
+            var url = '/progno/model/'+$scope.selected_model+'/star_rating/';
             $http.get(url).success(function(data) {
                 $scope.msg = "Calculation completed Successfully";
                 hide_loader();
@@ -1113,7 +1113,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         }
     }
     $scope.get_analytical_head = function(){
-        var url = '/analytical_heads/';
+        var url = '/progno/analytical_heads/';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;           
         })
@@ -1128,7 +1128,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.edit_parameters = false;
         $scope.flag = 0;
         show_loader();
-        var url = '/model_details/?id='+id;
+        var url = '/progno/model_details/?id='+id;
         $http.get(url).success(function(data) {
             hide_loader();
             $scope.analytical_heads = data.analytical_heads;           
@@ -1227,7 +1227,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.delete_rating = function(model_id,rating){    
         if(rating.id != ""){
             show_loader();
-            var url = '/delete_rating/?rating_id='+rating.id;
+            var url = '/progno/delete_rating/?rating_id='+rating.id;
             $http.get(url).success(function(data){
                 hide_loader();
                 if(data.result == 'ok')
@@ -1240,7 +1240,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_parameters = function(model_id, parameters){
         show_loader();
-        var url = '/delete_parameters/?id='+parameters.parameter_id;
+        var url = '/progno/delete_parameters/?id='+parameters.parameter_id;
         $http.get(url).success(function(data){
             hide_loader();
             if(data.result == 'ok')
@@ -1569,7 +1569,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_model = function(field){
         show_loader();
-        var url = '/delete_model/?id='+field.id;
+        var url = '/progno/delete_model/?id='+field.id;
         $http.get(url).success(function(data){
             hide_loader();
             if(data.result == 'ok'){
@@ -1619,7 +1619,7 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_data_files = function(){
         $scope.error_msg = '';  
-        var url = '/data_upload/';
+        var url = '/progno/data_upload/';
         $http.get(url).success(function(data) {
             $scope.data_files = data.data_files;
              paginate($scope.data_files, $scope);
@@ -1641,7 +1641,7 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
             fd.append('csrfmiddlewaretoken', $scope.csrf_token);
             show_loader();
 
-            var url = '/data_upload/';
+            var url = '/progno/data_upload/';
             $http.post(url, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined
@@ -1722,7 +1722,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_file_fields = function(){
         $scope.error_msg = '';  
-        var url = '/file_fields/';
+        var url = '/progno/file_fields/';
         $http.get(url).success(function(data) {
             $scope.file_fields = data.fields;
             if($scope.system_fields)
@@ -1731,7 +1731,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_system_fields = function(){
         $scope.error_msg = '';  
-        var url = '/field_settings/';
+        var url = '/progno/field_settings/';
         $http.get(url).success(function(data) {
             $scope.system_fields = data.fields;
             if($scope.file_fields)
@@ -1739,7 +1739,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
         })     
     }
     $scope.get_mapping = function(){
-        var url = '/field_mapping/';
+        var url = '/progno/field_mapping/';
         $http.get(url).success(function(data) {
             $scope.file_fields = data.file_fields;
             $scope.system_fields = data.system_fields;
@@ -1763,7 +1763,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
             }
         }).success(function(data, status) {  
             hide_loader();
-            document.location.href = '/field_mapping/';
+            document.location.href = '/progno/field_mapping/';
         }).error(function(data, status){
             $scope.message = data.message;
         });
@@ -1789,7 +1789,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         $('#dropdown_menu').css('display', 'none');
     }
     $scope.get_analytical_head = function(){
-        var url = '/analytical_heads/';
+        var url = '/progno/analytical_heads/';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;            
@@ -1842,7 +1842,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_head = function(head){
         show_loader();
-        var url = '/delete_head/?id='+head.id;
+        var url = '/progno/delete_head/?id='+head.id;
         $http.get(url).success(function(data){
             hide_loader();
             if(data.result == 'ok')
@@ -1911,7 +1911,7 @@ function CompanyController($scope, $element, $http, $timeout, $location)
             fd.append('csrfmiddlewaretoken', $scope.csrf_token);
             show_loader();
 
-            var url = '/companies/';
+            var url = '/progno/companies/';
             $http.post(url, fd, {
                 transformRequest: angular.identity,
                 headers: {'Content-Type': undefined
@@ -1927,7 +1927,7 @@ function CompanyController($scope, $element, $http, $timeout, $location)
         
     }
     $scope.get_companies = function(){
-        var url = '/companies/';
+        var url = '/progno/companies/';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.companies = data.companies;
@@ -1987,7 +1987,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
     }
     $scope.search_companies = function(){ 
         if($scope.search_key.length >= 3){
-            var url = '/companies/?search_key='+$scope.search_key;
+            var url = '/progno/companies/?search_key='+$scope.search_key;
             show_loader();
             $http.get(url).success(function(data) {
                 $scope.companies = data.companies;
@@ -2000,7 +2000,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
     $scope.search_rating = function(){
        if($scope.search_keys.length > 0) {
             show_loader();
-            var url = '/rating_report/';
+            var url = '/progno/rating_report/';
             params = { 
                 'search_keys': angular.toJson($scope.search_keys),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -2026,7 +2026,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
     $scope.search_companies_by_rating = function(){
         if($scope.rating_count.length > 0) {
             show_loader();
-            var url = '/rating_report_by_starcount/';
+            var url = '/progno/rating_report_by_starcount/';
             params = { 
                 'star_count': $scope.rating_count,
                 "csrfmiddlewaretoken" : $scope.csrf_token,
@@ -2052,7 +2052,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
     $scope.export_rating_xml = function(){
         if($scope.isin_list.length > 0) {
             show_loader();
-            var url = '/rating_xml/';
+            var url = '/progno/rating_xml/';
             params = { 
                 'isin_list': angular.toJson($scope.isin_list),
                 "csrfmiddlewaretoken" : $scope.csrf_token,
