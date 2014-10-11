@@ -55,7 +55,6 @@ function DashboardController($scope, $element, $http, $timeout, $location)
         else
             return '';
     }
-    
     $scope.show_dropdown = function(){
         $('#dropdown_menu').css('display', 'block');
     }
@@ -344,7 +343,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
          'field_name': '',
          'field_description': '',
          'id': '',
-         } 
+        } 
     }
     $scope.getClass = function(page) {
         if(page == $scope.current_page)

@@ -127,6 +127,7 @@ class Company(Date):
     company_name = models.CharField('company_name', max_length=200, unique=True)
     isin_code = models.CharField('ISIN Code', max_length=200, unique=True)
     industry = models.ForeignKey(Industry, null=True, blank=True)
+    is_all_data_available = models.BooleanField('Is all data avaialble', default=True)
 
     def __unicode__(self):
         return self.company_name + ' - ' + self.isin_code
@@ -135,7 +136,6 @@ class ScoreRating(Date):
     strong_score = models.IntegerField('Strong', max_length=1, default=0)
     neutral_score = models.IntegerField('Neutral', max_length=1, default=0)
     weak_score = models.IntegerField('weak', max_length=1, default=0)
-
 
 class AnalysisModel(Date):
 

@@ -95,10 +95,13 @@ def create_stock_data(data_file):
                     else:
                         if company_stock:
                             if company_stock.stock_data == None:
-                                company_stock.stock_data = {}
+                                company_stock.stock_data = {}                            
                             company_stock.stock_data[labels[i]] = row[i]
                             company_stock.created_by = data_file.uploaded_by
                             company_stock.save()
+                            if row[i] == '':
+                                company.is_all_data_available = False
+                                company.save()
     data_file.processing_completed = True
     data_file.save()
 

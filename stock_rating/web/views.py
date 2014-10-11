@@ -1062,6 +1062,8 @@ class ModelStarRating(View):
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
+                if not company.is_all_data_available:
+                    continue
                 model_point = 0
                 score = 0
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
@@ -1206,7 +1208,7 @@ class RatingReport(View):
                 else:
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
-                        'star_rating': 'No Rating available'
+                        'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
                     }
                 ratings.append(rating)
             response = simplejson.dumps({
@@ -1295,7 +1297,7 @@ class RatingXML(View):
                     field6.text = ', '.join(comments)
                 else:
                     doc = ET.SubElement(root, "rating")
-                    doc.text = "No rating available"
+                    doc.text = 'Data not available' if not company.is_all_data_available else 'No Rating available'
             tree = ET.ElementTree(root)
             tree.write(settings.MEDIA_ROOT+"/rating.xml")
             response = simplejson.dumps({
