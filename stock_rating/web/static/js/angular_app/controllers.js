@@ -121,7 +121,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/reset_password/",
+                url : "/progno/reset_password/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -176,7 +176,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/save_user/",
+                url : "/progno/save_user/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -320,7 +320,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/field_settings/",
+                url : "/progno/field_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -721,7 +721,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/function_settings/",
+                url : "/progno/function_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -732,7 +732,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
                     $scope.msg = "Function already exists";
                 }
                 else{
-                    document.location.href = "/function_settings/";
+                    document.location.href = "/progno/function_settings/";
                 }
             }).error(function(data, status){
                 $scope.message = data.message;
@@ -749,7 +749,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/function_settings/",
+                url : "/progno/function_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -777,7 +777,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/function_settings/",
+                url : "/progno/function_settings/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1199,7 +1199,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/model_details/",
+                url : "/progno/model_details/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1482,7 +1482,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/models/",
+                url : "/progno/models/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1514,7 +1514,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/model/"+$scope.selected_model+"/save_star_rating/",
+                url : "/progno/model/"+$scope.selected_model+"/save_star_rating/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1756,7 +1756,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
         }
         $http({
             method : 'post',
-            url : "/field_mapping/",
+            url : "/progno/field_mapping/",
             data : $.param(params),
             headers : {
                 'Content-Type' : 'application/x-www-form-urlencoded'
@@ -1818,7 +1818,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
             }
             $http({
                 method : 'post',
-                url : "/analytical_heads/",
+                url : "/progno/analytical_heads/",
                 data : $.param(params),
                 headers : {
                     'Content-Type' : 'application/x-www-form-urlencoded'
