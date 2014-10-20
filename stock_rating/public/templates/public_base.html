@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html ng-app="stock" class="no-js" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock title%} | Stocklabs </title>
+    <!-- Calendar bootstrap css -->
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css" type="text/css" />
+    <!-- Calendar css -->    
+    <link rel="shortcut icon" href="/static/images/f_icon.png" type="image/x-icon" />
+    <link rel="stylesheet" href="/static/css/public_style.css" />
+
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    
+    <!--  Angularjs -->
+    <script src="/static/js/angular_app/lib/angular/angular.min.js"></script>
+    <script src="/static/js/angular_app/lib/angular/angular-route.js"></script>
+    <script src="/static/js/angular_app/lib/angular/angular-resource.js"></script>
+    <script src="/static/js/angular_app/lib/ngDraggable.js"></script>
+    <script src="/static/js/angular_app/app.js"></script>
+    <script src="/static/js/angular_app/services.js"></script>
+    <script src="/static/js/angular_app/directives.js"></script>
+    <script src="/static/js/angular_app/public_controllers.js"></script>
+          
+    {% block extrahead %}
+    {% endblock extrahead %}
+    
+    </head>
+    <body id="{% block body_id %}base{% endblock %}" {% block controller %}{% endblock controller %}>
+        {% block body %}
+            <div id="overlay"></div>
+            <div class="spinner"></div>                 
+            <div class="main_container">
+                {% block header %}
+                    {% include 'public_header.html' %}
+                {% endblock header %}
+                
+                {% block content %}
+
+                {% endblock content %}
+                <div class="clear"></div>
+                
+                <div class="clear"></div>
+                {% block footer %}
+                    {% include 'public_footer.html' %}
+                {% endblock footer %}
+                <div class="clear"></div>
+            </div>
+        {% endblock body%}
+    </body>
+</html>
