@@ -1,20 +1,23 @@
 <header>
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-2">
+			<div class="col-md-2">
 				<img src="/static/images/logo.png" />
 			</div>
-			<div class="col-xs-6">
+			<div class="col-md-6">
 				<input type="text" name="header_search" placeholder="Search" class="search_box">
 			</div>
-			<div class="col-xs-4">
+			<div class="col-md-4">
 				<a href="" class="home"></a>
-				<a href="" class="blog_icon"></a>
-				<a href="" class="watch_list_icon"></a>
-				<a href="" class="compare_list_icon"></a>
-				<a href="" class="login_icon"></a>
-				<a href="" class="logout_icon"></a>
-				<a href="" class="username">Username</a>
+				{% if user.is_authenticated %}
+					<a href="" class="blog_icon"></a>
+					<a href="" class="watch_list_icon"></a>
+					<a href="" class="compare_list_icon"></a>				
+					<a href="{% url 'public_logout' %}" class="logout_icon"></a>
+				{% else %}
+					<a href="{% url 'public_login' %}" class="login_icon"></a>
+				{% endif %}
+				<a href="" class="username">{{user.first_name}}</a>
 			</div>
 		</div>
 	</div>

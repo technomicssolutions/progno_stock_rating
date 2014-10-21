@@ -1,0 +1,73 @@
+{% extends 'public_base.html' %}
+{% block extrahead %}
+	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
+{% endblock extra_head %}
+
+{% block controller %}ng-controller="LoginRegistrationController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
+{% block content %}
+	<div class="container">
+		<div class="row">
+			<div class="col-md-11 content_row">
+				<div class="col-md-6">
+					<div class="col-md-12 login">
+						<h3 class="box_head">Already a member? Sign in:</h3>
+						<form class="col-md-12">
+							<div class="col-md-12 control">
+								<label> Username</label>
+								<input type="text" name="username" ng-model="username" />
+							</div>
+							<div class="col-md-12 control">
+								<label> Password </label>
+								<input type="password" name="password" ng-model="password" />
+							</div>
+							<div class="col-md-12 control">
+								<label> Text In image </label>
+								<input type="password" name="password" />
+							</div>
+							<p class="error_msg">[[login_msg]]</p>
+						</form>
+						<div class="col-md-12 box_head">
+							<button class="signin_button" ng-click="login()">Sign In</button>
+							<p align="center"> Recover Your <a href=""> password </a>
+						</div>
+						<div class="col-md-12">
+							<button class="f_connect"></button>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="col-md-12 register">
+						<h3 class="box_head">Create an account. It's free!</h3>
+						<form class="col-md-12">
+							<div class="col-md-12 control">
+								<label> Your Full name</label>
+								<input type="text" name="name" ng-model="new_user.fullname"/>
+							</div>
+							<div class="col-md-12 control">
+								<label> Your Email(Username)</label>
+								<input type="text" name="email" ng-model="new_user.username" />
+							</div>
+							<div class="col-md-12 control">
+								<label> Password </label>
+								<input type="password" name="password" ng-model="new_user.password" />
+							</div>
+							<div class="col-md-12 control">
+								<label> Confirm Password </label>
+								<input type="password" name="password" ng-model="new_user.confirm_password" />
+							</div>
+							<div class="col-md-12 control_last">
+								<input type="checkbox" name="terms" ng-model="new_user.terms" />
+								<p> &nbsp;&nbsp;Yes, I agree to the <a href=""> terms and conditions </a> of use </p>
+								<p class="error_msg"> [[msg]]</p>
+							</div>
+						</form>
+						<div class="col-md-12 box_head">
+							<button class="signup_button" ng-click="save_new_user()">Signup to your Account</button>
+						</div>
+						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock content %}

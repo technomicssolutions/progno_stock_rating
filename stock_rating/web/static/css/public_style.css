@@ -1,12 +1,12 @@
 
 @font-face {
     font-family: 'open_sansregular';
-    src: url('opensans-regular-webfont.eot');
-    src: url('opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('opensans-regular-webfont.woff2') format('woff2'),
-         url('opensans-regular-webfont.woff') format('woff'),
-         url('opensans-regular-webfont.ttf') format('truetype'),
-         url('opensans-regular-webfont.svg#open_sansregular') format('svg');
+    src: url('../fonts/opensans-regular-webfont.eot');
+    src: url('../fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/opensans-regular-webfont.woff2') format('woff2'),
+         url('../fonts/opensans-regular-webfont.woff') format('woff'),
+         url('../fonts/opensans-regular-webfont.ttf') format('truetype'),
+         url('../fonts/opensans-regular-webfont.svg#open_sansregular') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -14,12 +14,12 @@
 
 @font-face {
     font-family: 'open_sansbold';
-    src: url('opensans-bold-webfont.eot');
-    src: url('opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
-         url('opensans-bold-webfont.woff2') format('woff2'),
-         url('opensans-bold-webfont.woff') format('woff'),
-         url('opensans-bold-webfont.ttf') format('truetype'),
-         url('opensans-bold-webfont.svg#open_sansbold') format('svg');
+    src: url('../fonts/opensans-bold-webfont.eot');
+    src: url('../fonts/opensans-bold-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/opensans-bold-webfont.woff2') format('woff2'),
+         url('../fonts/opensans-bold-webfont.woff') format('woff'),
+         url('../fonts/opensans-bold-webfont.ttf') format('truetype'),
+         url('../fonts/opensans-bold-webfont.svg#open_sansbold') format('svg');
     font-weight: normal;
     font-style: normal;
 
@@ -110,7 +110,7 @@ header a {
 }
 
 .home_content_text {
-	font-size: 25px;
+	font-size: 22px;
 }
 
 .home_first_row {
@@ -152,4 +152,174 @@ header a {
 	margin-top: 70px;
 	display: block;
 	float: left;
+}
+
+.help {
+	position: absolute;
+	width: 80px;
+	height: 38px;
+	background: url('../images/help-btn.png');
+	right: 0;
+	top: 55%;
+}
+
+.five_star {
+	background: url('../images/5-star.png') no-repeat;
+	background-position: 50%;
+}
+.star_list a {
+	display: block;
+	height: 35px;
+	width: 100%;
+	float: left;
+	padding-top: 8px;
+	color: #000000;
+}
+.star_list p {
+	display: block;
+	float: left;
+}
+.star_list div {
+	margin: 30px 0px 0px 40px;
+}
+.four_star {
+	background: url('../images/4-star.png') no-repeat;
+	background-position: 44%;
+}
+
+.three_star {
+	background: url('../images/3-star.png') no-repeat;
+	background-position: 39%;
+}
+
+.two_star {
+	background: url('../images/2-star.png') no-repeat;
+	background-position: 35%;
+	width: 46px;
+	height: 21px;
+	display: block;
+}
+
+.one_star {
+	background: url('../images/star.png') no-repeat;
+	background-position: 32%;
+	width: 17px;
+	height: 21px;
+	display: block;
+}
+
+footer {
+	height: 56px;
+	width: 100%;
+	background: url('../images/footer-bg.jpg');
+	margin-top: 30px;
+	padding-top: 20px;
+}
+
+footer a {
+	display: block;
+	float: left;
+	padding-left: 20px;
+	padding-right: 20px;
+	color: #605C5C;
+}
+
+.box_head {
+	background: url('../images/head-pattern.jpg');
+	width: 100%;
+	margin: 0px;
+	padding: 15px;
+}
+
+.content_row {
+	margin: auto;
+	margin-top: 30px;
+	display: block;
+	float: none;
+}
+
+.content_row div {
+}
+
+.content_row form {
+	padding: 30px;
+}
+
+.login form label {
+	font-weight: normal;
+	width: 30%;
+	float: left;
+	padding-top: 5px;
+}
+.register form label {
+	font-weight: normal;
+	width: 100%;
+	float: left;
+	padding-top: 5px;
+}
+.login form input {
+	border: 1px solid #DDDDDD;
+	padding: 5px;
+	width: 70%;
+	float: left;
+}
+.register form input {
+	border: 1px solid #DDDDDD;
+	padding: 5px;
+	width: 100%;
+	float: left;
+}
+.login, .register {
+	background-color: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	padding: 0px;
+}
+
+.login .control {
+	height: 50px;
+}
+
+.register .control {
+	height: 70px;
+}
+.register .control_last {
+	height: 20px;
+}
+.signin_button {
+	padding: 5px;
+	background-color: #FB9F5C;
+	border: none;
+	border-radius: 3px;
+	margin: auto;
+	display: block;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+.f_connect {
+	margin: auto;
+	display: block;
+	margin-top: 15px;
+	margin-bottom: 15px;
+	width: 107px;
+	border: none;
+	height: 25px;
+	background: url('../images/fbconnect_button.png') no-repeat;
+}
+
+.box_head p {
+	margin-bottom: 0px;
+}
+
+.signup_button {
+	padding: 5px;
+	background-color: #AADD7E;
+	border: none;
+	border-radius: 3px;
+	display: block;
+	color: #FFFFFF;
+	font-weight: bold;
+}
+
+.error_msg {
+	color: red;
 }
