@@ -126,7 +126,6 @@ INSTALLED_APPS = (
     'south',
     'web',
     'public',
-    'captcha'
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',

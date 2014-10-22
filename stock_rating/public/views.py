@@ -3,6 +3,7 @@
 import simplejson
 import ast
 import lxml.etree as ET
+import numpy as np 
 
 from collections import OrderedDict
 from math import sqrt
@@ -16,6 +17,14 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from models import PublicUser
+
+def rpHash(person): 
+    hash = 5381 
+  
+    value = person.upper() 
+    for caracter in value: 
+        hash = (( np.left_shift(hash, 5) + hash) + ord(caracter)) 
+    hash = np.int32(hash) 
 
 class Home(View):
     def get(self, request, *args, **kwargs):
