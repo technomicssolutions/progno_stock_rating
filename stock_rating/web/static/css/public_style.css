@@ -323,3 +323,27 @@ footer a {
 .error_msg {
 	color: red;
 }
+
+#dialogue_popup_container {
+	display: none;
+}
+#overlay {
+	display: none;
+	z-index: 1;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: #FFFFFF;
+	opacity: 0.5;
+}
+.spinner {
+	background: url('../images/ajax-loader.gif') no-repeat;
+	width: 16px;
+	height: 16px;
+	z-index: 2;
+	margin: auto;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	display: none;
+}

@@ -206,7 +206,9 @@ function StarRatingController($scope, $http){
             $scope.get_company_star_rating(star_count);
     }
     $scope.get_company_star_rating = function(star_count) {
+        show_loader()
         $http.get('/star_rating/?star_count='+star_count).success(function(data){
+            hide_loader()
             $scope.star_ratings = data.star_ratings;
         }).error(function(data, status){
             console.log(data);
