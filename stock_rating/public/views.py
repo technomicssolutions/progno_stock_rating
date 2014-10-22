@@ -75,3 +75,20 @@ class Logout(View):
     def get(self, request, *args, **kwargs):
         logout(request)
         return HttpResponseRedirect(reverse('public_login'))
+
+
+# import numpy as np 
+# ------------------------------ 
+# def rpHash(person): 
+#     hash = 5381 
+  
+#     value = person.upper() 
+#     for caracter in value: 
+#         hash = (( np.left_shift(hash, 5) + hash) + ord(caracter)) 
+#     hash = np.int32(hash) 
+# ----------------------------- 
+  
+# if rpHash(request.form['realPerson']) == request.form['realPersonHash']: 
+#     # Accepted 
+# else: 
+#     # Rejected

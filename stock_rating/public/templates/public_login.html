@@ -1,7 +1,19 @@
 {% extends 'public_base.html' %}
 {% block extrahead %}
-	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
-{% endblock extra_head %}
+	<link rel="stylesheet" type="text/css" href="/static/css/captcha/jquery.realperson.css"> 
+	<script type="text/javascript" src="/static/js/captcha/jquery.plugin.js"></script> 
+	<script type="text/javascript" src="/static/js/captcha/jquery.realperson.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('.captcha-text').realperson();
+			$('.captcha-text').realperson({
+				length: 5,
+				dot: '..'
+			});
+		});
+	</script>
+	 
+{% endblock extrahead %}
 
 {% block controller %}ng-controller="LoginRegistrationController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block content %}
@@ -19,6 +31,9 @@
 							<div class="col-md-12 control">
 								<label> Password </label>
 								<input type="password" name="password" ng-model="password" />
+							</div>
+							<div class="col-md-12 control">
+								<div class="captcha-text"></div>
 							</div>
 							<div class="col-md-12 control">
 								<label> Text In image </label>
