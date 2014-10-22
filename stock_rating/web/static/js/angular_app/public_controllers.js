@@ -198,3 +198,18 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
         })
     }
 }
+function StarRatingController($scope, $http){
+    $scope.init = function(csrf_token, star_count) {
+        $scope.csrf_token = csrf_token;
+        $scope.count = star_count;
+        if (star_count)
+            $scope.get_company_star_rating(star_count);
+    }
+    $scope.get_company_star_rating = function(star_count) {
+        $http.get('/star_rating/?star_count='+star_count).success(function(data){
+            $scope.star_ratings = data.star_ratings;
+        }).error(function(data, status){
+            console.log(data);
+        });
+    }
+}

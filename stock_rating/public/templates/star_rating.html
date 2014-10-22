@@ -1,0 +1,62 @@
+{% extends 'public_base.html' %}
+{% block controller %}ng-controller="StarRatingController" ng-init="init('{{csrf_token}}', '{{star_count}}')" {% endblock controller %}
+{% block content %}
+	<div class="container home_first_row">
+		<div class="row">
+			<div>
+				<h2>
+					The [[count]] Star Performers
+				</h2>
+				<ul>
+					<li>You can add maximum 20 stocks in Watch List</li>
+					<li>You have 4 stock in Watch List</li>
+					<li>You have added 2 stocks to compare. Click to View Compare</li>
+				</ul>
+				<table class="table table-striped">
+					<tr>
+						<th>Company Name</th>
+						<th>Industry</th>
+						<th>Star Rating</th>
+						<th>Score</th>
+						<th>Price BSE</th>
+						<th>Price NSE</th>
+						<th>Rating Changed on </th>
+						<th></th>
+					</tr>
+					<tr ng-repeat="star_rating in star_ratings" ng-show="star_ratings.length > 0">
+						<td>[[star_rating.company_name]]</td>
+						<td>[[star_rating.industry]]</td>
+						<td>[[star_rating.star_rating]]</td>
+						<td>[[star_rating.score]]</td>
+						<td></td>
+						<td></td>
+						<td>[[star_rating.rating_changed_date]]</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="container home_second_row">
+		<div class="row">
+			<div class="col-md-6 left">
+				<div class="col-md-12">
+					<p>
+						*Price change is fromthe date the stock is added to the watch list
+					</p>
+				</div>
+				<div class="col-md-12">
+					<p>
+						Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com
+					</p>
+				</div>
+			</div>
+			<div class="col-md-6 right">
+				<img src="/static/images/divider-img.png" />
+				<a href="" class="pdf_download"></a>
+				<p class="">
+					Read about stocklab rating methodology 
+				</p>
+			</div>
+		</div>
+	</div>
+{% endblock %}

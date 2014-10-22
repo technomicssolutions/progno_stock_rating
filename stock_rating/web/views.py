@@ -21,7 +21,7 @@ from models import (UserPermission, DataField, AnalyticalHead, Function,\
 
 from utils import process_data_file, process_company_file, \
     calculate_general_function_score, get_file_fields, calculate_consistency_function_score, \
-    calculate_continuity_function_score
+    calculate_continuity_function_score, get_rating_details_by_star_count
 
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
@@ -1227,32 +1227,7 @@ class RatingReportByStarCount(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             star_count = ast.literal_eval(request.POST['star_count'])
-            ratings = []
-            isin_list = []
-            model_scores = CompanyModelScore.objects.filter(star_rating=star_count)
-            for model_score in model_scores:
-                model = model_score.analysis_model
-                company = model_score.company
-                isin_list.append(company.isin_code)
-                parameters = model.parameterlimit_set.all()
-                comments = []
-                for parameter in parameters:
-                    function = parameter.function
-                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
-                    if fun_score.count() > 0:
-                        comments.append(fun_score[0].comment)
-                ratings.append({
-                    'company_name': company.company_name + ' - ' + company.isin_code,
-                    'industry': company.industry.industry_name,
-                    'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
-                    'score': model_score.points,
-                    'brief_comment': model_score.comment,
-                    'detailed_comment': comments
-                })
-            response = simplejson.dumps({
-                'star_ratings': ratings,
-                'isin_list': isin_list
-            })
+            response = get_rating_details_by_star_count(star_count)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'rating_report.html', {})
 
