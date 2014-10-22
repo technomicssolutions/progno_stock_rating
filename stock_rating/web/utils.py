@@ -210,6 +210,7 @@ def get_rating_details_by_star_count(star_count):
                 comments.append(fun_score[0].comment)
         ratings.append({
             'company_name': company.company_name + ' - ' + company.isin_code,
+            'isin_code': company.isin_code,
             'industry': company.industry.industry_name,
             'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
             'score': model_score.points,
@@ -217,6 +218,72 @@ def get_rating_details_by_star_count(star_count):
             'detailed_comment': comments,
             'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y'),
         })
+    response = simplejson.dumps({
+        'star_ratings': ratings,
+        'isin_list': isin_list
+    })
+    return response
+
+def get_rating_report(search_keys, isin_code):
+    ratings = []
+    isin_list = []
+    if len(search_keys) > 0:
+        for key in search_keys:
+            company = Company.objects.get(isin_code=key)
+            isin_list.append(company.isin_code)
+            model_score = CompanyModelScore.objects.filter(company=company)
+            if model_score.count() > 0:
+                model_score = model_score[0]
+                rating = {
+                    'company_name': company.company_name + ' - ' + company.isin_code,
+                    'industry': company.industry.industry_name,
+                    'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+                    'score': model_score.points,
+                    'brief_comment': model_score.comment,
+                }
+                model = model_score.analysis_model
+                parameters = model.parameterlimit_set.all()
+                comments = []
+                for parameter in parameters:
+                    function = parameter.function
+                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                    if fun_score.count() > 0:
+                        comments.append(fun_score[0].comment)
+                rating['detailed_comment'] = comments
+            else:
+                rating = {
+                    'company_name': company.company_name + ' - ' + company.isin_code,
+                    'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
+                }
+            ratings.append(rating)
+    else:
+        company = Company.objects.get(isin_code=isin_code)
+        isin_list.append(company.isin_code)
+        model_score = CompanyModelScore.objects.filter(company=company)
+        if model_score.count() > 0:
+            model_score = model_score[0]
+            rating = {
+                'company_name': company.company_name + ' - ' + company.isin_code,
+                'industry': company.industry.industry_name,
+                'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+                'score': model_score.points,
+                'brief_comment': model_score.comment,
+            }
+            model = model_score.analysis_model
+            parameters = model.parameterlimit_set.all()
+            comments = []
+            for parameter in parameters:
+                function = parameter.function
+                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                if fun_score.count() > 0:
+                    comments.append(fun_score[0].comment)
+            rating['detailed_comment'] = comments
+        else:
+            rating = {
+                'company_name': company.company_name + ' - ' + company.isin_code,
+                'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
+            }
+        ratings.append(rating)
     response = simplejson.dumps({
         'star_ratings': ratings,
         'isin_list': isin_list

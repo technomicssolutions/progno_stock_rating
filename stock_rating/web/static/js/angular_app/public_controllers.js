@@ -214,4 +214,24 @@ function StarRatingController($scope, $http){
             console.log(data);
         });
     }
+    $scope.view_rating_report = function(star_rating){
+        document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;
+    }
+}
+
+function StarRatingReportController($scope, $http) {
+    $scope.init = function(csrf_token, isin_code) {
+        $scope.csrf_token = csrf_token;
+        if (isin_code)
+            $scope.get_company_star_rating_report(isin_code);
+    }
+    $scope.get_company_star_rating_report = function(isin_code) {
+        show_loader()
+        $http.get('/star_rating_report/?isin_code='+isin_code).success(function(data){
+            hide_loader()
+            $scope.star_ratings = data.star_ratings;
+        }).error(function(data, status){
+            console.log(data);
+        });
+    }
 }

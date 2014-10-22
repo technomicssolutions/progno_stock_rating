@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from models import PublicUser
-from web.utils import get_rating_details_by_star_count 
+from web.utils import get_rating_details_by_star_count , get_rating_report
 
 def rpHash(person): 
     hash = 5381 
@@ -108,8 +108,18 @@ class StarRating(View):
     def get(self, request, *args, **kwargs):
 
         star_count = request.GET.get('star_count', '')
-        if request.is_ajax():
-            if star_count:
-                response = get_rating_details_by_star_count(star_count)
-                return HttpResponse(response, status=200, mimetype='application/json')
+        if request.is_ajax() and star_count:
+            response = get_rating_details_by_star_count(star_count)
+            return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating.html', {'star_count': star_count})
+
+class StarRatingReport(View):
+
+    def get(self, request, *args, **kwargs):
+
+        isin_code = request.GET.get('isin_code', '')
+        if request.is_ajax() and isin_code:
+            response = get_rating_report([], isin_code)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'star_rating_report.html', {'isin_code': isin_code})
+
