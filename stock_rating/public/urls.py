@@ -3,7 +3,7 @@ from django.conf.urls import patterns, url
 from django.contrib.auth.decorators import login_required
 
 
-from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, AddToWatchlist)
+from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, AddToWatchlist, AddToComparelist)
 
 LOGIN_URL = '/login/'
 
@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^star_rating/$', login_required(StarRating.as_view(), login_url="/login/"), name="star_rating"),
     url(r'^star_rating_report/$', login_required(StarRatingReport.as_view(), login_url="/login/"), name="star_rating_report"),
     url(r'^add_to_watch_list/$', login_required(AddToWatchlist.as_view(), login_url="/login/"), name="add_to_watch_list"),
-
+    url(r'^add_to_compare_list/$', login_required(AddToComparelist.as_view(), login_url="/login/"), name="add_to_compare_list"),
 )
 
 
