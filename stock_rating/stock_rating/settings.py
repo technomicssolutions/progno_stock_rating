@@ -126,7 +126,6 @@ INSTALLED_APPS = (
     'south',
     'web',
     'public',
-    'captcha'
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -165,10 +164,8 @@ LOGGING = {
 }
 
 
-RECAPTCHA_PUBLIC_KEY = '76wtgdfsjhsydt7r5FFGFhgsdfytd656sad75fgh'
-RECAPTCHA_PRIVATE_KEY = '98dfg6df7g56df6gdfgdfg65JHJH656565GFGFGs'
-RECAPTCHA_USE_SSL = False
-CAPTCHA_AJAX = True
+RECAPTCHA_PUBLIC_KEY = '6LdpgPwSAAAAAMMKjFmJArlaeHav9k1TSI4UfDrs'
+RECAPTCHA_PRIVATE_KEY = '6LdpgPwSAAAAAPxZMJl_LEuEI1GC_nkFBYU-eMR9'
 
 try:
     from local_settings import *

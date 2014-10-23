@@ -24,7 +24,10 @@ class Home(View):
 
 class Login(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'public_login.html', {})
+        return render(request, 'public_login.html', {
+            'recaptcha_public_key': settings.RECAPTCHA_PUBLIC_KEY,
+            'recaptcha_private_key': settings.RECAPTCHA_PRIVATE_KEY
+        })
 
     def post(self, request, *args, **kwargs):
 
