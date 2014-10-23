@@ -283,4 +283,18 @@ function StarRatingReportController($scope, $http) {
         add_to_compare_list($scope, $http, start_rating);
     }
 }
-
+function ViewWatchListController($scope, $http){
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        $scope.get_watch_list_details();
+    }
+    $scope.get_watch_list_details = function(){
+        $http.get('/view_watch_list/').success(function(data){
+            $scope.watch_lists = data.watch_lists;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+        }).error(function(data, status){
+            console.log('Request failed')
+        });
+    }
+}
