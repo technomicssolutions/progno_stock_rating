@@ -161,11 +161,10 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {   
-             if(data.result == 'Ok'){
+             if(data.result == 'Ok' || data.result == 'error'){
                 $scope.msg = "";
                 document.location.href = "/";
-             }         
-             else
+             } else
                 $scope.login_msg = "Username or Password is incorrect";
                 
             }).error(function(data, status){
@@ -210,6 +209,9 @@ function StarRatingController($scope, $http){
         $http.get('/star_rating/?star_count='+star_count).success(function(data){
             hide_loader()
             $scope.star_ratings = data.star_ratings;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+            console.log(data.watch_list_count, data.compare_list_count);
         }).error(function(data, status){
             console.log(data);
         });

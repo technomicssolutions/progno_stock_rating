@@ -41,8 +41,14 @@ class Login(View):
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user and user.is_active:
             login(request, user)
+            try:
+                public_user = PublicUser.objects.get(user=request.user)
+                res = {'result': 'Ok'}
+            except Exception as ex:
+                logout(request)
+                res = {'result': 'error'}
             if request.is_ajax():
-                response = simplejson.dumps({'result': 'Ok'})
+                response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
             return HttpResponseRedirect(reverse('dashboard'))
         else:
@@ -109,7 +115,7 @@ class StarRating(View):
 
         star_count = request.GET.get('star_count', '')
         if request.is_ajax() and star_count:
-            response = get_rating_details_by_star_count(star_count)
+            response = get_rating_details_by_star_count(request, star_count)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating.html', {'star_count': star_count})
 
@@ -119,7 +125,7 @@ class StarRatingReport(View):
 
         isin_code = request.GET.get('isin_code', '')
         if request.is_ajax() and isin_code:
-            response = get_rating_report([], isin_code)
+            response = get_rating_report(request, [isin_code])
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating_report.html', {'isin_code': isin_code})
 

@@ -1181,7 +1181,7 @@ class RatingReport(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             search_keys = ast.literal_eval(request.POST['search_keys'])
-            response = get_rating_report(search_keys, '')
+            response = get_rating_report(request, search_keys)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'rating_report.html', {})
             
@@ -1194,7 +1194,7 @@ class RatingReportByStarCount(View):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             star_count = ast.literal_eval(request.POST['star_count'])
-            response = get_rating_details_by_star_count(star_count)
+            response = get_rating_details_by_star_count(request, star_count)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'rating_report.html', {})
 
