@@ -26,7 +26,7 @@ def is_public_user(request):
 
 class Home(View):
     def get(self, request, *args, **kwargs):
-        is_public_user(request):
+        if is_public_user(request):
             return render(request, 'home.html', {})
         else:
             return HttpResponseRedirect(reverse('dashboard'))
@@ -135,7 +135,8 @@ class VerifyRecaptcha(View):
 class AddToWatchlist(View):
 
     def post(self, request, *args, **kwargs):
-
+        if not is_public_user(request):
+            return HttpResponseRedirect(reverse('login'))
         isin_code = request.POST.get('isin_code', '')
         if request.is_ajax() and isin_code:
             company = Company.objects.get(isin_code=isin_code)
