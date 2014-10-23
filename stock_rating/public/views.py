@@ -17,6 +17,20 @@ from web.models import Company
 from web.utils import get_rating_details_by_star_count , get_rating_report
 
 
+def public_login_required(function, login_url):
+    def wrapper(request, *args, **kw):
+        user = request.user  
+        if user.is_authenticated:
+            if not is_public_user(request):
+                return HttpResponseRedirect(login_url)
+            else:
+                return function(request, *args, **kw)
+        else:
+            return HttpResponseRedirect(login_url)        
+    return wrapper
+
+
+
 def is_public_user(request):
     try:
         public_user = PublicUser.objects.get(user=request.user)
@@ -26,10 +40,13 @@ def is_public_user(request):
 
 class Home(View):
     def get(self, request, *args, **kwargs):
-        is_public_user(request):
-            return render(request, 'home.html', {})
+        if request.user.is_authenticated():
+            if  is_public_user(request):
+                return render(request, 'home.html', {})
+            else:
+                return HttpResponseRedirect(reverse('dashboard'))
         else:
-            return HttpResponseRedirect(reverse('dashboard'))
+            return HttpResponseRedirect(reverse('public_login'))
 
 class Login(View):
 
@@ -47,6 +64,8 @@ class Login(View):
             if not is_public_user(request):
                 logout(request)
                 res = {'result': 'error'}
+            else: 
+                res = { 'result': 'Ok'}
             if request.is_ajax():
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
