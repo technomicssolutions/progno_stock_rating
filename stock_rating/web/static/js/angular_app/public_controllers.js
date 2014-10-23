@@ -3,7 +3,7 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
-function add_to_compare_list($scope, $http) {
+function add_to_compare_list($scope, $http, start_rating) {
     $http({
         method: 'post',
         data: $.param(params),
@@ -225,7 +225,7 @@ function StarRatingController($scope, $http){
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        add_to_compare_list($scope, $http);
+        add_to_compare_list($scope, $http, start_rating);
     }
 }
 
@@ -280,7 +280,7 @@ function StarRatingReportController($scope, $http) {
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        add_to_compare_list($scope, $http);
+        add_to_compare_list($scope, $http, start_rating);
     }
 }
 

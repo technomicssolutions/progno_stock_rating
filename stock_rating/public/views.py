@@ -229,7 +229,7 @@ class ViewWatchList(View):
                 'compare_list_count': compare_lists.count(),
             })
             return response
-        return render(request, 'view_watch')
+        return render(request, 'view_watch_list.html', {})
 
 
 
