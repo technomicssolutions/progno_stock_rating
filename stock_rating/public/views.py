@@ -3,6 +3,7 @@
 import simplejson
 import ast
 import urllib
+import datetime
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -13,7 +14,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from models import PublicUser, WatchList, CompareList
-from web.models import Company
+from web.models import Company, CompanyModelScore
 from web.utils import get_rating_details_by_star_count , get_rating_report
 
 
@@ -165,6 +166,8 @@ class AddToWatchlist(View):
                 watch_list_companies = WatchList.objects.filter(user=public_user)
                 if watch_list_companies.count() < 20:
                     watch_list, created = WatchList.objects.get_or_create(user=public_user, company=company)
+                    current_date = datetime.datetime.now().date()
+                    watch_list.added_on = current_date
                     watch_list.save()
                     res = {
                         'result': 'ok',
@@ -214,9 +217,10 @@ class AddToComparelist(View):
 class ViewWatchList(View):
 
     def get(self, request, *args, **kwargs):
-        ratings = []
-        isin_code = request.GET.get('isin_code', '')
-        if request.is_ajax and isin_code:
+        if not is_public_user(request):
+            return HttpResponseRedirect(reverse('login'))
+        watch_lists_details = []
+        if request.is_ajax():
             public_user = PublicUser.objects.get(user=request.user)
             watch_lists = WatchList.objects.filter(user=public_user)
             compare_lists = CompareList.objects.filter(user=public_user)
@@ -225,6 +229,11 @@ class ViewWatchList(View):
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0:
                     model_score = model_score[0]
+                    compare_list = CompareList.objects.filter(user=public_user, company=company)
+                    if compare_list.count() > 0:
+                        company_in_compare_list = True
+                    else:
+                        company_in_compare_list = False
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
@@ -232,7 +241,6 @@ class ViewWatchList(View):
                         'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                         'score': model_score.points,
                         'brief_comment': model_score.comment,
-                        'company_in_watch_list': 'true' if company_in_watch_list else 'false',
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                         'added_on': watch_list.added_on.strftime('%d/%m/%Y'),
                         'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y'),
@@ -242,14 +250,20 @@ class ViewWatchList(View):
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
                     }
-                ratings.append(rating)
+                watch_lists_details.append(rating)
             response = simplejson.dumps({
-                'star_ratings': ratings,
+                'watch_lists': watch_lists_details,
                 'watch_list_count': watch_lists.count(),
                 'compare_list_count': compare_lists.count(),
             })
-            return response
-        return render(request, 'view_watch')
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'view_watch_list.html', {})
+
+class ViewCompareList(View):
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'view_compare_list.html', {})
 
 
 

@@ -3,7 +3,7 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
-function add_to_compare_list($scope, $http) {
+function add_to_compare_list($scope, $http, star_rating) {
     $http({
         method: 'post',
         data: $.param(params),
@@ -14,7 +14,7 @@ function add_to_compare_list($scope, $http) {
     }).success(function(data){
         hide_loader();
         if (data.result == 'ok') {  
-            start_rating.company_in_compare_list = 'true';
+            star_rating.company_in_compare_list = 'true';
             $scope.compare_list_count = parseInt($scope.compare_list_count) + 1;
         } else if (data.result == 'error_stock_exceed'){
             $scope.error_message = data.error_message;
@@ -219,13 +219,13 @@ function StarRatingController($scope, $http){
     $scope.view_rating_report = function(star_rating){
         document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;
     }
-    $scope.add_to_compare_list = function(start_rating) {
+    $scope.add_to_compare_list = function(star_rating) {
         params = {
-            'isin_code': start_rating.isin_code,
+            'isin_code': star_rating.isin_code,
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        add_to_compare_list($scope, $http);
+        add_to_compare_list($scope, $http, star_rating);
     }
 }
 
@@ -248,9 +248,9 @@ function StarRatingReportController($scope, $http) {
             console.log(data);
         });
     }
-    $scope.add_to_watch_list = function(start_rating) {
+    $scope.add_to_watch_list = function(star_rating) {
         params = {
-            'isin_code': start_rating.isin_code,
+            'isin_code': star_rating.isin_code,
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
@@ -264,7 +264,7 @@ function StarRatingReportController($scope, $http) {
         }).success(function(data){
             hide_loader();
             if (data.result == 'ok'){
-                start_rating.company_in_watch_list = 'true';
+                star_rating.company_in_watch_list = 'true';
                 $scope.watch_list_count = parseInt($scope.watch_list_count) + 1;             
             } else if (data.result == 'error_stock_exceed'){
                 $scope.error_message = data.error_message;
@@ -274,13 +274,35 @@ function StarRatingReportController($scope, $http) {
             console.log('Request failed');
         })
     }
-    $scope.add_to_compare_list = function(start_rating) {
+    $scope.add_to_compare_list = function(star_rating) {
         params = {
-            'isin_code': start_rating.isin_code,
+            'isin_code': star_rating.isin_code,
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        add_to_compare_list($scope, $http);
+        add_to_compare_list($scope, $http, star_rating);
     }
 }
-
+function ViewWatchListController($scope, $http){
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+        $scope.get_watch_list_details();
+    }
+    $scope.get_watch_list_details = function(){
+        $http.get('/view_watch_list/').success(function(data){
+            $scope.watch_lists = data.watch_lists;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+        }).error(function(data, status){
+            console.log('Request failed')
+        });
+    }
+    $scope.add_to_compare = function(star_rating){
+        params = {
+            'isin_code': star_rating.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        add_to_compare_list($scope, $http, star_rating);
+    }
+}
