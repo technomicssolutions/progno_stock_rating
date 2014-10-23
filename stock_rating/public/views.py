@@ -137,9 +137,9 @@ class AddToWatchlist(View):
             company = Company.objects.get(isin_code=isin_code)
             try:
                 public_user = PublicUser.objects.get(user=request.user)
-                watch_list, created = WatchList.objects.get_or_create(user=public_user)
-                if watch_list.companies.all().count() < 20:
-                    watch_list.companies.add(company)
+                watch_list_companies = WatchList.objects.filter(user=public_user)
+                if watch_list_companies.count() < 20:
+                    watch_list, created = WatchList.objects.get_or_create(user=public_user, company=company)
                     watch_list.save()
                     res = {
                         'result': 'ok',
@@ -167,9 +167,9 @@ class AddToComparelist(View):
             company = Company.objects.get(isin_code=isin_code)
             try:
                 public_user = PublicUser.objects.get(user=request.user)
-                compare_list, created = CompareList.objects.get_or_create(user=public_user)
-                if compare_list.companies.all().count() < 4:
-                    compare_list.companies.add(company)
+                compare_list_companies = CompareList.objects.filter(user=public_user)
+                if compare_list_companies.count() < 4:
+                    compare_list, created = CompareList.objects.get_or_create(user=public_user, company=company)
                     compare_list.save()
                     res = {
                         'result': 'ok',
