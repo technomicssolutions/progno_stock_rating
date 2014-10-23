@@ -221,5 +221,56 @@ function StarRatingReportController($scope, $http) {
             console.log(data);
         });
     }
+    $scope.add_to_watch_list = function(start_rating) {
+        params = {
+            'isin_code': start_rating.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        $http({
+            method: 'post',
+            data: $.param(params),
+            url: '/add_to_watch_list/',
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data){
+            hide_loader();
+            if (data.result == 'ok'){
+                start_rating.company_in_watch_list = 'true';
+                $scope.watch_list_count = parseInt($scope.watch_list_count) + 1;             
+            } else if (data.result == 'error_stock_exceed'){
+                $scope.error_message = data.error_message;
+            }
+            
+        }).error(function(data, status){
+            console.log('Request failed');
+        })
+    }
+    $scope.add_to_compare_list = function(start_rating) {
+        params = {
+            'isin_code': start_rating.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        $http({
+            method: 'post',
+            data: $.param(params),
+            url: '/add_to_compare_list/',
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data){
+            hide_loader();
+            if (data.result == 'ok') {  
+                start_rating.company_in_compare_list = 'true';
+                $scope.compare_list_count = parseInt($scope.compare_list_count) + 1;
+            } else if (data.result == 'error_stock_exceed'){
+                $scope.error_message = data.error_message;
+            }
+        }).error(function(data, status){
+            console.log('Request failed');
+        })
+    }
 }
 */

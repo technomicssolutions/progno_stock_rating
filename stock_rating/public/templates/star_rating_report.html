@@ -8,6 +8,7 @@
 					<li>You have [[watch_list_count]] stock in Watch List</li>
 					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
 				</ul>
+				<p class="error_message">[[error_message]]</p>
 				<table class="table table-striped">
 					<tr>
 						<th>Company Name</th>
@@ -24,10 +25,10 @@
 						<td>[[star_rating.score]]</td>
 						<td>[[star_rating.brief_comment]]</td>
 						<td>
-							<a href="">Add to Watch List</a> <br/>
-							<a href="">Add to Compare</a><br/>
-							<a href="">Added to Watch List</a> <br/>
-							<a href="">Added to Compare</a><br/>
+							<a href="" ng-show="star_rating.company_in_watch_list == 'false'" ng-click="add_to_watch_list(star_rating)">Add to Watch List</a> <br/>
+							<a href="" ng-show="star_rating.company_in_compare_list == 'false' " ng-click="add_to_compare_list(star_rating)">Add to Compare</a><br/>
+							<a href="" ng-show="star_rating.company_in_watch_list == 'true'">Added to Watch List</a> <br/>
+							<a href="" ng-show="star_rating.company_in_compare_list == 'true' ">Added to Compare</a><br/>
 						</td>
 					</tr>
 				</table>

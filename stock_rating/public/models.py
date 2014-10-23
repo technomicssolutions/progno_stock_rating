@@ -11,8 +11,9 @@ class PublicUser(models.Model):
 
 class WatchList(models.Model):
 
-	user = models.ForeignKey(PublicUser)
-	companies = models.ManyToManyField(Company)
+	user = models.ForeignKey(PublicUser, null=True, blank=True)
+	company = models.ForeignKey(Company, null=True, blank=True)
+	added_on = models.DateField('Added Date', null=True, blank=True)
 
 	def __unicode__(self):
 		return self.user.user.username
@@ -20,8 +21,9 @@ class WatchList(models.Model):
 
 class CompareList(models.Model):
 
-	user = models.ForeignKey(PublicUser)
-	companies = models.ManyToManyField(Company)
+	user = models.ForeignKey(PublicUser, null=True, blank=True)
+	company = models.ForeignKey(Company, null=True, blank=True)
+	added_on = models.DateField('Added Date', null=True, blank=True)
 
 	def __unicode__(self):
 		return self.user.user.username
