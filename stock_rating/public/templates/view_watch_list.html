@@ -1,0 +1,18 @@
+{% extends 'public_base.html' %}
+{% block controller %}ng-controller="StarRatingController" ng-init="init('{{csrf_token}}', '{{star_count}}')" {% endblock controller %}
+{% block content %}
+	<div class="container home_first_row">
+		<div class="row">
+			<div>
+				<h2>
+					The [[count]] Star Performers
+				</h2>
+				<ul>
+					<li>You can add maximum 20 stocks in Watch List</li>
+					<li>You have [[watch_list_count]] stock in Watch List</li>
+					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+{% endblock %}
