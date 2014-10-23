@@ -24,10 +24,10 @@
 						<td>[[star_rating.score]]</td>
 						<td>[[star_rating.brief_comment]]</td>
 						<td>
-							<a href="">Add to Watch List</a> <br/>
-							<a href="">Add to Compare</a><br/>
-							<a href="">Added to Watch List</a> <br/>
-							<a href="">Added to Compare</a><br/>
+							<a href="" ng-show="star_rating.company_in_watch_list == 'false'" ng-click="add_to_watch_list(star_rating)">Add to Watch List</a> <br/>
+							<a href="" ng-show="star_rating.company_in_compare_list == 'false' ">Add to Compare</a><br/>
+							<a href="" ng-show="star_rating.company_in_watch_list == 'true'">Added to Watch List</a> <br/>
+							<a href="" ng-show="star_rating.company_in_compare_list == 'true' ">Added to Compare</a><br/>
 						</td>
 					</tr>
 				</table>

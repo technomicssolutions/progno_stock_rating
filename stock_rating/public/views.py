@@ -16,7 +16,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from models import PublicUser
+from models import PublicUser, WatchList
+from web.models import Company
 from web.utils import get_rating_details_by_star_count , get_rating_report
 
 def rpHash(person): 
@@ -128,4 +129,27 @@ class StarRatingReport(View):
             response = get_rating_report(request, [isin_code])
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating_report.html', {'isin_code': isin_code})
+
+class AddToWatchlist(View):
+
+    def post(self, request, *args, **kwargs):
+
+        isin_code = request.POST.get('isin_code', '')
+        if request.is_ajax() and isin_code:
+            company = Company.objects.get(isin_code=isin_code)
+            try:
+                public_user = PublicUser.objects.get(user=request.user)
+                watch_list, created = WatchList.objects.get_or_create(user=public_user)
+                watch_list.companies.add(company)
+                watch_list.save()
+                res = {
+                    'result': 'ok',
+                }
+            except:
+                res = {
+                    'result': 'error',
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+
 

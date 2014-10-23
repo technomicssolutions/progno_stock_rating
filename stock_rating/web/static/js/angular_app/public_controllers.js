@@ -240,4 +240,24 @@ function StarRatingReportController($scope, $http) {
             console.log(data);
         });
     }
+    $scope.add_to_watch_list = function(start_rating) {
+        params = {
+            'isin_code': start_rating.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        $http({
+            method: 'post',
+            data: $.param(params),
+            url: '/add_to_watch_list/',
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data){
+            hide_loader();
+            start_rating.company_in_watch_list = 'true';
+        }).error(function(data, status){
+            console.log('Request failed');
+        })
+    }
 }

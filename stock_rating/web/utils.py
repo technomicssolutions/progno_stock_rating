@@ -243,18 +243,42 @@ def get_rating_details_by_star_count(request, star_count):
 def get_rating_report(request, search_keys):
     ratings = []
     isin_list = []
+    public_user = PublicUser.objects.get(user=request.user)
+    watch_list = public_user.watchlist_set.all()
+    watchlist_companies_count = 0
+    watch_list_companies = []
+    compare_list_companies = []
+    if watch_list.count() > 0:
+        watch_list_companies = watch_list[0].companies.all()
+        watchlist_companies_count = watch_list[0].companies.all().count()
+    compare_list = public_user.comparelist_set.all()
+    comparelist_companies_count = 0
+    if compare_list.count() > 0:
+        compare_list_companies = compare_list[0].companies.all()
+        comparelist_companies_count = compare_list[0].companies.all().count()
     for key in search_keys:
         company = Company.objects.get(isin_code=key)
+        if company in watch_list_companies:
+            company_in_watch_list = True
+        else:
+            company_in_watch_list = False
+        if company in compare_list_companies:
+            company_in_compare_list = True
+        else:
+            company_in_compare_list = False
         isin_list.append(company.isin_code)
         model_score = CompanyModelScore.objects.filter(company=company)
         if model_score.count() > 0:
             model_score = model_score[0]
             rating = {
                 'company_name': company.company_name + ' - ' + company.isin_code,
+                'isin_code': company.isin_code,
                 'industry': company.industry.industry_name,
                 'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                 'score': model_score.points,
                 'brief_comment': model_score.comment,
+                'company_in_watch_list': 'true' if company_in_watch_list else 'false',
+                'company_in_compare_list': 'true' if company_in_compare_list else 'false',
             }
             model = model_score.analysis_model
             parameters = model.parameterlimit_set.all()
@@ -292,19 +316,11 @@ def get_rating_report(request, search_keys):
                 'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
             }
         ratings.append(rating)
-    public_user = PublicUser.objects.get(user=request.user)
-    watch_list = public_user.watchlist_set.all()
-    watchlist_companies = 0
-    if watch_list.count() > 0:
-        watchlist_companies = watch_list[0].companies.all().count()
-    compare_list = public_user.comparelist_set.all()
-    comparelist_companies = 0
-    if compare_list.count() > 0:
-        comparelist_companies = compare_list[0].companies.all().count()
+    
     response = simplejson.dumps({
         'star_ratings': ratings,
         'isin_list': isin_list,
-        'watch_list_count': watchlist_companies,
-        'compare_list_count': comparelist_companies,
+        'watch_list_count': watchlist_companies_count,
+        'compare_list_count': comparelist_companies_count,
     })
     return response
