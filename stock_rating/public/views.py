@@ -17,10 +17,19 @@ from web.models import Company
 from web.utils import get_rating_details_by_star_count , get_rating_report
 
 
+def is_public_user(request):
+    try:
+        public_user = PublicUser.objects.get(user=request.user)
+        return True
+    except Exception:
+        return False
 
 class Home(View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'home.html', {})
+        is_public_user(request):
+            return render(request, 'home.html', {})
+        else:
+            return HttpResponseRedirect(reverse('dashboard'))
 
 class Login(View):
 
@@ -34,13 +43,8 @@ class Login(View):
 
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user and user.is_active:
-            print "user is active"
             login(request, user)
-            try:
-                public_user = PublicUser.objects.get(user=request.user)
-                res = {'result': 'Ok'}
-                print "public user"
-            except Exception as ex:
+            if not is_public_user(request):
                 logout(request)
                 res = {'result': 'error'}
             if request.is_ajax():
@@ -83,7 +87,7 @@ class Signup(View):
                 login(request, user)
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'administration.html', {})
+        return render(request, 'home.html', {})
 
 class Logout(View):
     def get(self, request, *args, **kwargs):
