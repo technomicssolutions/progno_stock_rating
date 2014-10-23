@@ -2,11 +2,7 @@
 
 import simplejson
 import ast
-import lxml.etree as ET
-import numpy as np 
-
-from collections import OrderedDict
-from math import sqrt
+import urllib
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -20,20 +16,14 @@ from models import PublicUser, WatchList, CompareList
 from web.models import Company
 from web.utils import get_rating_details_by_star_count , get_rating_report
 
-def rpHash(person): 
-    hash = 5381 
-  
-    value = person.upper() 
-    for caracter in value: 
-        hash = (( np.left_shift(hash, 5) + hash) + ord(caracter)) 
-    hash = np.int32(hash) 
+
 
 class Home(View):
     def get(self, request, *args, **kwargs):
-        context = {}
         return render(request, 'home.html', {})
 
 class Login(View):
+
     def get(self, request, *args, **kwargs):
         return render(request, 'public_login.html', {
             'recaptcha_public_key': settings.RECAPTCHA_PUBLIC_KEY,
@@ -44,28 +34,32 @@ class Login(View):
 
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user and user.is_active:
+            print "user is active"
             login(request, user)
             try:
                 public_user = PublicUser.objects.get(user=request.user)
                 res = {'result': 'Ok'}
+                print "public user"
             except Exception as ex:
                 logout(request)
                 res = {'result': 'error'}
             if request.is_ajax():
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
-            return HttpResponseRedirect(reverse('dashboard'))
+            return HttpResponseRedirect(reverse('home'))
         else:
             context = {
                 'message' : 'Username or password is incorrect'
             }
-            return render(request, 'login.html', context)     
+            if request.is_ajax():
+                response = simplejson.dumps(context)
+                return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'login.html', context)     
 
 class Signup(View):
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-
             user_details = ast.literal_eval(request.POST['user_details'])
             user = User()
             user.username = user_details['username']
@@ -96,23 +90,6 @@ class Logout(View):
         logout(request)
         return HttpResponseRedirect(reverse('public_login'))
 
-
-# import numpy as np 
-# ------------------------------ 
-# def rpHash(person): 
-#     hash = 5381 
-  
-#     value = person.upper() 
-#     for caracter in value: 
-#         hash = (( np.left_shift(hash, 5) + hash) + ord(caracter)) 
-#     hash = np.int32(hash) 
-# ----------------------------- 
-  
-# if rpHash(request.form['realPerson']) == request.form['realPersonHash']: 
-#     # Accepted 
-# else: 
-#     # Rejected
-
 class StarRating(View):
 
     def get(self, request, *args, **kwargs):
@@ -132,6 +109,24 @@ class StarRatingReport(View):
             response = get_rating_report(request, [isin_code])
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating_report.html', {'isin_code': isin_code})
+
+class VerifyRecaptcha(View):
+    def post(self, request, *args, **kwargs):
+        url = "http://www.google.com/recaptcha/api/verify"
+        data = urllib.urlencode({
+            'privatekey': settings.RECAPTCHA_PRIVATE_KEY,
+            'remoteip': request.POST['remoteip'],
+            'challenge': request.POST['challenge'],
+            'response': request.POST['response']
+        })
+        try:
+            result = urllib.urlopen(url, data)
+            result = result.readline().strip()
+        except urllib.URLError, e:
+            print e
+            result = ''
+        response = simplejson.dumps({'result': result})
+        return HttpResponse(response, status=200, mimetype='application/json')
 
 class AddToWatchlist(View):
 

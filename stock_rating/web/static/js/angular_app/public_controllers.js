@@ -56,41 +56,49 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
     }
     $scope.validate_login = function(){        
         $scope.login_msg = '';
-        $.ajax({
-            url: '//freegeoip.net/json/',
-            type: 'POST',
-            dataType: 'jsonp',
-            success: function(location) {
-                $scope.ip = location.ip;
-            }
-        });
-        var response = Recaptcha.get_response();
-        var challenge = Recaptcha.get_challenge();
-        $.ajax({
-            url: 'http://www.google.com/recaptcha/api/verify',
-            type: 'POST',
-            date: {
-                privatekey: $scope.recaptcha_private_key,
-                remoteip: $scope.ip,
-                challenge: challenge,
-                response: response
-            },
-            dataType: 'jsonp',
-            success: function(data) {
-               console.log(data);
-            }
-        });
-       
         if($scope.username == '') {
             $scope.login_msg = "Please enter Username";
-            return false;
         } else if($scope.password == '') {
             $scope.login_msg = "Please enter Password";
-            return false;
+        } else if(Recaptcha.get_response() == '') {
+            $scope.login_msg = "Please enter the text in Image"
         } else {
-            return true;
+            $.ajax({
+                url: '//freegeoip.net/json/',
+                type: 'POST',
+                dataType: 'jsonp',
+                success: function(location) {
+                    $scope.ip = location.ip;
+                    params = {
+                        privatekey: $scope.recaptcha_private_key,
+                        remoteip: $scope.ip,
+                        challenge: Recaptcha.get_challenge(),
+                        response: Recaptcha.get_response(),
+                        csrfmiddlewaretoken: $scope.csrf_token
+                    }
+                    $http({
+                        method : 'post',
+                        url : "/verify_recaptcha/",
+                        data : $.param(params),
+                        headers : {
+                            'Content-Type' : 'application/x-www-form-urlencoded'
+                        }
+                    }).success(function(data, status) {   
+                        if(data=="false"){
+                            $scope.login_msg = "Text Entered is not correct";
+                            Recaptcha.reload();
+                        } else {
+                            $scope.login();
+                        }
+                    }).error(function(data, status){
+                        console.log(data);
+                    });
+                }
+            });
         }
+        
     }
+
     $scope.save_new_user = function(){
         $scope.msg = '';
         if($scope.validate_user()){
@@ -122,30 +130,28 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
         }        
     }
     $scope.login = function(){
-        if($scope.validate_login()){
-            params = { 
-                'username': $scope.username,
-                'password': $scope.password,
-                "csrfmiddlewaretoken" : $scope.csrf_token,
+        params = { 
+            'username': $scope.username,
+            'password': $scope.password,
+            "csrfmiddlewaretoken" : $scope.csrf_token,
+        }
+        $http({
+            method : 'post',
+            url : "/login/",
+            data : $.param(params),
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
             }
-            $http({
-                method : 'post',
-                url : "/login/",
-                data : $.param(params),
-                headers : {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
-                }
-            }).success(function(data, status) {   
-             if(data.result == 'Ok' || data.result == 'error'){
-                $scope.msg = "";
-                document.location.href = "/";
-             } else
-                $scope.login_msg = "Username or Password is incorrect";
-                
-            }).error(function(data, status){
-                $scope.message = data.message;
-            });
-        }        
+        }).success(function(data, status) {   
+         if(data.result == 'Ok'){
+            $scope.msg = "";
+            document.location.href = "/";
+         } else
+            $scope.login_msg = "Username or Password is incorrect";
+            
+        }).error(function(data, status){
+            $scope.message = data.message;
+        });
     }
     $scope.delete_user = function(user){
         show_loader();
@@ -172,7 +178,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
         })
     }
 }
-function StarRatingController($scope, $http){
+/*function StarRatingController($scope, $http){
     $scope.init = function(csrf_token, star_count) {
         $scope.csrf_token = csrf_token;
         $scope.count = star_count;
@@ -267,3 +273,4 @@ function StarRatingReportController($scope, $http) {
         })
     }
 }
+*/
