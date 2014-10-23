@@ -3,6 +3,7 @@
 import simplejson
 import ast
 import lxml.etree as ET
+import numpy as np 
 
 from collections import OrderedDict
 from math import sqrt
@@ -16,6 +17,15 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from models import PublicUser
+from web.utils import get_rating_details_by_star_count , get_rating_report
+
+def rpHash(person): 
+    hash = 5381 
+  
+    value = person.upper() 
+    for caracter in value: 
+        hash = (( np.left_shift(hash, 5) + hash) + ord(caracter)) 
+    hash = np.int32(hash) 
 
 class Home(View):
     def get(self, request, *args, **kwargs):
@@ -34,8 +44,14 @@ class Login(View):
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         if user and user.is_active:
             login(request, user)
+            try:
+                public_user = PublicUser.objects.get(user=request.user)
+                res = {'result': 'Ok'}
+            except Exception as ex:
+                logout(request)
+                res = {'result': 'error'}
             if request.is_ajax():
-                response = simplejson.dumps({'result': 'Ok'})
+                response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
             return HttpResponseRedirect(reverse('dashboard'))
         else:
@@ -95,3 +111,24 @@ class Logout(View):
 #     # Accepted 
 # else: 
 #     # Rejected
+
+class StarRating(View):
+
+    def get(self, request, *args, **kwargs):
+
+        star_count = request.GET.get('star_count', '')
+        if request.is_ajax() and star_count:
+            response = get_rating_details_by_star_count(request, star_count)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'star_rating.html', {'star_count': star_count})
+
+class StarRatingReport(View):
+
+    def get(self, request, *args, **kwargs):
+
+        isin_code = request.GET.get('isin_code', '')
+        if request.is_ajax() and isin_code:
+            response = get_rating_report(request, [isin_code])
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'star_rating_report.html', {'isin_code': isin_code})
+

@@ -136,11 +136,10 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                     'Content-Type' : 'application/x-www-form-urlencoded'
                 }
             }).success(function(data, status) {   
-             if(data.result == 'Ok'){
+             if(data.result == 'Ok' || data.result == 'error'){
                 $scope.msg = "";
                 document.location.href = "/";
-             }         
-             else
+             } else
                 $scope.login_msg = "Username or Password is incorrect";
                 
             }).error(function(data, status){
@@ -171,5 +170,49 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
             paginate($scope.users, $scope);
             hide_loader();
         })
+    }
+}
+function StarRatingController($scope, $http){
+    $scope.init = function(csrf_token, star_count) {
+        $scope.csrf_token = csrf_token;
+        $scope.count = star_count;
+        if (star_count)
+            $scope.get_company_star_rating(star_count);
+    }
+    $scope.get_company_star_rating = function(star_count) {
+        show_loader()
+        $http.get('/star_rating/?star_count='+star_count).success(function(data){
+            hide_loader()
+            $scope.star_ratings = data.star_ratings;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+            console.log(data.watch_list_count, data.compare_list_count);
+        }).error(function(data, status){
+            console.log(data);
+        });
+    }
+    $scope.view_rating_report = function(star_rating){
+        document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;
+    }
+}
+
+function StarRatingReportController($scope, $http) {
+    $scope.init = function(csrf_token, isin_code) {
+        $scope.csrf_token = csrf_token;
+        if (isin_code)
+            $scope.get_company_star_rating_report(isin_code);
+    }
+    $scope.get_company_star_rating_report = function(isin_code) {
+        show_loader()
+        $http.get('/star_rating_report/?isin_code='+isin_code).success(function(data){
+            hide_loader()
+            $scope.star_ratings = data.star_ratings;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+            $scope.analytical_heads = data.star_ratings[0].analytical_heads;
+            console.log(data.analytical_heads);
+        }).error(function(data, status){
+            console.log(data);
+        });
     }
 }
