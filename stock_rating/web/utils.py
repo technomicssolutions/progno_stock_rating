@@ -244,6 +244,7 @@ def get_rating_report(request, search_keys):
     if public_user.count() > 0:
         watch_list_companies = public_user[0].watchlist_set.all()
         compare_list_companies = public_user[0].comparelist_set.all()
+    print watch_list_companies, compare_list_companies
     for key in search_keys:
         company = Company.objects.get(isin_code=key)
         if public_user.count() > 0:
