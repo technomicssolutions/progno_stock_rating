@@ -232,6 +232,10 @@ function StarRatingReportController($scope, $http) {
         $http.get('/star_rating_report/?isin_code='+isin_code).success(function(data){
             hide_loader()
             $scope.star_ratings = data.star_ratings;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+            $scope.analytical_heads = data.star_ratings[0].analytical_heads;
+            console.log(data.analytical_heads);
         }).error(function(data, status){
             console.log(data);
         });

@@ -264,6 +264,27 @@ def get_rating_report(request, search_keys):
                 fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
                 if fun_score.count() > 0:
                     comments.append(fun_score[0].comment)
+            analytical_heads = []
+            for analytical_head in model.analytical_heads.all():
+                functions_details = []
+
+                for function in analytical_head.function_set.all():
+                    comments = []
+                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                    if fun_score.count() > 0:
+                        comments.append(fun_score[0].comment)
+                    function_score = CompanyFunctionScore.objects.get(function=function, company=company)
+                    functions_details.append({
+                        'function_name': function.function_name + str(' - ') + str(function_score.score),
+                        'score': function_score.score,
+                        'description': function.description,
+                        'comments': comments[0] if len(comments) > 0 else 'None'
+                    })
+                analytical_heads.append({
+                    'analytical_head_name': analytical_head.title,
+                    'functions': functions_details,
+                })
+            rating['analytical_heads'] = analytical_heads
             rating['detailed_comment'] = comments
         else:
             rating = {
