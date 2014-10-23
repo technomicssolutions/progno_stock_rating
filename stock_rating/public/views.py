@@ -239,5 +239,11 @@ class ViewWatchList(View):
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'view_watch_list.html', {})
 
+class ViewCompareList(View):
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'view_compare_list.html', {})
+
 
 
