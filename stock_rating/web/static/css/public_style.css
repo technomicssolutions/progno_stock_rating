@@ -324,6 +324,26 @@ footer a {
 	color: red;
 }
 
+<<<<<<< HEAD
+#recaptcha_area .recaptchatable {
+	border: none !important;
+}
+
+#recaptcha_table #recaptcha_image {
+	border: none !important;
+}
+
+#recaptcha_logo {
+	display: none;
+}
+
+#recaptcha_div {
+	height: 110px;
+}
+
+#recaptcha_privacy {
+	display: none;
+}
 #dialogue_popup_container {
 	display: none;
 }

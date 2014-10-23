@@ -1,21 +1,26 @@
 {% extends 'public_base.html' %}
 {% block extrahead %}
-	<link rel="stylesheet" type="text/css" href="/static/css/captcha/jquery.realperson.css"> 
-	<script type="text/javascript" src="/static/js/captcha/jquery.plugin.js"></script> 
-	<script type="text/javascript" src="/static/js/captcha/jquery.realperson.js"></script>
+	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 	<script type="text/javascript">
-		$(function() {
-			$('.captcha-text').realperson();
-			$('.captcha-text').realperson({
-				length: 5,
-				dot: '*'
-			});
-		});
-	</script>
+         $(function() {
+           Recaptcha.create("{{recaptcha_public_key}}", 'recaptcha_div', {
+             theme: "clean",
+             callback: Recaptcha.focus_response_field});
+         });
+        
+      </script>
+       <script type="application/javascript">
+            function getip(json){
+            	alert(json.ip); // alerts the ip address
+    		}
+    </script>
+
+    <script type="application/javascript" src="http://jsonip.appspot.com/?callback=getip"></script>
+
 	 
 {% endblock extrahead %}
 
-{% block controller %}ng-controller="LoginRegistrationController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
+{% block controller %}ng-controller="LoginRegistrationController" ng-init="init('{{csrf_token}}', '{{recaptcha_private_key}}')" {% endblock controller %}
 {% block content %}
 	<div class="container">
 		<div class="row">
@@ -31,14 +36,8 @@
 							<div class="col-md-12 control">
 								<label> Password </label>
 								<input type="password" name="password" ng-model="password" />
-							</div>
-							<div class="col-md-12 control">
-								<div class="captcha-text"></div>
-							</div>
-							<div class="col-md-12 control">
-								<label> Text In image </label>
-								<input type="password" name="password" />
-							</div>
+							</div>							
+							<div class="col-md-12 control" id="recaptcha_div"></div>		 
 							<p class="error_msg">[[login_msg]]</p>
 						</form>
 						<div class="col-md-12 box_head">
