@@ -3,7 +3,26 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
-
+function add_to_compare_list($scope, $http) {
+    $http({
+        method: 'post',
+        data: $.param(params),
+        url: '/add_to_compare_list/',
+        headers : {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        }
+    }).success(function(data){
+        hide_loader();
+        if (data.result == 'ok') {  
+            start_rating.company_in_compare_list = 'true';
+            $scope.compare_list_count = parseInt($scope.compare_list_count) + 1;
+        } else if (data.result == 'error_stock_exceed'){
+            $scope.error_message = data.error_message;
+        }
+    }).error(function(data, status){
+        console.log('Request failed');
+    });
+}
 function LoginRegistrationController($scope, $element, $http, $timeout, $location)
 {
     $scope.init = function(csrf_token, recaptcha_private_key){
@@ -178,7 +197,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
         })
     }
 }
-/*function StarRatingController($scope, $http){
+function StarRatingController($scope, $http){
     $scope.init = function(csrf_token, star_count) {
         $scope.csrf_token = csrf_token;
         $scope.count = star_count;
@@ -199,6 +218,14 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
     }
     $scope.view_rating_report = function(star_rating){
         document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;
+    }
+    $scope.add_to_compare_list = function(start_rating) {
+        params = {
+            'isin_code': start_rating.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        add_to_compare_list($scope, $http);
     }
 }
 
@@ -253,24 +280,7 @@ function StarRatingReportController($scope, $http) {
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        $http({
-            method: 'post',
-            data: $.param(params),
-            url: '/add_to_compare_list/',
-            headers : {
-                'Content-Type' : 'application/x-www-form-urlencoded'
-            }
-        }).success(function(data){
-            hide_loader();
-            if (data.result == 'ok') {  
-                start_rating.company_in_compare_list = 'true';
-                $scope.compare_list_count = parseInt($scope.compare_list_count) + 1;
-            } else if (data.result == 'error_stock_exceed'){
-                $scope.error_message = data.error_message;
-            }
-        }).error(function(data, status){
-            console.log('Request failed');
-        })
+        add_to_compare_list($scope, $http);
     }
 }
-*/
+

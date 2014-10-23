@@ -12,6 +12,7 @@
 					<li>You have [[watch_list_count]] stock in Watch List</li>
 					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
 				</ul>
+				<p class="error_message">[[error_message]]</p>
 				<table class="table table-striped">
 					<tr>
 						<th>Company Name</th>
@@ -32,8 +33,8 @@
 						<td></td>
 						<td>[[star_rating.rating_changed_date]]</td>
 						<td>
-							<a href="/star_rating_report/?isin_code=[[star_rating.isin_code]]">View Report</a> 
-							<a href="">Add to Compare</a>
+							<a href="/star_rating_report/?isin_code=[[star_rating.isin_code]]">View Report</a> <br/>
+							<a href="" ng-show="star_rating.company_in_compare_list == 'false' " ng-click="add_to_compare_list(star_rating)">Add to Compare</a>
 						</td>
 					</tr>
 				</table>
