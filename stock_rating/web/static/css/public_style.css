@@ -325,7 +325,6 @@ footer a {
 	color: red;
 }
 
-<<<<<<< HEAD
 #recaptcha_area .recaptchatable {
 	border: none !important;
 }
@@ -396,6 +395,8 @@ footer a {
 }
 .list_table td {
 	border: 1px solid #E2E2E1;
+	background-color: #FFFFFF;
+	padding: 20px !important;
 }
 .list_table th {
 	background-color: #005FC4 !important;
@@ -403,4 +404,22 @@ footer a {
 	color: #FFFFFF;	
 	border: 1px solid #E2E2E1;
 
+}
+
+.aqua_button {
+	background-color: #34CCCD;
+	padding: 5px 10px;
+	color: #FFFFFF;
+	display: block;
+	float: left;
+	border-radius: 3px;
+	margin-right: 10px;
+}
+
+#watch_list .button_holder {
+	background-color: #CBCBCB !important;
+	padding: 8px !important; 
+}
+.star_holder {
+	width: 150px;
 }

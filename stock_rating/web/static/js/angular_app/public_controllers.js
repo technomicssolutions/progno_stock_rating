@@ -294,6 +294,9 @@ function ViewWatchListController($scope, $http){
         $scope.csrf_token = csrf_token;
         $scope.get_watch_list_details();
     }
+    $scope.range = function(n) {
+        return new Array(n);
+    }
     $scope.get_watch_list_details = function(){
         $http.get('/watch_list/').success(function(data){
             $scope.watch_lists = data.watch_lists;

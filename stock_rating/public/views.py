@@ -241,7 +241,7 @@ class ViewWatchList(View):
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
                         'industry': company.industry.industry_name,
-                        'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+                        'star_rating': int(model_score.star_rating) if model_score.star_rating else 0,
                         'score': model_score.points,
                         'brief_comment': model_score.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
