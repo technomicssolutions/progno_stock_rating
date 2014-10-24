@@ -222,17 +222,27 @@ function StarRatingController($scope, $http){
     $scope.init = function(csrf_token, star_count) {
         $scope.csrf_token = csrf_token;
         $scope.count = star_count;
+        $scope.pages = 0;
+        $scope.visible_list = [];
+        $scope.error = false;
         if (star_count)
             $scope.get_company_star_rating(star_count);
+    }
+    $scope.range = function(n) {
+        var n = Math.abs(n);
+        return new Array(n);
     }
     $scope.get_company_star_rating = function(star_count) {
         show_loader()
         $http.get('/star_rating/?star_count='+star_count).success(function(data){
             hide_loader()
             $scope.star_ratings = data.star_ratings;
+            if(data.star_ratings.length == 0){
+                $scope.error = true;
+            }
+            paginate($scope.star_ratings, $scope, 5);
             $scope.watch_list_count = data.watch_list_count;
             $scope.compare_list_count = data.compare_list_count;
-            console.log(data.watch_list_count, data.compare_list_count);
         }).error(function(data, status){
             console.log(data);
         });
@@ -247,6 +257,19 @@ function StarRatingController($scope, $http){
         }
         show_loader();
         add_to_compare_list($scope, $http, star_rating);
+    }
+    $scope.select_page = function(page){
+        select_page(page, $scope.star_ratings, $scope);
+    }
+    $scope.select_next_page = function(){
+        var page = $scope.current_page + 1;
+        if(page != $scope.pages + 1)
+            select_page(page, $scope.star_ratings, $scope);
+    }
+    $scope.select_previous_page = function(){
+        var page = $scope.current_page - 1
+        if(page != 0)
+            select_page(page, $scope.star_ratings, $scope);
     }
 }
 
@@ -264,7 +287,15 @@ function StarRatingReportController($scope, $http) {
             $scope.watch_list_count = data.watch_list_count;
             $scope.compare_list_count = data.compare_list_count;
             $scope.analytical_heads = data.star_ratings[0].analytical_heads;
-            console.log(data.analytical_heads);
+            $scope.analytical_heads_list = [];
+            var list = []
+            for(i=0;i<$scope.analytical_heads.length;i++){                
+                list.push($scope.analytical_heads[i])
+                if((i+1)%3 == 0 || (i+1) == $scope.analytical_heads.length) {
+                    $scope.analytical_heads_list.push(list);
+                    list = [];
+                }
+            }console.log($scope.analytical_heads_list);
         }).error(function(data, status){
             console.log(data);
         });
@@ -295,11 +326,12 @@ function ViewWatchListController($scope, $http){
         $scope.get_watch_list_details();
     }
     $scope.range = function(n) {
+        var n = Math.abs(n);
         return new Array(n);
     }
     $scope.get_watch_list_details = function(){
         $http.get('/watch_list/').success(function(data){
-            $scope.watch_lists = data.watch_lists;
+            $scope.watch_list = data.watch_list;
             $scope.watch_list_count = data.watch_list_count;
             $scope.compare_list_count = data.compare_list_count;
         }).error(function(data, status){

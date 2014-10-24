@@ -226,12 +226,6 @@ class ViewWatchList(View):
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0:
                     model_score = model_score[0]
-                    if model_score.star_rating_change and model_score.star_rating_change > 0:
-                        change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
-                    elif model_score.star_rating_change and model_score.star_rating_change < 0:
-                        change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
-                    else:
-                        change_in_star_rating = ' '
                     compare_list = CompareList.objects.filter(user=public_user, company=company)
                     if compare_list.count() > 0:
                         company_in_compare_list = True
@@ -246,7 +240,8 @@ class ViewWatchList(View):
                         'brief_comment': model_score.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                         'added_on': watch_list.added_on.strftime('%d/%m/%Y') if watch_list.added_on else '',
-                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating if model_score.updated_date else '',
+                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') if model_score.updated_date else '',
+                        'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
                     }
                 else:
                     rating = {
@@ -255,7 +250,7 @@ class ViewWatchList(View):
                     }
                 watch_lists_details.append(rating)
             response = simplejson.dumps({
-                'watch_lists': watch_lists_details,
+                'watch_list': watch_lists_details,
                 'watch_list_count': watch_lists.count(),
                 'compare_list_count': compare_lists.count(),
             })

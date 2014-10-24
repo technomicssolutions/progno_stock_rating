@@ -2,11 +2,11 @@
 {% block controller %}ng-controller="ViewWatchListController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block body_id %}watch_list{% endblock %}
 {% block content %}
-	<div class="container watch_list_first_row">
+	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
 				<h3>{{user.first_name}}'s Watch List</h3>
-				<ul class="watchlist_instructions">
+				<ul class="header_ul">
 					<li>You can add maximum 20 stocks in Watch List</li>
 					<li>You have [[watch_list_count]] stock in Watch List</li>
 					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
@@ -15,7 +15,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="container watch_list_first_row">
+	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
 				<table class="table table-striped list_table">
@@ -29,16 +29,26 @@
 						<th>Price NSE</th>
 						<th>Rating Changed on</th>
 					</tr>
-					<tbody ng-repeat="star_rating in watch_lists">
+					<tbody ng-repeat="star_rating in watch_list">
 						<tr>
 							<td>[[star_rating.company_name]]</td>
 							<td>[[star_rating.industry]]</td>
-							<td CLASS="star_holder"><img ng-repeat="star in range(star_rating.star_rating) track by $index" src="/static/images/star.png" /></td>
+							<td class="star_holder">
+								<img ng-repeat="star in range(star_rating.star_rating) track by $index" src="/static/images/star.png" />
+							</td>
 							<td>[[star_rating.score]]</td>
 							<td>[[star_rating.added_on]]</td>
 							<td> price NSE </td>
 							<td> Price BSE </td>
-							<td>[[star_rating.rating_changed_date]]</td>	
+							<td>
+								[[star_rating.rating_changed_date]] 
+								<span ng-show="star_rating.change>0"> 
+									up by <img ng-repeat="star in range(star_rating.change) track by $index" src="/static/images/star.png" />
+								</span>
+								<span ng-show="star_rating.change<0"> 
+									down by <img ng-repeat="star in range(star_rating.change) track by $index" src="/static/images/star.png" />
+								</span>
+							</td>	
 						</tr>
 						<tr>
 							<td colspan="8" class="button_holder">
@@ -55,13 +65,15 @@
 		<div class="row">
 			<div class="col-md-6 left">
 				<div class="col-md-12">
-					<p>
+					<p class="instruction">
 						*Price change is fromthe date the stock is added to the watch list
 					</p>
 				</div>
 				<div class="col-md-12">
-					<p>
-						Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com
+					<p class="instruction">
+						<a href="http://www.prognoFP.com">
+							Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com
+						</a>
 					</p>
 				</div>
 			</div>
