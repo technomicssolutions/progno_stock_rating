@@ -23,6 +23,27 @@ function add_to_compare_list($scope, $http, star_rating) {
         console.log('Request failed');
     });
 }
+function add_to_watch_list($scope, $http, star_rating){
+    $http({
+        method: 'post',
+        data: $.param(params),
+        url: '/add_to_watch_list/',
+        headers : {
+            'Content-Type' : 'application/x-www-form-urlencoded'
+        }
+    }).success(function(data){
+        hide_loader();
+        if (data.result == 'ok'){
+            star_rating.company_in_watch_list = 'true';
+            $scope.watch_list_count = parseInt($scope.watch_list_count) + 1;             
+        } else if (data.result == 'error_stock_exceed'){
+            $scope.error_message = data.error_message;
+        }
+        
+    }).error(function(data, status){
+        console.log('Request failed');
+    });
+}
 function LoginRegistrationController($scope, $element, $http, $timeout, $location)
 {
     $scope.init = function(csrf_token, recaptcha_private_key){
@@ -254,25 +275,7 @@ function StarRatingReportController($scope, $http) {
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        $http({
-            method: 'post',
-            data: $.param(params),
-            url: '/add_to_watch_list/',
-            headers : {
-                'Content-Type' : 'application/x-www-form-urlencoded'
-            }
-        }).success(function(data){
-            hide_loader();
-            if (data.result == 'ok'){
-                star_rating.company_in_watch_list = 'true';
-                $scope.watch_list_count = parseInt($scope.watch_list_count) + 1;             
-            } else if (data.result == 'error_stock_exceed'){
-                $scope.error_message = data.error_message;
-            }
-            
-        }).error(function(data, status){
-            console.log('Request failed');
-        })
+        add_to_watch_list($scope, $http, star_rating);
     }
     $scope.add_to_compare_list = function(star_rating) {
         params = {
@@ -349,5 +352,12 @@ function SearchResultController($scope, $http) {
         }).error(function(data, status){
             console.log('Request failed');
         });
+    }
+    $scope.add_to_watch_list = function(company){
+        params = {
+            'isin_code': company.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        add_to_watch_list($scope, $http, company);
     }
 }

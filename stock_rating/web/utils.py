@@ -260,14 +260,20 @@ def get_rating_details_by_star_count(request, star_count):
 def get_rating_report(request, search_keys):
     ratings = []
     isin_list = []
-    public_user = []
-    public_user = PublicUser.objects.filter(user=request.user)
-    if public_user.count() > 0:
-        watch_list_companies = public_user[0].watchlist_set.all()
-        compare_list_companies = public_user[0].comparelist_set.all()
-    for key in search_keys:
-        company = Company.objects.get(isin_code=key)
+    watch_list_companies_count = 0
+    compare_list_companies_count = 0
+    if request.user.is_authenticated():
+        public_user = PublicUser.objects.filter(user=request.user)
         if public_user.count() > 0:
+            watch_list_companies = public_user[0].watchlist_set.all()
+            compare_list_companies = public_user[0].comparelist_set.all()
+            watch_list_companies_count = watch_list_companies.count()
+            compare_list_companies_count = compare_list_companies.count()
+    for key in search_keys:
+        company_in_watch_list = False
+        company_in_compare_list = False
+        company = Company.objects.get(isin_code=key)
+        if request.user.is_authenticated() and public_user.count() > 0:
             try:
                 watch_list = WatchList.objects.get(company=company, user=public_user[0])
                 company_in_watch_list = True
@@ -331,8 +337,8 @@ def get_rating_report(request, search_keys):
     response = simplejson.dumps({
         'star_ratings': ratings,
         'isin_list': isin_list,
-        'watch_list_count': watch_list_companies.count(),
-        'compare_list_count': compare_list_companies.count(),
+        'watch_list_count': watch_list_companies_count,
+        'compare_list_count': compare_list_companies_count,
     })
     return response
 
