@@ -23,6 +23,22 @@ from utils import process_data_file, process_company_file, \
     calculate_general_function_score, get_file_fields, calculate_consistency_function_score, \
     calculate_continuity_function_score, get_rating_details_by_star_count, get_rating_report
 
+from public.views import is_public_user
+
+
+def progno_login_required(function, login_url):
+    def wrapper(request, *args, **kw):
+        user = request.user  
+        if user.is_authenticated:
+            if is_public_user(request):
+                return HttpResponseRedirect(login_url)
+            else:
+                return function(request, *args, **kw)
+        else:
+            return HttpResponseRedirect(login_url)        
+    return wrapper
+
+
 class Dashboard(View):
     def get(self, request, *args, **kwargs):
         context = {}
