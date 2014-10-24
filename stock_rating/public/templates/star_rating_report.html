@@ -1,4 +1,5 @@
 {% extends 'public_base.html' %}
+{% block body_id %}star_rating_report{% endblock %}
 {% block controller %}ng-controller="StarRatingReportController" ng-init="init('{{csrf_token}}', '{{isin_code}}')" {% endblock controller %}
 {% block content %}
 	<div class="container home_first_row">

@@ -4,7 +4,7 @@ from django.conf.urls import patterns, url
 
 
 from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, \
-	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList, public_login_required)
+	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList, public_login_required, ViewCompareList)
 
 LOGIN_URL = '/login/'
 
@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^add_to_compare_list/$', public_login_required(AddToComparelist.as_view(), login_url="/login/"), name="add_to_compare_list"),
     url(r'^add_to_watch_list/$', public_login_required(AddToWatchlist.as_view(), login_url="/login/"), name="add_to_watch_list"),
     url(r'^add_to_compare_list/$', public_login_required(AddToComparelist.as_view(), login_url="/login/"), name="add_to_compare_list"),
-
+    url(r'^compare_list/$', public_login_required(ViewCompareList.as_view(), login_url="/login/"), name="compare_list"),
     url(r'^watch_list/$', public_login_required(ViewWatchList.as_view(), login_url="/login/"), name="watch_list"),
 )
 
