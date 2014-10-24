@@ -2,4 +2,42 @@
 {% block controller %}ng-controller="ViewCompareListController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block content %}
 
+	<div class="container home_first_row">
+		<div class="row">
+			<div>
+				<ul>
+					<li>You can add maximum 4 stocks</li>
+				</ul>
+				<table class="table table-striped">
+					<tr>
+						<th>Company Name</th>
+						<th>Industry</th>
+						<th>Star Rating</th>
+						<th>Score</th>
+						<th>Added on</th>
+						<th>Price BSE</th>
+						<th>Price NSE</th>
+						<th>Rating Changed on</th>
+						<th></th>
+					</tr>
+					<tr ng-repeat="star_rating in watch_lists">
+						<td>[[star_rating.company_name]]</td>
+						<td>[[star_rating.industry]]</td>
+						<td>[[star_rating.star_rating]]</td>
+						<td>[[star_rating.score]]</td>
+						<td>[[star_rating.added_on]]</td>
+						<td></td>
+						<td></td>
+						<td>[[star_rating.rating_changed_date]]</td>
+						<td>
+							<a href="/star_rating_report/?isin_code=[[star_rating.isin_code]]">View Report</a><br/>
+							<a href="" ng-show="star_rating.company_in_compare_list == 'false'" ng-click="add_to_compare(star_rating)">Add to Compare</a>
+						</td>
+					</tr>
+				</table>
+				<p>Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com</p>
+			</div>
+		</div>
+	</div>
+
 {% endblock %}

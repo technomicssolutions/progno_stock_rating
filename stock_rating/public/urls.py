@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 
 
 from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, \
-	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList)
+	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList, ViewCompareList)
 
 LOGIN_URL = '/login/'
 
@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^add_to_compare_list/$', login_required(AddToComparelist.as_view(), login_url="/login/"), name="add_to_compare_list"),
 
     url(r'^view_watch_list/$', login_required(ViewWatchList.as_view(), login_url="/login/"), name="view_watch_list"),
+    url(r'^view_compare_list/$', login_required(ViewCompareList.as_view(), login_url="/login/"), name="view_compare_list"),
 )
 
 

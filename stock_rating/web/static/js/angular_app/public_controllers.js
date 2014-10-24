@@ -306,3 +306,8 @@ function ViewWatchListController($scope, $http){
         add_to_compare_list($scope, $http, star_rating);
     }
 }
+function ViewCompareListController($scope, $http) {
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+    }
+}
