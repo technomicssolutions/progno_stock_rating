@@ -205,6 +205,12 @@ def get_rating_details_by_star_count(request, star_count):
         company = model_score.company
         company_in_watch_list = False
         company_in_compare_list = False
+        if model_score.star_rating_change and model_score.star_rating_change > 0:
+            change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
+        elif model_score.star_rating_change and model_score.star_rating_change < 0:
+            change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
+        else:
+            change_in_star_rating = ' '
         if public_user.count() > 0:
             try:
                 watch_list = WatchList.objects.get(company=company, user=public_user[0])
@@ -232,20 +238,22 @@ def get_rating_details_by_star_count(request, star_count):
             'score': model_score.points,
             'brief_comment': model_score.comment,
             'detailed_comment': comments,
-            'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y'),
+            'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
             'company_in_watch_list': 'true' if company_in_watch_list else 'false',
             'company_in_compare_list': 'true' if company_in_compare_list else 'false',
         })
-    watch_list = []
-    compare_list = []
+    watch_list_count = 0
+    compare_list_count = 0
     if public_user.count() > 0:
         watch_list = public_user[0].watchlist_set.all()
         compare_list = public_user[0].comparelist_set.all()
+        watch_list_count = watch_list.count()
+        compare_list_count = compare_list.count()
     response = simplejson.dumps({
         'star_ratings': ratings,
         'isin_list': isin_list,
-        'watch_list_count': watch_list.count(),
-        'compare_list_count': compare_list.count(),
+        'watch_list_count': watch_list_count,
+        'compare_list_count': compare_list_count,
     })
     return response
 

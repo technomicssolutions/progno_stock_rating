@@ -1151,9 +1151,7 @@ class ModelStarRating(View):
                 company_model_score.save()
                 for rating in model_ratings:
                     if company_model_score.points >= rating.min_score and company_model_score.points <= rating.max_score:
-                        print rating.star_count, company_model_score.star_rating
-                        changed_rating = company_model_score.star_rating - rating.star_count
-                        print "Changed rating == ", changed_rating
+                        changed_rating = int(rating.star_count) - int(company_model_score.star_rating)
                         company_model_score.star_rating_change = changed_rating
                         company_model_score.star_rating = rating.star_count
                         company_model_score.comment = rating.comment

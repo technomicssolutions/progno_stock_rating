@@ -117,8 +117,6 @@ class Logout(View):
 class StarRating(View):
 
     def get(self, request, *args, **kwargs):
-        print "ajax", request.is_ajax()
-
         star_count = request.GET.get('star_count', '')
         if request.is_ajax() and star_count:
             response = get_rating_details_by_star_count(request, star_count)
