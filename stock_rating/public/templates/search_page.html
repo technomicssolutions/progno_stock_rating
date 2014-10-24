@@ -1,0 +1,6 @@
+<div ng-controller="SearchViewController" ng-init="init('{{csrf_token}}')">
+	<input type="text" name="header_search" placeholder="Search" class="search_box" ng-change="search_companies()" ng-model="company_name">
+	<ul ng-show="companies.length > 0">
+		<li ng-repeat="company in companies" ng-click="select_company(company)"> [[company.name]] - [[company.isin_code]] </li>
+	</ul>
+</div>
