@@ -206,6 +206,7 @@ class CompanyModelScore(Date):
     points = models.IntegerField('Model Points in percentage terms', default=0)
     star_rating = models.CharField('Star Rating', max_length=200 , null=True, blank=True)
     comment = models.CharField('Comment', max_length=500, null=True, blank=True)
+    star_rating_change = models.IntegerField('Change in Star Rating', null=True, blank=True)
 
 
     def __unicode__(self):
