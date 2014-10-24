@@ -323,7 +323,7 @@ function SearchViewController($scope, $http) {
     }
     $scope.search_companies = function() {
         if($scope.company_name.length >= 3){
-            var url = '/progno/companies/?search_key='+$scope.company_name;
+            var url = '/search_company/?search_key='+$scope.company_name;
             show_loader();
             $http.get(url).success(function(data) {
                 $scope.companies = data.companies;
@@ -334,5 +334,20 @@ function SearchViewController($scope, $http) {
     }
     $scope.select_company = function(company) {
         $scope.companies = [];
+        document.location.href ='/search_result/?isin_code='+company.isin_code;
+    }
+}
+function SearchResultController($scope, $http) {
+    $scope.init = function(csrf_token, isin_code) {
+        $scope.csrf_token = csrf_token;
+        $scope.isin_code = isin_code;
+        $scope.get_company_details();
+    }
+    $scope.get_company_details = function() {
+        $http.get('/search_result/?isin_code='+$scope.isin_code).success(function(data){
+            $scope.company_details = data.star_ratings;
+        }).error(function(data, status){
+            console.log('Request failed');
+        });
     }
 }

@@ -15,7 +15,7 @@ from django.conf import settings
 
 from models import PublicUser, WatchList, CompareList
 from web.models import Company, CompanyModelScore
-from web.utils import get_rating_details_by_star_count , get_rating_report
+from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
 
 def public_login_required(function, login_url):
@@ -226,6 +226,12 @@ class ViewWatchList(View):
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0:
                     model_score = model_score[0]
+                    if model_score.star_rating_change and model_score.star_rating_change > 0:
+                        change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
+                    elif model_score.star_rating_change and model_score.star_rating_change < 0:
+                        change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
+                    else:
+                        change_in_star_rating = ' '
                     compare_list = CompareList.objects.filter(user=public_user, company=company)
                     if compare_list.count() > 0:
                         company_in_compare_list = True
@@ -240,7 +246,7 @@ class ViewWatchList(View):
                         'brief_comment': model_score.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                         'added_on': watch_list.added_on.strftime('%d/%m/%Y') if watch_list.added_on else '',
-                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') if model_score.updated_date else '',
+                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating if model_score.updated_date else '',
                     }
                 else:
                     rating = {
@@ -263,6 +269,24 @@ class ViewCompareList(View):
         # if request.is_ajax():
 
         return render(request, 'view_compare_list.html', {})
+
+class SearchCompany(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            response = get_company_details(request)
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+class SearchResult(View):
+
+    def get(self, request, *args, **kwargs):
+        isin_code = request.GET.get('isin_code', '')
+        if request.is_ajax() and isin_code:
+            response = get_rating_report(request, [isin_code])
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'search_result.html', {'isin_code': isin_code})
+
+
 
 
 

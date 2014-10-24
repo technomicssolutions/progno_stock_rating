@@ -21,7 +21,8 @@ from models import (UserPermission, DataField, AnalyticalHead, Function,\
 
 from utils import process_data_file, process_company_file, \
     calculate_general_function_score, get_file_fields, calculate_consistency_function_score, \
-    calculate_continuity_function_score, get_rating_details_by_star_count, get_rating_report
+    calculate_continuity_function_score, get_rating_details_by_star_count, get_rating_report, \
+    get_company_details
 
 from public.views import is_public_user
 
@@ -258,10 +259,7 @@ class FunctionSettings(View):
 
 class Companies(View):
     def get(self, request, *args, **kwargs):
-        if request.GET.get('search_key', ''):
-            companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''))
-        else:
-            companies = Company.objects.all()
+        
         company_files = CompanyFile.objects.all()
         if company_files.count() > 0:
             company_file = CompanyFile.objects.latest('id')
@@ -271,20 +269,25 @@ class Companies(View):
                 process_company_file(company_file)
         else:
             company_file = None
+        # if request.GET.get('search_key', ''):
+        #     companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''))
+        # else:
+        #     companies = Company.objects.all()
         if request.is_ajax():
-            company_list = []
-            for company in companies:
-                company_list.append({
-                    'name': company.company_name,
-                    'isin_code': company.isin_code,
-                    'industry': company.industry.industry_name if company.industry else '',
-                    'created_by': company.created_by.username if company.created_by else '',
-                    'created_date': company.created_date.strftime("%d/%m/%Y")
-                })
-            response = simplejson.dumps({
-                'result': 'Ok',
-                'companies': company_list,
-            })
+            # company_list = []
+            # for company in companies:
+            #     company_list.append({
+            #         'name': company.company_name,
+            #         'isin_code': company.isin_code,
+            #         'industry': company.industry.industry_name if company.industry else '',
+            #         'created_by': company.created_by.username if company.created_by else '',
+            #         'created_date': company.created_date.strftime("%d/%m/%Y")
+            #     })
+            # response = simplejson.dumps({
+            #     'result': 'Ok',
+            #     'companies': company_list,
+            # })
+            response = get_company_details(request)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'companies.html', {
             'company_file': company_file,

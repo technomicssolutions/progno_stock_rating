@@ -335,3 +335,24 @@ def get_rating_report(request, search_keys):
         'compare_list_count': compare_list_companies.count(),
     })
     return response
+
+def get_company_details(request):
+
+    if request.GET.get('search_key', ''):
+        companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''))
+    else:
+        companies = Company.objects.all()
+    company_list = []
+    for company in companies:
+        company_list.append({
+            'name': company.company_name,
+            'isin_code': company.isin_code,
+            'industry': company.industry.industry_name if company.industry else '',
+            'created_by': company.created_by.username if company.created_by else '',
+            'created_date': company.created_date.strftime("%d/%m/%Y")
+        })
+    response = simplejson.dumps({
+        'result': 'Ok',
+        'companies': company_list,
+    })
+    return response
