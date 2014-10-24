@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     url(r'^add_to_compare_list/$', login_required(AddToComparelist.as_view(), login_url="/login/"), name="add_to_compare_list"),
 
     url(r'^view_watch_list/$', login_required(ViewWatchList.as_view(), login_url="/login/"), name="view_watch_list"),
-    url(r'^view_compare_list/$', login_required(ViewCompareList.as_view(), login_url="/login/"), name="view_compare_list"),
+    url(r'^compare_list/$', login_required(ViewCompareList.as_view(), login_url="/login/"), name="compare_list"),
 )
 
 

@@ -11,8 +11,8 @@
 				<a href="" class="home"></a>
 				{% if user.is_authenticated %}
 					<a href="" class="blog_icon"></a>
-					<a href="/view_watch_list/" class="watch_list_icon"></a>
-					<a href="/view_compare_list/" class="compare_list_icon"></a>				
+					<a href="/watch_list/" class="watch_list_icon"></a>
+					<a href="/compare_list/" class="compare_list_icon"></a>				
 					<a href="{% url 'public_logout' %}" class="logout_icon"></a>
 				{% else %}
 					<a href="{% url 'public_login' %}" class="login_icon"></a>
