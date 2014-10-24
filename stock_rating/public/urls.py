@@ -22,7 +22,7 @@ urlpatterns = patterns('',
     url(r'^add_to_watch_list/$', public_login_required(AddToWatchlist.as_view(), login_url="/login/"), name="add_to_watch_list"),
     url(r'^add_to_compare_list/$', public_login_required(AddToComparelist.as_view(), login_url="/login/"), name="add_to_compare_list"),
 
-    url(r'^watch_list/$', public_login_required(ViewWatchList.as_view(), login_url="/login/"), name="view_watch_list"),
+    url(r'^watch_list/$', public_login_required(ViewWatchList.as_view(), login_url="/login/"), name="watch_list"),
 )
 
 

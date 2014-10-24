@@ -161,6 +161,7 @@ header a {
 	background: url('../images/help-btn.png');
 	right: 0;
 	top: 55%;
+	z-index: 1;
 }
 
 .five_star {
@@ -366,4 +367,40 @@ footer a {
 	left: 50%;
 	top: 50%;
 	display: none;
+}
+
+#watch_list h3 {
+	color: #0A63BF;
+	padding: 0px;
+	margin: 0px;
+}
+
+.watch_list_first_row {
+	padding: 10px 0px 0px 30px;
+}
+
+.watchlist_instructions {
+	list-style: none;
+	margin-top: 10px;
+}
+
+.watchlist_instructions li {
+	background: url("../images/li-arrow.png") no-repeat scroll 0 16% rgba(0, 0, 0, 0);
+    display: block;
+    height: 30px;
+    padding-left: 20px;
+}
+
+.list_table {
+	border: 1px solid #E2E2E1;
+}
+.list_table td {
+	border: 1px solid #E2E2E1;
+}
+.list_table th {
+	background-color: #005FC4 !important;
+	font-weight: normal;
+	color: #FFFFFF;	
+	border: 1px solid #E2E2E1;
+
 }
