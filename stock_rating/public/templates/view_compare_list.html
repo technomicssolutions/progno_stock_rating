@@ -1,4 +1,5 @@
 {% extends 'public_base.html' %}
+{% block body_id %}compare_list{% endblock %}
 {% block controller %}ng-controller="ViewCompareListController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block content %}
 
