@@ -317,3 +317,22 @@ function ViewCompareListController($scope, $http) {
         $scope.csrf_token = csrf_token;
     }
 }
+function SearchViewController($scope, $http) {
+    $scope.init = function(csrf_token) {
+        $scope.csrf_token = csrf_token;
+    }
+    $scope.search_companies = function() {
+        if($scope.company_name.length >= 3){
+            var url = '/progno/companies/?search_key='+$scope.company_name;
+            show_loader();
+            $http.get(url).success(function(data) {
+                $scope.companies = data.companies;
+                paginate($scope.companies, $scope);
+                hide_loader();
+            })
+        }  
+    }
+    $scope.select_company = function(company) {
+        $scope.companies = [];
+    }
+}

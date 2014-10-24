@@ -241,8 +241,8 @@ class ViewWatchList(View):
                         'score': model_score.points,
                         'brief_comment': model_score.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
-                        'added_on': watch_list.added_on.strftime('%d/%m/%Y'),
-                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y'),
+                        'added_on': watch_list.added_on.strftime('%d/%m/%Y') if watch_list.added_on else '',
+                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') if model_score.updated_date else '',
                     }
                 else:
                     rating = {
