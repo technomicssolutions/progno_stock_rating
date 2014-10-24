@@ -295,7 +295,6 @@ def get_rating_report(request, search_keys):
             analytical_heads = []
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
-
                 for function in analytical_head.function_set.all():
                     comments = []
                     fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)

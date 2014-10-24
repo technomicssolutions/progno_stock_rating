@@ -217,8 +217,7 @@ class AddToComparelist(View):
 class ViewWatchList(View):
 
     def get(self, request, *args, **kwargs):
-        if not is_public_user(request):
-            return HttpResponseRedirect(reverse('login'))
+        
         watch_lists_details = []
         if request.is_ajax():
             public_user = PublicUser.objects.get(user=request.user)
@@ -262,6 +261,8 @@ class ViewWatchList(View):
 class ViewCompareList(View):
 
     def get(self, request, *args, **kwargs):
+        compare_list_details = []
+        # if request.is_ajax():
 
         return render(request, 'view_compare_list.html', {})
 
