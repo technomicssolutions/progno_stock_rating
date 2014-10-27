@@ -17,15 +17,20 @@
 			<div class="col-md-12">
 				<table class="table table-striped list_table">
 					<tr>
-						<th>Company Name</th>
-						<th>Industry</th>
-						<th>Star Rating</th>
-						<th>Score</th>
-						<th>Added on</th>
-						<th>Price BSE</th>
-						<th>Price NSE</th>
-						<th>Rating Changed on</th>
 						<th></th>
+						<th></th>
+						<th>Change Stock</th>
+						<th>Change Stock</th>
+						<th></th>
+						<th></th>						
+					</tr>
+					<tr>
+						<td></td>
+						<td ng-repeat="company in compare_list"> [[company.company_name]] X </td>
+					</tr>
+					<tr>
+						<td>StolabScore <br /> Industry</td>
+						<td ng-repeat="company in compare_list"> [[company.company_name]] X </td>
 					</tr>
 					<tbody ng-repeat="star_rating in watch_lists">
 						<tr>

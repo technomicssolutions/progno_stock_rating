@@ -14,7 +14,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 
 from models import PublicUser, WatchList, CompareList
-from web.models import Company, CompanyModelScore
+from web.models import Company, CompanyModelScore, CompanyModelFunctionPoint, CompanyFunctionScore
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
 
@@ -263,73 +263,54 @@ class ViewCompareList(View):
         compare_lists_details = []
         if request.is_ajax():
             public_user = PublicUser.objects.get(user=request.user)
-            watch_lists = WatchList.objects.filter(user=public_user)
-            compare_lists = CompareList.objects.filter(user=public_user)
-            for compare_list in compare_lists:
-                company = compare_list.company
+            compare_list = CompareList.objects.filter(user=public_user)
+            i = 0
+            an_heads = []
+            for obj in compare_list:
+                company = obj.company
                 model_score = CompanyModelScore.objects.filter(company=company)
-                if model_score.count() > 0:
-                    model_score = model_score[0]
-                    if model_score.star_rating_change and model_score.star_rating_change > 0:
-                        change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
-                    elif model_score.star_rating_change and model_score.star_rating_change < 0:
-                        change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
-                    else:
-                        change_in_star_rating = ' '
-                    compare_list = CompareList.objects.filter(user=public_user, company=company)
-                    if compare_list.count() > 0:
-                        company_in_compare_list = True
-                    else:
-                        company_in_compare_list = False
-                    rating = {
+                if model_score.count() > 0: 
+                    company_dict = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
                         'industry': company.industry.industry_name,
-                        'star_rating': int(model_score.star_rating) if model_score.star_rating else 0,
-                        'score': model_score.points,
-                        'brief_comment': model_score.comment,
-                        'company_in_compare_list': 'true' if company_in_compare_list else 'false',
-                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating if model_score.updated_date else '',
+                        'star_rating': int(model_score[0].star_rating) if model_score[0].star_rating else 0,
+                        'model_score': model_score[0].points
                     }
-                    model = model_score.analysis_model
-                    parameters = model.parameterlimit_set.all()
-                    comments = []
-                    for parameter in parameters:
-                        function = parameter.function
-                        fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
-                        if fun_score.count() > 0:
-                            comments.append(fun_score[0].comment)
+                    model = model_score[0].analysis_model
                     analytical_heads = []
                     for analytical_head in model.analytical_heads.all():
+                        if i==0:
+                            head = {
+                                'head_name': analytical_head.title,
+                                'functions': []
+                            }
                         functions_details = []
                         for function in analytical_head.function_set.all():
-                            comments = []
-                            fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
-                            if fun_score.count() > 0:
-                                comments.append(fun_score[0].comment)
+                            if i==0:
+                                head['functions'].append(function.function_name)
                             function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
                             functions_details.append({
                                 'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
                                 'score': function_score[0].score if len(function_score) > 0 else 'None',
-                                'description': function.description,
-                                'comments': comments[0] if len(comments) > 0 else 'None'
                             })
                         analytical_heads.append({
                             'analytical_head_name': analytical_head.title,
                             'functions': functions_details,
                         })
-                    rating['analytical_heads'] = analytical_heads
-                    rating['detailed_comment'] = comments
+                        if i == 0:
+                            an_heads.append(head)
+                    i = i+ 1
+                    company_dict['analytical_heads'] = analytical_heads
                 else:
-                    rating = {
+                    company_dict = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
                     }
-                compare_lists_details.append(rating)
+                compare_lists_details.append(company_dict)
             response = simplejson.dumps({
-                'compare_lists': compare_lists_details,
-                'watch_list_count': watch_lists.count(),
-                'compare_list_count': compare_lists.count(),
+                'compare_list': compare_lists_details,
+                'analytical_heads': an_heads
             })
             return HttpResponse(response, status=200, mimetype='application/json')
 
