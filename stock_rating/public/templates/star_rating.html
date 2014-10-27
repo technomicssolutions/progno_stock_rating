@@ -11,7 +11,8 @@
 					<li>You have [[watch_list_count]] stock in Watch List</li>
 					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
 				</ul>
-				<p class="error_msg" ng-show="error">No Companies with [[count]] star rating</p>				
+				<p class="error_msg" ng-show="error">No Companies with [[count]] star rating</p>
+				<p class="error_msg">[[error_message]]</p>				
 			</div>
 		</div>
 	</div>
@@ -64,27 +65,5 @@
 			</div>
 		</div>
 	</div>
-	<div class="container home_second_row">
-		<div class="row">
-			<div class="col-md-6 left">
-				<div class="col-md-12">
-					<p class="instruction">
-						*Price change is fromthe date the stock is added to the watch list
-					</p>
-				</div>
-				<div class="col-md-12">
-					<p class="instruction">
-						Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com
-					</p>
-				</div>
-			</div>
-			<div class="col-md-6 right">
-				<img src="/static/images/divider-img.png" />
-				<a href="" class="pdf_download"></a>
-				<p class="">
-					Read about stocklab rating methodology 
-				</p>
-			</div>
-		</div>
-	</div>
+	{% include 'content_footer.html' %}
 {% endblock %}

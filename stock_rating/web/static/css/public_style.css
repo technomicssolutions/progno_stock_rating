@@ -124,7 +124,7 @@ header a {
 	margin-top: 10px;
 }
 
-.home_second_row img, .home_second_row p {
+.content_footer img, .content_footer p {
 	display: block;
 	float: left;
 }
@@ -155,7 +155,7 @@ header a {
 }
 
 .help {
-	position: absolute;
+	position: fixed;
 	width: 80px;
 	height: 38px;
 	background: url('../images/help-btn.png');
@@ -450,6 +450,7 @@ footer a {
 	border: 1px solid #E2E2E1;
 	border-top: none;
 	padding: 0px;
+	margin-bottom: 10px;
 }
 /*.white_bg .col-md-12 {
 	padding-left: 0px;
@@ -460,4 +461,51 @@ footer a {
 	background: url('../images/date-bg.png') no-repeat;
 	height: 169px;
 	margin-bottom: 20px;
+}
+
+.no-padding {
+	padding-left: 0px;
+}
+
+.analytical_head {
+	font-size: 18px;
+	font-weight: normal !important;
+	position: absolute;
+	left: 0;
+	padding: 10px 15px 10px 15px;
+	margin-top: -20px;
+	background-color: #FFFFFF;
+}
+
+.analytical_header {
+	height: 40px;
+}
+
+.analytical_header hr {
+	width: 90%;
+	height: 2px;
+	border-color: #DDDDDD;
+}
+
+.analytical_head_container {
+	height: 400px;
+	border-bottom: 3px solid #0066CC;
+	overflow-y: auto;
+	margin-bottom: 30px;
+}
+
+.analytical_head_1 {
+	color: #058411;
+}
+
+.analytical_head_2 {
+	color: #9B6038;
+}
+
+.analytical_head_3 {
+	color: #87E4DC;
+}
+
+.blue_text {
+	color: #0066CC;
 }

@@ -195,7 +195,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
     }
     $scope.delete_user = function(user){
         show_loader();
-        var url = '/progno/delete_user/?id='+user.id;
+        var url = '/progno/delete_user/?id='+user.id+'&ajax=true';
         $http.get(url).success(function(data){
         if(data.result == 'ok'){
             hide_loader();
@@ -209,7 +209,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
         })
     }
     $scope.get_users = function(){
-        var url = '/progno/users/';
+        var url = '/progno/users/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.users = data.users;
@@ -234,7 +234,7 @@ function StarRatingController($scope, $http){
     }
     $scope.get_company_star_rating = function(star_count) {
         show_loader()
-        $http.get('/star_rating/?star_count='+star_count).success(function(data){
+        $http.get('/star_rating/?star_count='+star_count+'&ajax=true').success(function(data){
             hide_loader()
             $scope.star_ratings = data.star_ratings;
             if(data.star_ratings.length == 0){
@@ -281,7 +281,7 @@ function StarRatingReportController($scope, $http) {
     }
     $scope.get_company_star_rating_report = function(isin_code) {
         show_loader()
-        $http.get('/star_rating_report/?isin_code='+isin_code).success(function(data){
+        $http.get('/star_rating_report/?isin_code='+isin_code+'&ajax=true').success(function(data){
             hide_loader()
             $scope.star_ratings = data.star_ratings;
             $scope.watch_list_count = data.watch_list_count;
@@ -330,7 +330,7 @@ function ViewWatchListController($scope, $http){
         return new Array(n);
     }
     $scope.get_watch_list_details = function(){
-        $http.get('/watch_list/').success(function(data){
+        $http.get('/watch_list/?ajax=true').success(function(data){
             $scope.watch_list = data.watch_list;
             $scope.watch_list_count = data.watch_list_count;
             $scope.compare_list_count = data.compare_list_count;
@@ -361,7 +361,7 @@ function SearchViewController($scope, $http) {
     }
     $scope.search_companies = function() {
         if($scope.company_name.length >= 3){
-            var url = '/search_company/?search_key='+$scope.company_name;
+            var url = '/search_company/?search_key='+$scope.company_name+'&ajax=true';
             show_loader();
             $http.get(url).success(function(data) {
                 $scope.companies = data.companies;
@@ -382,7 +382,7 @@ function SearchResultController($scope, $http) {
         $scope.get_company_details();
     }
     $scope.get_company_details = function() {
-        $http.get('/search_result/?isin_code='+$scope.isin_code).success(function(data){
+        $http.get('/search_result/?isin_code='+$scope.isin_code+'&ajax=true').success(function(data){
             $scope.company_details = data.star_ratings;
         }).error(function(data, status){
             console.log('Request failed');

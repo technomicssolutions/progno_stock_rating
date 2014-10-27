@@ -3,13 +3,19 @@
 {% block controller %}ng-controller="ViewCompareListController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block content %}
 
-	<div class="container home_first_row">
+	<div class="container page_content">
 		<div class="row">
-			<div>
-				<ul>
+			<div class="col-md-12">
+				<ul class="header_ul">
 					<li>You can add maximum 4 stocks</li>
 				</ul>
-				<table class="table table-striped">
+			</div>
+		</div>
+	</div>
+	<div class="container page_content">
+		<div class="row">
+			<div class="col-md-12">
+				<table class="table table-striped list_table">
 					<tr>
 						<th>Company Name</th>
 						<th>Industry</th>
@@ -21,24 +27,27 @@
 						<th>Rating Changed on</th>
 						<th></th>
 					</tr>
-					<tr ng-repeat="star_rating in watch_lists">
-						<td>[[star_rating.company_name]]</td>
-						<td>[[star_rating.industry]]</td>
-						<td>[[star_rating.star_rating]]</td>
-						<td>[[star_rating.score]]</td>
-						<td>[[star_rating.added_on]]</td>
-						<td></td>
-						<td></td>
-						<td>[[star_rating.rating_changed_date]]</td>
-						<td>
-							<a href="" ng-click="view_report(star_rating)">View Report</a><br/>
-							<a href="" ng-show="star_rating.company_in_compare_list == 'false'" ng-click="add_to_compare(star_rating)">Add to Compare</a>
-						</td>
-					</tr>
+					<tbody ng-repeat="star_rating in watch_lists">
+						<tr>
+							<td>[[star_rating.company_name]]</td>
+							<td>[[star_rating.industry]]</td>
+							<td>[[star_rating.star_rating]]</td>
+							<td>[[star_rating.score]]</td>
+							<td>[[star_rating.added_on]]</td>
+							<td>NSE</td>
+							<td>BSE</td>
+							<td>[[star_rating.rating_changed_date]]</td>
+						</tr>
+						<tr>
+							<td colspan="8">
+								<a href="" ng-click="view_report(star_rating)">View Report</a><br/>
+								<a href="" ng-show="star_rating.company_in_compare_list == 'false'" ng-click="add_to_compare(star_rating)">Add to Compare</a>
+							</td>
+						</tr>
+					</tbody>
 				</table>
-				<p>Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com</p>
 			</div>
 		</div>
 	</div>
-
+	{% include 'content_footer.html' %}
 {% endblock %}

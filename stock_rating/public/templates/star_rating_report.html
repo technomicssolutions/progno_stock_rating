@@ -50,49 +50,31 @@
 			</div>
 		</div>			
 	</div>
-		<div class="container page_content">
-			<div class="row" ng-repeat="list in analytical_heads_list">
-				<div class="col-md-4" ng-repeat="analytical_head in list">
-					<div class="col-md-12">
-						<h3>[[analytical_head.analytical_head_name]]</h3>
-						<div ng-repeat="function in analytical_head.functions" class="col-md-12">
-							<span>[[function.function_name]]</span>
-							<p>[[function.comments]]</p>
-						</div>
+	<div class="container page_content no-padding">
+		<div class="row" ng-repeat="list in analytical_heads_list">
+			<div class="col-md-4 " ng-repeat="analytical_head in list">
+				<div class="col-md-12 white_bg analytical_head_container">
+					<div class="analytical_header">
+						<h3 class="analytical_head analytical_head_[[$index+1]]">[[analytical_head.analytical_head_name]]</h3>
+						<hr />
+					</div>
+					<div ng-repeat="function in analytical_head.functions" class="col-md-12 with_margin">
+						<span class="blue_text">[[function.function_name]]</span>
+						<p>[[function.comments]]</p>
 					</div>
 				</div>
-				<div class="col-md-4" ng-show="$index+1 == analytical_heads_list.length">
+			</div>
+			<div class="col-md-4 " ng-show="$index+1 == analytical_heads_list.length">
+				<div class="col-md-12 white_bg analytical_head_container">
 					<div class="col-md-12">
-						<h4>Company Financials & Price Data</h4>
+						<h4 class="blue_text">Company Financials & Price Data</h4>
 						<p>give links to respective pages in BSE website</p>
-						<h4>Latest Corporate Announcement</h4>
+						<h4 class="blue_text">Latest Corporate Announcement</h4>
 						<p>list here the respective links in BSE website</p>
 					</div>
 				</div>
 			</div>
 		</div>
 	</div>
-	<div class="container page_content">
-		<div class="row">
-			<div class="col-md-6 left">
-				<div class="col-md-12">
-					<p>
-						*Price change is fromthe date the stock is added to the watch list
-					</p>
-				</div>
-				<div class="col-md-12">
-					<p>
-						Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com
-					</p>
-				</div>
-			</div>
-			<div class="col-md-6 right">
-				<img src="/static/images/divider-img.png" />
-				<a href="" class="pdf_download"></a>
-				<p class="">
-					Read about stocklab rating methodology 
-				</p>
-			</div>
-		</div>
-	</div>
+	{% include 'content_footer.html' %}
 {% endblock %}
