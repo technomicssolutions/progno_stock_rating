@@ -285,12 +285,41 @@ class ViewCompareList(View):
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
                         'industry': company.industry.industry_name,
-                        'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+                        'star_rating': int(model_score.star_rating) if model_score.star_rating else 0,
                         'score': model_score.points,
                         'brief_comment': model_score.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                         'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating if model_score.updated_date else '',
                     }
+                    model = model_score.analysis_model
+                    parameters = model.parameterlimit_set.all()
+                    comments = []
+                    for parameter in parameters:
+                        function = parameter.function
+                        fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                        if fun_score.count() > 0:
+                            comments.append(fun_score[0].comment)
+                    analytical_heads = []
+                    for analytical_head in model.analytical_heads.all():
+                        functions_details = []
+                        for function in analytical_head.function_set.all():
+                            comments = []
+                            fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                            if fun_score.count() > 0:
+                                comments.append(fun_score[0].comment)
+                            function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                            functions_details.append({
+                                'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
+                                'score': function_score[0].score if len(function_score) > 0 else 'None',
+                                'description': function.description,
+                                'comments': comments[0] if len(comments) > 0 else 'None'
+                            })
+                        analytical_heads.append({
+                            'analytical_head_name': analytical_head.title,
+                            'functions': functions_details,
+                        })
+                    rating['analytical_heads'] = analytical_heads
+                    rating['detailed_comment'] = comments
                 else:
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
