@@ -265,8 +265,49 @@ class ViewWatchList(View):
 class ViewCompareList(View):
 
     def get(self, request, *args, **kwargs):
-        compare_list_details = []
-        # if request.is_ajax():
+        compare_lists_details = []
+        if request.is_ajax():
+            public_user = PublicUser.objects.get(user=request.user)
+            watch_lists = WatchList.objects.filter(user=public_user)
+            compare_lists = CompareList.objects.filter(user=public_user)
+            for compare_list in compare_lists:
+                company = compare_list.company
+                model_score = CompanyModelScore.objects.filter(company=company)
+                if model_score.count() > 0:
+                    model_score = model_score[0]
+                    if model_score.star_rating_change and model_score.star_rating_change > 0:
+                        change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
+                    elif model_score.star_rating_change and model_score.star_rating_change < 0:
+                        change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
+                    else:
+                        change_in_star_rating = ' '
+                    compare_list = CompareList.objects.filter(user=public_user, company=company)
+                    if compare_list.count() > 0:
+                        company_in_compare_list = True
+                    else:
+                        company_in_compare_list = False
+                    rating = {
+                        'company_name': company.company_name + ' - ' + company.isin_code,
+                        'isin_code': company.isin_code,
+                        'industry': company.industry.industry_name,
+                        'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+                        'score': model_score.points,
+                        'brief_comment': model_score.comment,
+                        'company_in_compare_list': 'true' if company_in_compare_list else 'false',
+                        'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating if model_score.updated_date else '',
+                    }
+                else:
+                    rating = {
+                        'company_name': company.company_name + ' - ' + company.isin_code,
+                        'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
+                    }
+                compare_lists_details.append(rating)
+            response = simplejson.dumps({
+                'compare_lists': compare_lists_details,
+                'watch_list_count': watch_lists.count(),
+                'compare_list_count': compare_lists.count(),
+            })
+            return HttpResponse(response, status=200, mimetype='application/json')
 
         return render(request, 'view_compare_list.html', {})
 
