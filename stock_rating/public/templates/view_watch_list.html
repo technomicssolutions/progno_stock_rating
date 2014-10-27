@@ -2,11 +2,11 @@
 {% block controller %}ng-controller="ViewWatchListController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block body_id %}watch_list{% endblock %}
 {% block content %}
-	<div class="container watch_list_first_row">
+	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
 				<h3>{{user.first_name}}'s Watch List</h3>
-				<ul class="watchlist_instructions">
+				<ul class="header_ul">
 					<li>You can add maximum 20 stocks in Watch List</li>
 					<li>You have [[watch_list_count]] stock in Watch List</li>
 					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
@@ -15,7 +15,7 @@
 			</div>
 		</div>
 	</div>
-	<div class="container watch_list_first_row">
+	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
 				<table class="table table-striped list_table">
@@ -29,45 +29,37 @@
 						<th>Price NSE</th>
 						<th>Rating Changed on</th>
 					</tr>
-					<tr ng-repeat="star_rating in watch_lists">
-						<td>[[star_rating.company_name]]</td>
-						<td>[[star_rating.industry]]</td>
-						<td>[[star_rating.star_rating]]</td>
-						<td>[[star_rating.score]]</td>
-						<td>[[star_rating.added_on]]</td>
-						<td> price NSE </td>
-						<td> Price BSE </td>
-						<td>[[star_rating.rating_changed_date]]</td>
-						<td>
-							<a href="" ng-click="view_report(star_rating)">View Report</a><br/>
-							<a href="" ng-show="star_rating.company_in_compare_list == 'false'" ng-click="add_to_compare(star_rating)">Add to Compare</a>
-						</td>
-					</tr>
+					<tbody ng-repeat="star_rating in watch_list">
+						<tr>
+							<td>[[star_rating.company_name]]</td>
+							<td>[[star_rating.industry]]</td>
+							<td class="star_holder">
+								<img ng-repeat="star in range(star_rating.star_rating) track by $index" src="/static/images/star.png" />
+							</td>
+							<td>[[star_rating.score]]</td>
+							<td>[[star_rating.added_on]]</td>
+							<td> price NSE </td>
+							<td> Price BSE </td>
+							<td>
+								[[star_rating.rating_changed_date]] 
+								<span ng-show="star_rating.change>0"> 
+									up by <img ng-repeat="star in range(star_rating.change) track by $index" src="/static/images/star.png" />
+								</span>
+								<span ng-show="star_rating.change<0"> 
+									down by <img ng-repeat="star in range(star_rating.change) track by $index" src="/static/images/star.png" />
+								</span>
+							</td>	
+						</tr>
+						<tr>
+							<td colspan="8" class="button_holder">
+								<a href="" ng-click="view_report(star_rating)" class="aqua_button">View Report</a>
+								<a href="" ng-show="star_rating.company_in_compare_list == 'false'" ng-click="add_to_compare(star_rating)" class="aqua_button">Add to Compare</a>
+							</td>
+						</tr>
+					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
-	<div class="container home_second_row">
-		<div class="row">
-			<div class="col-md-6 left">
-				<div class="col-md-12">
-					<p>
-						*Price change is fromthe date the stock is added to the watch list
-					</p>
-				</div>
-				<div class="col-md-12">
-					<p>
-						Would you like to restructure your portfolio? Then talk to a Progno Advisor. To know more about Progno visit www.prognoFP.com
-					</p>
-				</div>
-			</div>
-			<div class="col-md-6 right">
-				<img src="/static/images/divider-img.png" />
-				<a href="" class="pdf_download"></a>
-				<p class="">
-					Read about stocklab rating methodology 
-				</p>
-			</div>
-		</div>
-	</div>
+	{% include 'content_footer.html' %}
 {% endblock %}

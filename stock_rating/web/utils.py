@@ -241,6 +241,9 @@ def get_rating_details_by_star_count(request, star_count):
             'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
             'company_in_watch_list': 'true' if company_in_watch_list else 'false',
             'company_in_compare_list': 'true' if company_in_compare_list else 'false',
+            'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
+            'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
+
         })
     watch_list_count = 0
     compare_list_count = 0

@@ -3,6 +3,8 @@
 function paginate(list, $scope, page_interval) {
     if(!page_interval)
         $scope.page_interval = 20;
+    else 
+        $scope.page_interval = page_interval;
     $scope.current_page = 1;
     $scope.pages = list.length / $scope.page_interval;
     if($scope.pages > parseInt($scope.pages))
@@ -11,8 +13,7 @@ function paginate(list, $scope, page_interval) {
 }
     
 function select_page(page, list, $scope, page_interval) {
-    if(!page_interval)
-        $scope.page_interval = 20;
+    
     var last_page = page - 1;
     var start = (last_page * $scope.page_interval);
     var end = $scope.page_interval * page;
