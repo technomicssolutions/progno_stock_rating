@@ -47,8 +47,8 @@ class Home(View):
             else:
                 return HttpResponseRedirect(reverse('dashboard'))
         else:
-            return HttpResponseRedirect(reverse('public_login'))
-
+            return render(request, 'home.html', {})
+            
 class Login(View):
 
     def get(self, request, *args, **kwargs):
