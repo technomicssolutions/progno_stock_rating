@@ -199,7 +199,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_user = function(user){
         show_loader();
-        var url = '/progno/delete_user/?id='+user.id;
+        var url = '/progno/delete_user/?id='+user.id+'&ajax=true';
         $http.get(url).success(function(data){
         if(data.result == 'ok'){
             hide_loader();
@@ -213,7 +213,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_users = function(){
-        var url = '/progno/users/';
+        var url = '/progno/users/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.users = data.users;
@@ -277,7 +277,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
         $scope.new_field.id = field.id;
     }
     $scope.delete_field = function(field){
-        var url = '/progno/delete_field/?id='+field.id;
+        var url = '/progno/delete_field/?id='+field.id+'&ajax=true';
         $http.get(url).success(function(data){
             if(data.result == 'ok'){
                 $scope.msg = "Field deleted";
@@ -288,7 +288,7 @@ function FieldController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_fields = function(){
-        var url = '/progno/field_settings/';
+        var url = '/progno/field_settings/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.fields = data.fields;
@@ -849,7 +849,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         }   
     }
     $scope.edit_general = function(id){
-        var url = '/progno/general_function/?id='+id;
+        var url = '/progno/general_function/?id='+id+'&ajax=true';
         $http.get(url).success(function(data) {
             $scope.selected_general_function = data.general_function;
             $scope.select_type = 1;
@@ -863,26 +863,26 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.edit_continuity = function(id){
-        var url = '/progno/continuity_function/?id='+id;
+        var url = '/progno/continuity_function/?id='+id+'&ajax=true';
         $http.get(url).success(function(data) {         
             $scope.new_continuity = data.continuity_fucntion;
         })
     }
     $scope.edit_consistency = function(id){
-        var url = '/progno/consistency_function/?id='+id;
+        var url = '/progno/consistency_function/?id='+id+'&ajax=true';
         $http.get(url).success(function(data) {
             $scope.new_consistency = data.consistency_function;
         })
     }
     
     $scope.get_analytical_head = function(){
-        var url = '/progno/analytical_heads/';
+        var url = '/progno/analytical_heads/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;
         })
     }
     $scope.get_functions = function(){
-        var url = '/progno/function_settings/';
+        var url = '/progno/function_settings/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
@@ -891,14 +891,14 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         })
     }
     $scope.get_operands = function(){
-        var url = '/progno/fields_with_mapping/';
+        var url = '/progno/fields_with_mapping/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.operands = data.fields;
             $scope.fields = data.fields;
         })  
     }
     $scope.get_operators = function(){
-        var url = '/progno/operators/';
+        var url = '/progno/operators/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.operators = data.operators;
         })  
@@ -1085,14 +1085,14 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.rating_msg = "";
     }
     $scope.get_industries = function(){
-        var url = '/progno/industry/';
+        var url = '/progno/industry/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.industry_list = data.industry_list;
             $scope.industry_select = '';
         }) 
     }
     $scope.get_models = function(){
-        var url = '/progno/models/';
+        var url = '/progno/models/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.model_list = data.model_list;
@@ -1104,7 +1104,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.msg = '';
         if($scope.selected_model){
             show_loader();
-            var url = '/progno/model/'+$scope.selected_model+'/star_rating/';
+            var url = '/progno/model/'+$scope.selected_model+'/star_rating/?ajax=true';
             $http.get(url).success(function(data) {
                 $scope.msg = "Calculation completed Successfully";
                 hide_loader();
@@ -1114,7 +1114,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         }
     }
     $scope.get_analytical_head = function(){
-        var url = '/progno/analytical_heads/';
+        var url = '/progno/analytical_heads/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;           
         })
@@ -1129,7 +1129,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
         $scope.edit_parameters = false;
         $scope.flag = 0;
         show_loader();
-        var url = '/progno/model_details/?id='+id;
+        var url = '/progno/model_details/?id='+id+'&ajax=true';
         $http.get(url).success(function(data) {
             hide_loader();
             $scope.analytical_heads = data.analytical_heads;           
@@ -1228,7 +1228,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     $scope.delete_rating = function(model_id,rating){    
         if(rating.id != ""){
             show_loader();
-            var url = '/progno/delete_rating/?rating_id='+rating.id;
+            var url = '/progno/delete_rating/?rating_id='+rating.id+'&ajax=true';
             $http.get(url).success(function(data){
                 hide_loader();
                 if(data.result == 'ok')
@@ -1241,7 +1241,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_parameters = function(model_id, parameters){
         show_loader();
-        var url = '/progno/delete_parameters/?id='+parameters.parameter_id;
+        var url = '/progno/delete_parameters/?id='+parameters.parameter_id+'&ajax=true';
         $http.get(url).success(function(data){
             hide_loader();
             if(data.result == 'ok')
@@ -1570,7 +1570,7 @@ function ModelController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_model = function(field){
         show_loader();
-        var url = '/progno/delete_model/?id='+field.id;
+        var url = '/progno/delete_model/?id='+field.id+'&ajax=true';
         $http.get(url).success(function(data){
             hide_loader();
             if(data.result == 'ok'){
@@ -1620,7 +1620,7 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_data_files = function(){
         $scope.error_msg = '';  
-        var url = '/progno/data_upload/';
+        var url = '/progno/data_upload/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.data_files = data.data_files;
              paginate($scope.data_files, $scope);
@@ -1723,7 +1723,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_file_fields = function(){
         $scope.error_msg = '';  
-        var url = '/progno/file_fields/';
+        var url = '/progno/file_fields/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.file_fields = data.fields;
             if($scope.system_fields)
@@ -1732,7 +1732,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
     }
     $scope.get_system_fields = function(){
         $scope.error_msg = '';  
-        var url = '/progno/field_settings/';
+        var url = '/progno/field_settings/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.system_fields = data.fields;
             if($scope.file_fields)
@@ -1740,7 +1740,7 @@ function FieldMappingController($scope, $element, $http, $timeout, $location)
         })     
     }
     $scope.get_mapping = function(){
-        var url = '/progno/field_mapping/';
+        var url = '/progno/field_mapping/?ajax=true';
         $http.get(url).success(function(data) {
             $scope.file_fields = data.file_fields;
             $scope.system_fields = data.system_fields;
@@ -1790,7 +1790,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         $('#dropdown_menu').css('display', 'none');
     }
     $scope.get_analytical_head = function(){
-        var url = '/progno/analytical_heads/';
+        var url = '/progno/analytical_heads/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.anly_heads = data.head_objects;            
@@ -1843,7 +1843,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
     }
     $scope.delete_head = function(head){
         show_loader();
-        var url = '/progno/delete_head/?id='+head.id;
+        var url = '/progno/delete_head/?id='+head.id+'&ajax=true';
         $http.get(url).success(function(data){
             hide_loader();
             if(data.result == 'ok')
@@ -1928,7 +1928,7 @@ function CompanyController($scope, $element, $http, $timeout, $location)
         
     }
     $scope.get_companies = function(){
-        var url = '/progno/companies/';
+        var url = '/progno/companies/?ajax=true';
         show_loader();
         $http.get(url).success(function(data) {
             $scope.companies = data.companies;
@@ -1988,7 +1988,7 @@ function RatingReportController($scope, $element, $http, $timeout, $location)
     }
     $scope.search_companies = function(){ 
         if($scope.search_key.length >= 3){
-            var url = '/progno/companies/?search_key='+$scope.search_key;
+            var url = '/progno/companies/?search_key='+$scope.search_key+'&ajax=true';
             show_loader();
             $http.get(url).success(function(data) {
                 $scope.companies = data.companies;

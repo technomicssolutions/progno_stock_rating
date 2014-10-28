@@ -2,38 +2,49 @@
 {% block controller %}ng-controller="SearchResultController" ng-init="init('{{csrf_token}}', '{{isin_code}}')" {% endblock controller %}
 {% block body_id %}search_result{% endblock %}
 {% block content %}
-	<div class="container home_first_row">
+	<div class="container page_content  report_container">
+		<div class="container white_bg">
 		<div class="row">
-			<table class="table table-striped">
-				<tr>
-					<th>Company Name</th>
-					<th>Industry</th>
-					<th>Star Rating</th>
-					<th>Score</th>
-					<th>Brief Comment </th>
-					<th></th>
-				</tr>
-				<tr ng-repeat="detail in company_details" ng-show="company_details.length > 0">
-					<td>[[detail.company_name]]</td>
-					<td>[[detail.industry]]</td>
-					<td>[[detail.star_rating]]</td>
-					<td>[[detail.score]]</td>
-					<td>[[detail.brief_comment]]</td>
-					<td>
-						{% if user.is_authenticated %}
-							<a href="" ng-click="view_rating_report(detail)">View Report</a> <br/>
-							<a href="" ng-show="detail.company_in_watch_list == 'false' " ng-click="add_to_watch_list(detail)">Add to Watch List</a><br/>
-							<a href="" ng-show="detail.company_in_compare_list == 'false' " ng-click="add_to_compare_list(detail)">Add to Compare</a>
-						{% else %}
-							<a href="{% url 'public_login' %}" >View Report</a> <br/>
-							<a href="{% url 'public_login' %}" >Add to Watch List</a><br/>
-							<a href="{% url 'public_login' %}" >Add to Compare</a>
-						{% endif %}
-					</td>
-				</tr>
-			</table>
+			<div class="col-md-12">
+				<table class="table table-striped list_table">
+					<tr>
+						<th>Company Name</th>
+						<th>Industry</th>
+						<th>Star Rating</th>
+						<th>Score</th>
+						<th>Brief Comment </th>
+						<th></th>
+					</tr>
+					<tr ng-repeat="detail in company_details" ng-show="company_details.length > 0">
+						<td>[[detail.company_name]]</td>
+						<td>[[detail.industry]]</td>
+						<td>[[detail.star_rating]]</td>
+						<td>[[detail.score]]</td>
+						<td>[[detail.brief_comment]]</td>
+						<td>
+							{% if user.is_authenticated %}
+								<a href="" ng-click="view_rating_report(detail)"class="aqua_button with_margin" >View Report</a> <br/>
+								<a href="" ng-show="detail.company_in_watch_list == 'false' " ng-click="add_to_watch_list(detail)"class="aqua_button with_margin" >Add to Watch List</a><br/>
+								<a href="" ng-show="detail.company_in_compare_list == 'false' " ng-click="add_to_compare_list(detail)"class="aqua_button with_margin" >Add to Compare</a>
+							{% else %}
+								<a href="{% url 'public_login' %}" class="aqua_button with_margin" >View Report</a> <br/>
+								<a href="{% url 'public_login' %}" class="aqua_button with_margin" >Add to Watch List</a><br/>
+								<a href="{% url 'public_login' %}" class="aqua_button with_margin" >Add to Compare</a>
+							{% endif %}
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
+		<div class="row">
+			<div class="col-md-1"> <!-- this is a place holder For alignment of below div -->
+			</div>
+			<div class="col-md-4 price_value">
+			</div>
+			<div class="col-md-4 price_value">
+			</div>
+		</div>	
 	</div>
-	{% include 'content_footer.html' %}
+	{% include 'home_content_footer.html' %}
 
 {% endblock%}

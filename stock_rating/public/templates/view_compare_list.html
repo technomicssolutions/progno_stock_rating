@@ -2,7 +2,14 @@
 {% block body_id %}compare_list{% endblock %}
 {% block controller %}ng-controller="ViewCompareListController" ng-init="init('{{csrf_token}}')" {% endblock controller %}
 {% block content %}
-
+	<div id="stock_search_overlay"></div>
+	<div class="container popup">
+		<div class="row">
+			<div vlass="col-md-12">
+				{% include 'stock_search_popup.html' %}
+			</div>
+		</div>
+	</div>
 	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
@@ -18,37 +25,33 @@
 				<table class="table table-striped list_table">
 					<tr>
 						<th></th>
-						<th></th>
-						<th>Change Stock</th>
-						<th>Change Stock</th>
-						<th></th>
-						<th></th>						
+						<th ng-repeat="company in compare_list"><a href="" class="white_text" ng-click="change_stock(company);">Change Stock</a></th>
+						<th ng-repeat="i in range(4-compare_list.length) track by $index"></th>
 					</tr>
 					<tr>
 						<td></td>
-						<td ng-repeat="company in compare_list"> [[company.company_name]] X </td>
+						<td ng-repeat="company in compare_list"> [[company.company_name]] <a href="{% url 'delete_from_compare_list' %}?isin_code=[[company.isin_code]]" > &nbsp; X </a> </td>
+						<td ng-repeat="i in range(4-compare_list.length) track by $index" ng-click="add_stock();">Add Stock</td>
 					</tr>
 					<tr>
-						<td>StolabScore <br /> Industry</td>
-						<td ng-repeat="company in compare_list"> [[company.company_name]] X </td>
+						<td>StocklabScore <br /> Industry</td>
+						<td ng-repeat="company in compare_list"> 
+							<p><img ng-repeat="star in range(company.star_rating) track by $index" src="/static/images/star.png" /></p>
+							<p>[[company.model_score]] </p>
+							<p>[[company.industry]] </p>
+						</td>
 					</tr>
-					<tbody ng-repeat="star_rating in watch_lists">
-						<tr>
-							<td>[[star_rating.company_name]]</td>
-							<td>[[star_rating.industry]]</td>
-							<td>[[star_rating.star_rating]]</td>
-							<td>[[star_rating.score]]</td>
-							<td>[[star_rating.added_on]]</td>
-							<td>NSE</td>
-							<td>BSE</td>
-							<td>[[star_rating.rating_changed_date]]</td>
-						</tr>
-						<tr>
-							<td colspan="8">
-								<a href="" ng-click="view_report(star_rating)">View Report</a><br/>
-								<a href="" ng-show="star_rating.company_in_compare_list == 'false'" ng-click="add_to_compare(star_rating)">Add to Compare</a>
+					<tbody>
+						<tr ng-repeat="head in analytical_heads">
+							<td>
+								<b>[[head.head_name]]</b>
+								<p ng-repeat="function in head.functions">[[function]]</p>
 							</td>
-						</tr>
+							<td ng-repeat="company in compare_list">
+								<p ng-repeat="function in head.functions"> [[company.analytical_heads.head]] </p>
+							</td>
+							<td ng-repeat="i in range(4-compare_list.length) track by $index">&nbsp;</td>
+						</tr>						
 					</tbody>
 				</table>
 			</div>

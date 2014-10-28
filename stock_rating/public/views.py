@@ -212,6 +212,28 @@ class AddToComparelist(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
 
+class ChangeCompareList(View):
+
+    def post(self, request, *args, **kwargs):
+
+        new_stock = request.POST.get('new_stock_isin_code', '')
+        current_stock = request.POST.get('current_stock_isin_code', '')
+        public_user = PublicUser.objects.get(user=request.user)
+        current_stock = Company.objects.get(isin_code=current_stock)
+        current_stock_in_compare_list = CompareList.objects.filter(user=public_user, company=current_stock)
+        current_stock_in_compare_list.delete();
+        new_stock = Company.objects.get(isin_code=new_stock)
+        compare_list, created = CompareList.objects.get_or_create(user=public_user, company=new_stock)
+        compare_list.save()
+        if request.is_ajax():
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        else:
+            return HttpResponseRedirect(reverse('compare_list'))
+
 class ViewWatchList(View):
 
     def get(self, request, *args, **kwargs):
@@ -278,26 +300,20 @@ class ViewCompareList(View):
                         'model_score': model_score[0].points
                     }
                     model = model_score[0].analysis_model
-                    analytical_heads = []
+                    analytical_heads = {}
                     for analytical_head in model.analytical_heads.all():
                         if i==0:
                             head = {
                                 'head_name': analytical_head.title,
                                 'functions': []
                             }
-                        functions_details = []
+                        functions_details = {}
                         for function in analytical_head.function_set.all():
                             if i==0:
                                 head['functions'].append(function.function_name)
                             function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
-                            functions_details.append({
-                                'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
-                                'score': function_score[0].score if len(function_score) > 0 else 'None',
-                            })
-                        analytical_heads.append({
-                            'analytical_head_name': analytical_head.title,
-                            'functions': functions_details,
-                        })
+                            functions_details[function.function_name] = function_score[0].score if len(function_score) > 0 else 'None'
+                        analytical_heads[analytical_head.title] = functions_details
                         if i == 0:
                             an_heads.append(head)
                     i = i+ 1
@@ -315,6 +331,23 @@ class ViewCompareList(View):
             return HttpResponse(response, status=200, mimetype='application/json')
 
         return render(request, 'view_compare_list.html', {})
+
+class DeleteFromCompareList(View):
+    def get(self, request, *args, **kwargs):
+        isin_code = request.GET.get('isin_code', '')
+        company = Company.objects.get(isin_code=isin_code)
+        public_user = PublicUser.objects.get(user=request.user)
+        compare_list_company = CompareList.objects.get(user=public_user, company=company)
+        compare_list_company.delete()
+        if request.is_ajax() and isin_code:
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        else:
+            print "hsilk"
+            return HttpResponseRedirect(reverse('compare_list'))
 
 class SearchCompany(View):
 

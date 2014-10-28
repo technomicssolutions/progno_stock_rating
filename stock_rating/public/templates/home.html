@@ -1,37 +1,19 @@
 {% extends 'public_base.html' %}
 
 {% block content %}
-	<div class="container home_first_row">
+	<div class="container page_content home_first_row">
 		<div class="row">
-			<div class="col-md-3 ">
-				<img src="/static/images/header-img.jpg" />
-			</div>
-			<div class="col-md-9">
-				<p class="home_content_text" align="justify">
-					While umpteen websites provide you with published financial data of companies, here we provide you analysed information based on a unique rating methodology.  Our objective is to help you have a quick glance of the fundamental strength of a stock which you might be holding or wish to check out. 
-				</p>
-			</div>
-		</div>
-	</div>
-	<div class="container home_second_row content_footer">
-		<div class="row">
-			<div class="col-md-6 star_list">
-				<div class="col-md-6">
-					<p> All Lists </p>
-					<a href="/star_rating/?star_count=5" class="five_star" ng-click="get_company_star_rating(5)">5 Stars</a>
-					<a href="/star_rating/?star_count=4" class="four_star">4 Stars</a>
-					<a href="/star_rating/?star_count=3" class="three_star">3 Stars</a>
-					<a href="/star_rating/?star_count=2" class="two_star">2 Stars</a>
-					<a href="/star_rating/?star_count=1" class="one_star">1 Star</a>
+			<div class="col-md-12 home_white_bg">
+				<div class="col-md-3 ">
+					<img src="/static/images/header-img.jpg" />
+				</div>
+				<div class="col-md-9">
+					<p class="home_content_text" align="justify">
+						While umpteen websites provide you with published financial data of companies, here we provide you analysed information based on a unique rating methodology.  Our objective is to help you have a quick glance of the fundamental strength of a stock which you might be holding or wish to check out. 
+					</p>
 				</div>
 			</div>
-			<div class="col-md-6 right">
-				<img src="/static/images/divider-img.png" />
-				<a href="" class="pdf_download"></a>
-				<p class="instruction">
-					Read about stocklab rating methodology 
-				</p>
-			</div>
 		</div>
 	</div>
+	{% include 'home_content_footer.html' %}
 {% endblock content%}

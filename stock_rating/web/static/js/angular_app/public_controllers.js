@@ -353,6 +353,9 @@ function ViewWatchListController($scope, $http){
 function ViewCompareListController($scope, $http) {
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
+        $scope.current_stock = '';
+        $scope.add_stock_flag = false;
+        $scope.change_stock_flag = false;
         $scope.get_compare_list_details()
     }
     $scope.get_compare_list_details = function(){
@@ -363,7 +366,66 @@ function ViewCompareListController($scope, $http) {
             console.log('Request failed')
         });
     }
+    $scope.range = function(n) {
+        var n = Math.abs(n);
+        return new Array(n);
+    }
+    $scope.show_stock_search_popup = function(){
+        $('#stock_search_overlay').css('display', 'block');
+        $('.popup').css('display', 'block');
+    }
+    $scope.hide_stock_search_popup = function(){
+        $('#stock_search_overlay').css('display', 'none');
+        $('.popup').css('display', 'none');
+    }
+    $scope.add_stock = function(){
+        $scope.show_stock_search_popup();
+        $scope.add_stock_flag = true;
+        $scope.change_stock_flag = false;
+    }
+    $scope.change_stock = function(company){
+        $scope.show_stock_search_popup();
+        $scope.current_stock = company;
+        $scope.add_stock_flag = false;
+        $scope.change_stock_flag = true;
+    }
+    $scope.add_to_compare_list = function(company) {
+        $scope.hide_stock_search_popup();
+        params = {
+            'isin_code': company.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        add_to_compare_list($scope, $http, company);
+        document.location.href = '/compare_list/';
+
+    }
+    $scope.change_compare_list = function(company) {
+        $scope.hide_stock_search_popup();
+        params = {
+            'new_stock_isin_code': company.isin_code,
+            'current_stock_isin_code': $scope.current_stock.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        $http({
+            method: 'post',
+            data: $.param(params),
+            url: '/change_compare_list/',
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
+            }
+        }).success(function(data){
+            hide_loader();
+            if (data.result == 'ok') {  
+                document.location.href = '/compare_list/';
+            }
+        }).error(function(data, status){
+            console.log('Request failed');
+        });
+    }
 }
+
 function SearchViewController($scope, $http) {
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
@@ -403,5 +465,16 @@ function SearchResultController($scope, $http) {
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         add_to_watch_list($scope, $http, company);
+    }
+    $scope.add_to_compare_list = function(company){
+        params = {
+            'isin_code': company.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        add_to_compare_list($scope, $http, company);
+    }
+    $scope.view_rating_report = function(company) {
+        document.location.href = '/star_rating_report/?isin_code='+company.isin_code;
     }
 }

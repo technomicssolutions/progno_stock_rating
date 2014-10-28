@@ -114,10 +114,8 @@ header a {
 }
 
 .home_first_row {
-	border: 1px solid #E2E2E1;
 	padding: 25px;
 	margin-top: 40px;
-	background-color: #FFFFFF;
 }
 
 .home_second_row {
@@ -147,11 +145,20 @@ header a {
 	margin-left: 50px;
 }
 
-.right p {
-	margin-left: 35px;
-	margin-top: 70px;
+.instruction {
 	display: block;
-	float: left;
+    float: left;
+    margin-left: 15px;
+    margin-top: 49px;
+}
+
+.instruction2 {
+	margin-top: -90px;
+	display: block;
+    float: left;
+    margin-left: 15px;
+    font-size: 18px;
+    padding: 10px;
 }
 
 .help {
@@ -356,6 +363,15 @@ footer a {
 	background-color: #FFFFFF;
 	opacity: 0.5;
 }
+#stock_search_overlay {
+	display: none;
+	z-index: 1;
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	background-color: #FFFFFF;
+	opacity: 0.5;
+}
 .spinner {
 	background: url('../images/ajax-loader.gif') no-repeat;
 	width: 16px;
@@ -508,4 +524,59 @@ footer a {
 
 .blue_text {
 	color: #0066CC;
+}
+
+.white_text {
+	color: #FFFFFF;
+}
+
+.search_div ul {
+	background-color: #FFFFFF;
+    border: 1px solid;
+    float: left;
+    padding: 0;
+    position: absolute;
+    width: 95%;
+    z-index: 2;
+}
+.search_div ul li{
+	width: 100%;
+	border-bottom: 1px solid #EAE8E7;
+	padding: 10px;
+	display: block;
+	height: 40px;
+}
+.search_text {
+	display: block;
+    float: left;
+    height: 100%;
+    padding: 11px;
+}
+
+.home_white_bg {
+	padding: 20px;
+	background-color: #FFFFFF;
+	border: 1px solid #DDDDDD;
+	margin-bottom: 10px;
+}
+
+.report_container {
+	padding-left: 20px;
+	margin-top: 40px;
+}
+
+.popup {
+	background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    border-radius: 10px;
+    display: none;
+    left: 8%;
+    padding: 5% 10%;
+    position: fixed;
+    top: 20%;
+    z-index: 3;
+}
+
+.popup ul {
+	width: 79%;
 }
