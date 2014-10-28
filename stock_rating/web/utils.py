@@ -300,6 +300,7 @@ def get_rating_report(request, search_keys):
                 'brief_comment': model_score.comment,
                 'company_in_watch_list': 'true' if company_in_watch_list else 'false',
                 'company_in_compare_list': 'true' if company_in_compare_list else 'false',
+                'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
             }
             model = model_score.analysis_model
             parameters = model.parameterlimit_set.all()

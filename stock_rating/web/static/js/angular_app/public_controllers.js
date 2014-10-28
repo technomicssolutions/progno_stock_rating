@@ -319,6 +319,10 @@ function StarRatingReportController($scope, $http) {
     $scope.view_report = function(star_rating){
         document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;
     }
+    $scope.range = function(n) {
+        var n = Math.abs(n);
+        return new Array(n);
+    }
 }
 function ViewWatchListController($scope, $http){
     $scope.init = function(csrf_token) {
@@ -459,6 +463,10 @@ function SearchResultController($scope, $http) {
         }).error(function(data, status){
             console.log('Request failed');
         });
+    }
+    $scope.range = function(n) {
+        var n = Math.abs(n);
+        return new Array(n);
     }
     $scope.add_to_watch_list = function(company){
         params = {

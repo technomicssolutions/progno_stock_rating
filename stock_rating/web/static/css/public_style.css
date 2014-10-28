@@ -580,3 +580,25 @@ footer a {
 .popup ul {
 	width: 79%;
 }
+
+.function_score p {
+	 clear: both;
+    float: left;
+    height: 40px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.big_font {
+	font-size: 40px;
+	text-align: center;
+}
+
+.medium_font {
+	font-size: 20px;
+	text-align: center;
+}
+.small_font {
+	font-size: 10px;
+	text-align: center;
+}

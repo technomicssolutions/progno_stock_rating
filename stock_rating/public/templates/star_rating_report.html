@@ -27,7 +27,9 @@
 					<tr ng-repeat="star_rating in star_ratings" ng-show="star_ratings.length > 0">
 						<td>[[star_rating.company_name]]</td>
 						<td>[[star_rating.industry]]</td>
-						<td>[[star_rating.star_rating]]</td>
+						<td class="star_holder">
+							<img ng-repeat="star in range(star_rating.star_count) track by $index" src="/static/images/star.png" />
+						</td>
 						<td>[[star_rating.score]]</td>
 						<td>[[star_rating.brief_comment]]</td>
 						<td>

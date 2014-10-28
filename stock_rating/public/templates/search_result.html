@@ -18,7 +18,9 @@
 					<tr ng-repeat="detail in company_details" ng-show="company_details.length > 0">
 						<td>[[detail.company_name]]</td>
 						<td>[[detail.industry]]</td>
-						<td>[[detail.star_rating]]</td>
+						<td class="star_holder">
+							<img ng-repeat="star in range(detail.star_count) track by $index" src="/static/images/star.png" />
+						</td>
 						<td>[[detail.score]]</td>
 						<td>[[detail.brief_comment]]</td>
 						<td>
