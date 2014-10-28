@@ -442,6 +442,7 @@ function SearchViewController($scope, $http) {
         }  
     }
     $scope.select_company = function(company) {
+        console.log('here');
         $scope.companies = [];
         document.location.href ='/search_result/?isin_code='+company.isin_code;
     }

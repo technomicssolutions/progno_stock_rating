@@ -48,7 +48,7 @@ class Home(View):
                 return HttpResponseRedirect(reverse('dashboard'))
         else:
             return render(request, 'home.html', {})
-            
+
 class Login(View):
 
     def get(self, request, *args, **kwargs):
@@ -300,20 +300,26 @@ class ViewCompareList(View):
                         'model_score': model_score[0].points
                     }
                     model = model_score[0].analysis_model
-                    analytical_heads = {}
+                    analytical_heads = []
                     for analytical_head in model.analytical_heads.all():
                         if i==0:
                             head = {
                                 'head_name': analytical_head.title,
                                 'functions': []
                             }
-                        functions_details = {}
+                        functions_details = []
                         for function in analytical_head.function_set.all():
                             if i==0:
                                 head['functions'].append(function.function_name)
                             function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
-                            functions_details[function.function_name] = function_score[0].score if len(function_score) > 0 else 'None'
-                        analytical_heads[analytical_head.title] = functions_details
+                            functions_details.append({
+                                'funtion_name': function.function_name,
+                                'score': round(function_score[0].score, 2) if len(function_score) > 0 else 'None'
+                            })
+                        analytical_heads.append({
+                            'head_name': analytical_head.title,
+                            'functions': functions_details,
+                        })
                         if i == 0:
                             an_heads.append(head)
                     i = i+ 1

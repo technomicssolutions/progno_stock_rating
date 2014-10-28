@@ -45,10 +45,15 @@
 						<tr ng-repeat="head in analytical_heads">
 							<td>
 								<b>[[head.head_name]]</b>
-								<p ng-repeat="function in head.functions">[[function]]</p>
+								<div class="function_score"> 
+									<p ng-repeat="function in head.functions">[[function]]</p>
+								</div>
 							</td>
 							<td ng-repeat="company in compare_list">
-								<p ng-repeat="function in head.functions"> [[company.analytical_heads.head]] </p>
+								<p> &nbsp; </p>
+								<div class="function_score" ng-repeat="c_head in company.analytical_heads" ng-show="c_head.head_name == head.head_name">
+									<p ng-repeat="fun in c_head.functions">[[fun.score]]<br /></p> 
+								</div>
 							</td>
 							<td ng-repeat="i in range(4-compare_list.length) track by $index">&nbsp;</td>
 						</tr>						
