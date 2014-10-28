@@ -28,11 +28,11 @@
     </head>
     <body id="{% block body_id %}base{% endblock %}" {% block controller %}{% endblock controller %}>
         {% block body %}
+            <div id="stock_search_overlay"></div>
             <div id="overlay"></div>
-            <div class="spinner"></div>                 
+            <div class="spinner"></div> 
+            {% include 'help_popup.html' %}                
             <div class="main_container">
-                <a href="" class="help"></a>
-
                 {% block header %}
                     {% include 'public_header.html' %}
                 {% endblock header %}

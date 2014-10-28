@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.conf import settings
 
-from models import PublicUser, WatchList, CompareList
+from models import PublicUser, WatchList, CompareList, Help
 from web.models import Company, CompanyModelScore, CompanyModelFunctionPoint, CompanyFunctionScore
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
@@ -371,6 +371,23 @@ class SearchResult(View):
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'search_result.html', {'isin_code': isin_code})
 
+
+class Help(View):
+
+    def post(self, request, *args, **kwargs):
+        help = ast.literal_eval(request.POST['help'])
+        help_obj = Help()
+        help_obj.name =  help['name']
+        help_obj.email = help['email']
+        help_obj.message =  help['message']
+        help_obj.save()
+        if request.is_ajax():
+            response = {
+                'result': 'OK'
+            }
+            response = simplejson.dumps(response)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'home.html', {})
 
 
 

@@ -37,5 +37,11 @@ class CompanyPriceValue(models.Model):
 	def __unicode__(self):
 		return self.company.company_name
 
+class Help(models.Model):
 
+	name =  models.CharField('Name', max_length=200)
+	email =  models.CharField('Email', max_length=200)
+	message = models.TextField('Message')
 
+	def __unicode__(self):
+		return self.name

@@ -433,6 +433,11 @@ function ViewCompareListController($scope, $http) {
 function SearchViewController($scope, $http) {
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
+        $scope.help = {
+            'name': '',
+            'email': '',
+            'message': ''
+        }
     }
     $scope.search_companies = function() {
         if($scope.company_name.length >= 3){
@@ -445,10 +450,57 @@ function SearchViewController($scope, $http) {
             })
         }  
     }
+    $scope.validate_help = function(){
+        $scope.help_message = '';
+        if($scope.help.name == ''){
+            $scope.help_message = 'Please enter your name';
+            return false;
+        } else if($scope.help.email == '' || validateEmail($scope.help.email)){
+            $scope.help_message = 'Please enter a valid email';
+            return false;
+        } if($scope.help.message == ''){
+            $scope.help_message = 'Please enter message';
+            return false;
+        }
+        return true;
+    }
     $scope.select_company = function(company) {
-        console.log('here');
         $scope.companies = [];
         document.location.href ='/search_result/?isin_code='+company.isin_code;
+    }
+    $scope.show_popup = function(){
+        $('#stock_search_overlay').css('display', 'block');
+        $('.help_popup').css('display', 'block');
+    }
+    $scope.hide_popup = function(){
+        $('#stock_search_overlay').css('display', 'block');
+        $('.help_popup').css('display', 'block');
+    }
+    $scope.show_help = function() {
+        $scope.show_popup();
+    }
+    $scope.submit_help = function() {
+        if($scope.validate_help()) {
+            params = {
+                'help': angular.toJson($scope.help),
+                'csrfmiddlewaretoken': $scope.csrf_token,
+            }
+            $http({
+                method: 'post',
+                data: $.param(params),
+                url: '/help/',
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data){
+                hide_loader();
+                if (data.result == 'ok') {  
+                    $scope.hide_popup();
+                }
+            }).error(function(data, status){
+                console.log('Request failed');
+            });
+        }
     }
 }
 function SearchResultController($scope, $http) {
