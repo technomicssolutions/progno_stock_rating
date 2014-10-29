@@ -314,7 +314,6 @@ def get_rating_report(request, search_keys):
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
                 for function in analytical_head.function_set.all():
-                    comments = []
                     fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
                     if fun_score.count() > 0:
                         comments.append(fun_score[0].comment)
@@ -323,7 +322,7 @@ def get_rating_report(request, search_keys):
                         'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
                         'score': function_score[0].score if len(function_score) > 0 else 'None',
                         'description': function.description,
-                        'comments': comments[0] if len(comments) > 0 else 'None'
+                        'comments': fun_score[0].comment if len(fun_score) > 0 else 'None',
                     })
                 analytical_heads.append({
                     'analytical_head_name': analytical_head.title,

@@ -188,7 +188,6 @@ class CompanyFunctionScore(Date):
     def __unicode__(self):
         return self.company.company_name + " - " + self.function.function_name + " - " + str(self.score)
 
-
 class CompanyModelFunctionPoint(Date):
     company = models.ForeignKey(Company)
     model = models.ForeignKey(AnalysisModel)
@@ -215,6 +214,16 @@ class CompanyModelScore(Date):
 class CompanyStockData(Date):
     company = models.ForeignKey(Company)
     stock_data = JSONField('Stock Data', null=True, blank=True)
+
+    def __unicode__(self):
+        return self.company.company_name
+
+
+class NSEBSEPrice(models.Model):
+    company = models.ForeignKey(Company)
+    date = models.DateField('Date')
+    NSE_price = models.DecimalField('NSE Price', max_digits=10, decimal_places=5)
+    BSE_price = models.DecimalField('BSE Price', max_digits=10, decimal_places=5)
 
     def __unicode__(self):
         return self.company.company_name
