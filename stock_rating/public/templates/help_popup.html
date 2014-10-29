@@ -1,16 +1,21 @@
 <div class="container help_popup">
 	<div class="row">
-		<div class="col-md-3"></div>
-		<div class="col-md-6">
+		<div class="col-md-2"></div>
+		<div class="col-md-7 white_bg">
 			<form action="" method="post">
 				<label> Name </label>
-				<input type="text" name="name" />
+				<input type="text" name="name" ng-model="help.name" />
 				<label> Email </label>
-				<input type="email" name="email" />
+				<input type="text" name="email" type="text" ng-model="help.email" />
 				<label> Message </label>
-				<textarea name="message"></textarea>
+				<textarea name="message" ng-model="help.message"></textarea>
+				<div class="col-md-12">
+					<p class="error_msg"> [[help_message]] </p>
+					<input type="button" name="submit" value="Submit" ng-click="submit_help();" />
+					<input type="button" name="cancel" value="Cancel" ng-click="cancel_help();" />
+				</div>
 			</form>
 		</div>
-		<div class="col-md-3"></div>
+		<div class="col-md-2"></div>
 	</div>
 </div>

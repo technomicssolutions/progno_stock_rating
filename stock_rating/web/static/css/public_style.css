@@ -607,7 +607,49 @@ footer a {
 	display: none;
 	position: fixed;
 	z-index: 3;
-	background-color: #FFFFFF;
 	top: 30%;
-	left: 30%;
+	left: 10%;
+}
+.help_popup form {
+	padding: 30px;
+}
+
+.help_popup .white_bg {
+	border: 1px solid #DDDDDD;
+	border-radius: 5px;
+}
+
+.help_popup form label{
+	width: 40%;
+	display: block;
+	float: left;
+	height: 30px;
+	margin-bottom: 10px;
+}
+
+.help_popup form input[type="text"]{
+	width: 60%;
+	display: block;
+	float: left;
+	height: 30px;
+	border: 1px solid #DDDDDD;
+	padding: 5px;
+	margin-bottom: 10px;
+}
+
+.help_popup form textarea {
+	width: 60%;
+	height: 100px;
+	float: left;
+	border: 1px solid #DDDDDD;
+}
+.help_popup form input[type="button"]{
+	display: block;
+	float: right;
+	height: 30px;
+	border: 1px solid #DDDDDD;
+	padding: 5px;
+	margin: 30px 10px 30px 10px;
+	background-color: #0066CC;
+	color: #FFFFFF;
 }

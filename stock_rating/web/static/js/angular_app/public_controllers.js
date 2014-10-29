@@ -455,7 +455,7 @@ function SearchViewController($scope, $http) {
         if($scope.help.name == ''){
             $scope.help_message = 'Please enter your name';
             return false;
-        } else if($scope.help.email == '' || validateEmail($scope.help.email)){
+        } else if($scope.help.email == '' || !validateEmail($scope.help.email)){
             $scope.help_message = 'Please enter a valid email';
             return false;
         } if($scope.help.message == ''){
@@ -473,8 +473,8 @@ function SearchViewController($scope, $http) {
         $('.help_popup').css('display', 'block');
     }
     $scope.hide_popup = function(){
-        $('#stock_search_overlay').css('display', 'block');
-        $('.help_popup').css('display', 'block');
+        $('#stock_search_overlay').css('display', 'none');
+        $('.help_popup').css('display', 'none');
     }
     $scope.show_help = function() {
         $scope.show_popup();
@@ -501,6 +501,14 @@ function SearchViewController($scope, $http) {
                 console.log('Request failed');
             });
         }
+    }
+    $scope.cancel_help = function(){
+        $scope.help = {
+            'name': '',
+            'email': '',
+            'message': ''
+        }
+        $scope.hide_popup();
     }
 }
 function SearchResultController($scope, $http) {

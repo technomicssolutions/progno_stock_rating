@@ -12,9 +12,11 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.core.mail import send_mail
+
 
 from models import PublicUser, WatchList, CompareList, Help
-from web.models import Company, CompanyModelScore, CompanyModelFunctionPoint, CompanyFunctionScore
+from web.models import Company, CompanyModelScore, CompanyFunctionScore
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
 
@@ -372,7 +374,7 @@ class SearchResult(View):
         return render(request, 'search_result.html', {'isin_code': isin_code})
 
 
-class Help(View):
+class HelpView(View):
 
     def post(self, request, *args, **kwargs):
         help = ast.literal_eval(request.POST['help'])
@@ -381,6 +383,12 @@ class Help(View):
         help_obj.email = help['email']
         help_obj.message =  help['message']
         help_obj.save()
+        email_to = User.objects.filter(is_superuser=True)[0].email
+        print email_to
+        subject = " Help Request From Stoklab "
+        message = help['message']
+        from_email = settings.DEFAULT_FROM_EMAIL         
+        send_mail(subject, message, from_email,[email_to])
         if request.is_ajax():
             response = {
                 'result': 'OK'
