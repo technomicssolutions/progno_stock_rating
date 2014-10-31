@@ -295,7 +295,7 @@ function StarRatingReportController($scope, $http) {
                     $scope.analytical_heads_list.push(list);
                     list = [];
                 }
-            }console.log($scope.analytical_heads_list);
+            }
         }).error(function(data, status){
             console.log(data);
         });
@@ -520,6 +520,7 @@ function SearchResultController($scope, $http) {
     $scope.get_company_details = function() {
         $http.get('/search_result/?isin_code='+$scope.isin_code+'&ajax=true').success(function(data){
             $scope.company_details = data.star_ratings;
+            $scope.pricing = data.star_ratings[0].pricing;
         }).error(function(data, status){
             console.log('Request failed');
         });

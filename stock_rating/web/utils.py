@@ -5,7 +5,7 @@ import simplejson
 from django.conf import settings
 from collections import OrderedDict
 from models import Company, Industry, CompanyStockData, CompanyFunctionScore, \
- FieldMap, DataFile, CompanyModelScore, CompanyModelFunctionPoint
+ FieldMap, DataFile, CompanyModelScore, CompanyModelFunctionPoint, NSEBSEPrice
 
 from public.models import WatchList, CompareList, PublicUser
 
@@ -230,6 +230,17 @@ def get_rating_details_by_star_count(request, star_count):
             fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
             if fun_score.count() > 0:
                 comments.append(fun_score[0].comment)
+        pricing = {}
+        try:
+            price = NSEBSEPrice.objects.get(company=company, latest=True)
+            pricing = {
+                'nse_price': price.NSE_price,
+                'bse_price': price.BSE_price,
+                'date': price.date.strftime('%d %B %Y')
+            }
+        except Exception as ex:
+            print str(ex)
+            pass
         ratings.append({
             'company_name': company.company_name + ' - ' + company.isin_code,
             'isin_code': company.isin_code,
@@ -243,7 +254,7 @@ def get_rating_details_by_star_count(request, star_count):
             'company_in_compare_list': 'true' if company_in_compare_list else 'false',
             'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
             'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
-
+            'pricing': pricing
         })
     watch_list_count = 0
     compare_list_count = 0
@@ -330,6 +341,18 @@ def get_rating_report(request, search_keys):
                 })
             rating['analytical_heads'] = analytical_heads
             rating['detailed_comment'] = comments
+            pricing = {}
+            try:
+                price = NSEBSEPrice.objects.get(company=company, latest=True)
+                pricing = {
+                    'nse_price': price.NSE_price,
+                    'bse_price': price.BSE_price,
+                    'date': price.date.strftime('%d %B %Y')
+                }
+            except Exception as ex:
+                print str(ex)
+                pass
+            rating['pricing'] = pricing
         else:
             rating = {
                 'company_name': company.company_name + ' - ' + company.isin_code,

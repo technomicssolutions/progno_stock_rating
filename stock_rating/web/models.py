@@ -126,7 +126,11 @@ class CompanyFile(Date):
 class Company(Date):
     company_name = models.CharField('company_name', max_length=200, unique=True)
     isin_code = models.CharField('ISIN Code', max_length=200, unique=True)
+    NSE_code = models.CharField('NSE Code', max_length=200, null=True, blank=True)
+    BSE_code = models.CharField('BSE Code', max_length=200, null=True, blank=True)
     industry = models.ForeignKey(Industry, null=True, blank=True)
+    bse_status = models.CharField('BSE Status', max_length=50, null=True, blank=True)
+    bse_group = models.CharField('BSE Group', max_length=50, null=True, blank=True)
     is_all_data_available = models.BooleanField('Is all data avaialble', default=True)
 
     def __unicode__(self):
@@ -222,8 +226,11 @@ class CompanyStockData(Date):
 class NSEBSEPrice(models.Model):
     company = models.ForeignKey(Company)
     date = models.DateField('Date')
-    NSE_price = models.DecimalField('NSE Price', max_digits=10, decimal_places=5)
-    BSE_price = models.DecimalField('BSE Price', max_digits=10, decimal_places=5)
+    NSE_price = models.DecimalField('NSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
+    BSE_price = models.DecimalField('BSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
+    latest = models.BooleanField('Is Latest', default=True)
+    last_review = models.BooleanField('Is last review', default=False)
+    parent = models.ForeignKey('self', null=True, blank=True)
 
     def __unicode__(self):
         return self.company.company_name

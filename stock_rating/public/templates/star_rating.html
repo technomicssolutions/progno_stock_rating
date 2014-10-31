@@ -38,8 +38,8 @@
 								<img ng-repeat="star in range(star_rating.star_count) track by $index" src="/static/images/star.png" />
 							</td>
 							<td>[[star_rating.score]]</td>
-							<td>NSE</td>
-							<td>BSE</td>
+							<td>[[star_rating.pricing.nse_price]]</td>
+							<td>[[star_rating.pricing.bse_price]]</td>
 							<td>
 								<span ng-show="star_rating.change>0"> 
 									up by <img ng-repeat="star in range(star_rating.change) track by $index" src="/static/images/star.png" />

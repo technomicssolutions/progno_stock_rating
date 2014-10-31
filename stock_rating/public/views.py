@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 
 
 from models import PublicUser, WatchList, CompareList, Help
-from web.models import Company, CompanyModelScore, CompanyFunctionScore
+from web.models import Company, CompanyModelScore, CompanyFunctionScore, NSEBSEPrice
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
 
@@ -62,6 +62,7 @@ class Login(View):
     def post(self, request, *args, **kwargs):
 
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
+        print "user", user
         if user and user.is_active:
             login(request, user)
             if not is_public_user(request):
@@ -74,13 +75,13 @@ class Login(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
             return HttpResponseRedirect(reverse('home'))
         else:
-            context = {
+            result = {
                 'message' : 'Username or password is incorrect'
             }
             if request.is_ajax():
-                response = simplejson.dumps(context)
+                response = simplejson.dumps(result)
                 return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'login.html', context)     
+        return render(request, 'login.html', result)     
 
 class Signup(View):
 
@@ -255,6 +256,17 @@ class ViewWatchList(View):
                         company_in_compare_list = True
                     else:
                         company_in_compare_list = False
+                    pricing = {}
+                    try:
+                        price = NSEBSEPrice.objects.get(company=company, latest=True)
+                        pricing = {
+                            'nse_price': price.NSE_price,
+                            'bse_price': price.BSE_price,
+                            'date': price.date.strftime('%d %B %Y')
+                        }
+                    except Exception as ex:
+                        print str(ex)
+                        pass
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
@@ -266,6 +278,7 @@ class ViewWatchList(View):
                         'added_on': watch_list.added_on.strftime('%d/%m/%Y') if watch_list.added_on else '',
                         'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') if model_score.updated_date else '',
                         'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
+                        'pricing': pricing
                     }
                 else:
                     rating = {
@@ -314,9 +327,14 @@ class ViewCompareList(View):
                             if i==0:
                                 head['functions'].append(function.function_name)
                             function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                            if function_score.count() > 0:
+                                function_score = function_score[0]
+                            else:
+                                function_score = None
+                            print "hereeeeee",function_score
                             functions_details.append({
                                 'funtion_name': function.function_name,
-                                'score': round(function_score[0].score, 2) if len(function_score) > 0 else 'None'
+                                'score': round(function_score.score, 2) if function_score and function_score.score else 'None'
                             })
                         analytical_heads.append({
                             'head_name': analytical_head.title,

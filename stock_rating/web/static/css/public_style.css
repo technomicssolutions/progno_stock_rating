@@ -477,8 +477,18 @@ footer a {
 	background: url('../images/date-bg.png') no-repeat;
 	height: 169px;
 	margin-bottom: 20px;
+	padding: 25px
+}
+.aqua_bold {
+	color: #34CCCD;
+	font-weight: bold;
 }
 
+.green_bold {
+	color: #2F9766;
+	font-weight: bold;
+	font-size: 17px;
+}
 .no-padding {
 	padding-left: 0px;
 }

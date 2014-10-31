@@ -22,6 +22,9 @@ class CompanyStockDataAdmin(admin.ModelAdmin):
 class CompanyModelFunctionPointAdmin(admin.ModelAdmin):
 	search_fields = ['company__company_name', 'function__function_name', 'model__name']
 
+class NSEBSEPriceAdmin(admin.ModelAdmin):
+	search_fields = ['company__company_name']
+
 admin.site.register(UserPermission, UserPermissionAdmin)
 admin.site.register(AnalyticalHead)
 admin.site.register(DataField)
@@ -44,6 +47,7 @@ admin.site.register(CompanyModelScore, CompanyModelScoreAdmin)
 admin.site.register(CompanyFile)
 admin.site.register(CompanyStockData, CompanyStockDataAdmin)
 admin.site.register(CompanyModelFunctionPoint, CompanyModelFunctionPointAdmin)
+admin.site.register(NSEBSEPrice, NSEBSEPriceAdmin)
 
 
 
