@@ -1100,11 +1100,14 @@ function ModelController($scope, $element, $http, $timeout, $location)
             hide_loader();
         })
     }
-    $scope.calculate_star_rating = function(){
+    $scope.calculate_star_rating = function(parameter_id){
         $scope.msg = '';
         if($scope.selected_model){
             show_loader();
             var url = '/progno/model/'+$scope.selected_model+'/star_rating/?ajax=true';
+            if(parameter_id){
+                var url = '/progno/model/'+$scope.selected_model+'/star_rating/?parameter_id='+parameter_id+"&ajax=true";
+            }
             $http.get(url).success(function(data) {
                 $scope.msg = "Calculation completed Successfully";
                 hide_loader();

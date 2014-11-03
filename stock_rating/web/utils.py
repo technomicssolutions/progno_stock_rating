@@ -229,7 +229,12 @@ def get_rating_details_by_star_count(request, star_count):
             function = parameter.function
             fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
             if fun_score.count() > 0:
-                comments.append(fun_score[0].comment)
+                if fun_score.points == parameter.strong_points:
+                    comments.append(parameter.strong_comment)
+                elif fun_score.points == parameter.weak_points:
+                    comments.append(parameter.weak_comment)
+                elif fun_score.points == parameter.neutral_points:
+                    comments.append(parameter.neutral_comment)
         pricing = {}
         try:
             price = NSEBSEPrice.objects.get(company=company, latest=True)
@@ -245,14 +250,14 @@ def get_rating_details_by_star_count(request, star_count):
             'company_name': company.company_name + ' - ' + company.isin_code,
             'isin_code': company.isin_code,
             'industry': company.industry.industry_name,
-            'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
+            'star_rating': "*" * int(model_score.star_rating.v) if model_score.star_rating else '',
             'score': model_score.points,
-            'brief_comment': model_score.comment,
+            'brief_comment': model_score.star_rating.comment,
             'detailed_comment': comments,
             'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
             'company_in_watch_list': 'true' if company_in_watch_list else 'false',
             'company_in_compare_list': 'true' if company_in_compare_list else 'false',
-            'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
+            'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
             'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
             'pricing': pricing
         })
@@ -308,7 +313,7 @@ def get_rating_report(request, search_keys):
                 'industry': company.industry.industry_name,
                 'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                 'score': model_score.points,
-                'brief_comment': model_score.comment,
+                'brief_comment': model_score.star_rating.comment,
                 'company_in_watch_list': 'true' if company_in_watch_list else 'false',
                 'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                 'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
@@ -326,14 +331,23 @@ def get_rating_report(request, search_keys):
                 functions_details = []
                 for function in analytical_head.function_set.all():
                     fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                    comment = ''
                     if fun_score.count() > 0:
-                        comments.append(fun_score[0].comment)
+                        if fun_score.points == parameter.strong_points:
+                            comment = parameter.strong_comment
+                            comments.append(comment)
+                        elif fun_score.points == parameter.weak_points:
+                            comment = parameter.weak_comment
+                            comments.append(comment)
+                        elif fun_score.points == parameter.neutral_points:
+                            comment = parameter.neutral_comment
+                            comments.append(comment)                    
                     function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
                     functions_details.append({
                         'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
                         'score': function_score[0].score if len(function_score) > 0 else 'None',
                         'description': function.description,
-                        'comments': fun_score[0].comment if len(fun_score) > 0 else 'None',
+                        'comments': comment,
                     })
                 analytical_heads.append({
                     'analytical_head_name': analytical_head.title,

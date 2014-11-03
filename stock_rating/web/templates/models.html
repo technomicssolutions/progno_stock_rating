@@ -149,10 +149,18 @@
 		
 
 									<input type="hidden" ng-model="function.parameter_set.id" />			    							
-									<td class="five no_border"><input type="button" value="Edit" ng-click="edit_function(function)"></td>
-									<td class="five no_border"><input type="button" value="Del" ng-click="delete_parameters(selected_model,function.parameter_set)"></td>
-									<td class="five no_border"><input type="button" value="Save" ng-click="save_parameters(selected_model,select_function,function.parameter_set)"></td>	
-									<td class="five no_border"></td>									
+									<td class="no_border" colspan="4">
+										<input type="button" value="Edit" ng-click="edit_function(function)">
+									<!-- </td>
+									<td class="five no_border"> -->
+										<input type="button" value="Del" ng-click="delete_parameters(selected_model,function.parameter_set)">
+									<!-- </td>
+									<td class="five no_border"> -->
+										<input type="button" value="Save" ng-click="save_parameters(selected_model,select_function,function.parameter_set)">
+									<!-- </td>	
+									<td class="five no_border"> -->
+										<input type="button" value="Calculate Score" ng-click="calculate_star_rating(function.parameter_set.parameter_id);" />
+									</td>									
 								</tr>
 								<tr>
 									<td class="six">Comments </td>

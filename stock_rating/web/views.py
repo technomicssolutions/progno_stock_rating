@@ -987,6 +987,7 @@ class DeleteParameter(View):
     def get(self, request, *args, **kwargs):
         parameterlimit = ParameterLimit.objects.get(id=request.GET.get('id'))
         try:
+            CompanyModelFunctionPoint.objects.filter(parameter_limit=parameterlimit).delete()
             parameterlimit.delete()
             res = {
               'result': 'ok',
@@ -1068,16 +1069,19 @@ class DeleteDataFile(View):
 class ModelStarRating(View):
     def get(self, request, *args, **kwargs):
         model = AnalysisModel.objects.get(id=kwargs['model_id'])
+        parameter_id = request.GET.get('parameter_id', '')
         industries = model.industries.all()
         model_max_point = 0
-        parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
+        if parameter_id:
+            parameterlimits = ParameterLimit.objects.filter(id=int(parameter_id))
+        else:
+            parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
         for parameterlimit in parameterlimits:
             function = parameterlimit.function
             model_max_point = model_max_point + parameterlimit.strong_points  
         model.max_points = model_max_point
         model.save()
         model_ratings = model.starrating_set.all() 
-        parameterlimits = ParameterLimit.objects.filter(analysis_model=model)
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
@@ -1097,51 +1101,41 @@ class ModelStarRating(View):
                         elif function.function_type == 'continuity':
                             calculate_continuity_function_score(function, company)
                         function_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                        company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, function=function, model=model)
+                        company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, parameter_limit=parameterlimit)
                         if not parameterlimit.strong_max.replace('.','',1).replace('-','',1).isdigit() and function_score.score >= float(parameterlimit.strong_min):
                             company_model_function_point.points = parameterlimit.strong_points
-                            company_model_function_point.comment = parameterlimit.strong_comment
                             company_model_function_point.save()                               
                         elif function_score.score >= float(parameterlimit.strong_min) and function_score.score < float(parameterlimit.strong_max):
                             company_model_function_point.points = parameterlimit.strong_points                                
-                            company_model_function_point.comment = parameterlimit.strong_comment
                             company_model_function_point.save()
                         elif function_score.score >= float(parameterlimit.neutral_min) and function_score.score < float(parameterlimit.neutral_max):
                             company_model_function_point.points = parameterlimit.neutral_points
-                            company_model_function_point.comment = parameterlimit.neutral_comment
                             company_model_function_point.save()
                         elif not parameterlimit.weak_min.replace('.','',1).replace('-','',1).isdigit() and function_score.score < float(parameterlimit.weak_max):
                             company_model_function_point.points = parameterlimit.weak_points
-                            company_model_function_point.comment = parameterlimit.weak_comment
                             company_model_function_point.save()
                         elif not parameterlimit.weak_max.replace('.','',1).replace('-','',1).isdigit() and function_score.score >= float(parameterlimit.weak_min):
                             company_model_function_point.points = parameterlimit.weak_points
-                            company_model_function_point.comment = parameterlimit.weak_comment
                             company_model_function_point.save()
                         elif function_score.score >= float(parameterlimit.weak_min) and function_score.score < float(parameterlimit.weak_max):
                             company_model_function_point.points = parameterlimit.weak_points
-                            company_model_function_point.comment = parameterlimit.weak_comment
                             company_model_function_point.save()
                         elif parameterlimit.weak_min_1 is not None:
                             if not parameterlimit.weak_min_1.replace('.','',1).replace('-','',1).isdigit():
                                 if function_score.score < float(parameterlimit.weak_max_1):
                                     company_model_function_point.points = parameterlimit.weak_points
-                                    company_model_function_point.comment = parameterlimit.weak_comment
                                     company_model_function_point.save()
                             elif not parameterlimit.weak_max_1.replace('.','',1).replace('-','',1).isdigit():
                                 if parameterlimit.weak_max_1 == "Above":
                                     if function_score.score >= float(parameterlimit.weak_min_1):
                                         company_model_function_point.points = parameterlimit.weak_points
-                                        company_model_function_point.comment = parameterlimit.weak_comment
                                         company_model_function_point.save()
                                 elif parameterlimit.weak_max_1 == "Below":
                                     if function_score.score < float(parameterlimit.weak_min_1):
                                         company_model_function_point.points = parameterlimit.weak_points
-                                        company_model_function_point.comment = parameterlimit.weak_comment
                                         company_model_function_point.save()
                             elif function_score.score >= float(parameterlimit.weak_min_1) and function_score.score < float(parameterlimit.weak_max_1):
                                 company_model_function_point.points = parameterlimit.weak_points
-                                company_model_function_point.comment = parameterlimit.weak_comment
                                 company_model_function_point.save()                                    
                         score = score + function_score.score
                         model_point = model_point + company_model_function_point.points
@@ -1154,20 +1148,19 @@ class ModelStarRating(View):
                 company_model_score.save()
                 for rating in model_ratings:
                     if company_model_score.points >= rating.min_score and company_model_score.points <= rating.max_score:
-                        changed_rating = int(rating.star_count) - int(company_model_score.star_rating)
-                        company_model_score.star_rating_change = changed_rating
-                        company_model_score.star_rating = rating.star_count
-                        company_model_score.comment = rating.comment
+                        if company_model_score.star_rating:
+                            changed_rating = int(rating.star_count) - int(company_model_score.star_rating.star_count)
+                            company_model_score.star_rating_change = changed_rating
+                        company_model_score.star_rating = rating
                         company_model_score.save()
                         break;
                     elif rating.star_count == 5:
                         if company_model_score.points >= rating.min_score:
-                            company_model_score.star_rating = rating.star_count
-                            company_model_score.comment = rating.comment
+                            company_model_score.star_rating = rating
                             company_model_score.save()
                             break;
         response = simplejson.dumps({
-            'result': 'OK'
+             'result': 'OK'
         })
         return HttpResponse(response, status=200, mimetype='application/json')
 

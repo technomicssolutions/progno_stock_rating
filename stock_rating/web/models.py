@@ -136,11 +136,6 @@ class Company(Date):
     def __unicode__(self):
         return self.company_name + ' - ' + self.isin_code
 
-class ScoreRating(Date):
-    strong_score = models.IntegerField('Strong', max_length=1, default=0)
-    neutral_score = models.IntegerField('Neutral', max_length=1, default=0)
-    weak_score = models.IntegerField('weak', max_length=1, default=0)
-
 class AnalysisModel(Date):
 
     name = models.CharField('Model name', max_length=200, unique=True, null=True)
@@ -194,10 +189,8 @@ class CompanyFunctionScore(Date):
 
 class CompanyModelFunctionPoint(Date):
     company = models.ForeignKey(Company)
-    model = models.ForeignKey(AnalysisModel)
-    function = models.ForeignKey(Function)
+    parameter_limit = models.ForeignKey(ParameterLimit, null=True, blank=True)
     points = models.FloatField('Function Point', max_length=5, null=True, blank=True)
-    comment = models.CharField('Comment', max_length=500, null=True, blank=True)
 
     def __unicode__(self):
         return self.company.company_name + " - " + self.function.function_name + " - " + str(self.points)
@@ -207,8 +200,7 @@ class CompanyModelScore(Date):
     analysis_model = models.ForeignKey(AnalysisModel)
     score = models.FloatField('Model Score', max_length=5, null=True, blank=True)
     points = models.IntegerField('Model Points in percentage terms', default=0)
-    star_rating = models.CharField('Star Rating', max_length=200 , null=True, blank=True)
-    comment = models.CharField('Comment', max_length=500, null=True, blank=True)
+    star_rating = models.ForeignKey(StarRating, null=True, blank=True)
     star_rating_change = models.IntegerField('Change in Star Rating', null=True, blank=True)
 
 
