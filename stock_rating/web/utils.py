@@ -338,26 +338,29 @@ def get_rating_report(request, search_keys):
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
                 for function in analytical_head.function_set.all():
-                    parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
-                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
-                    comment = ''
-                    if fun_score.count() > 0:
-                        if fun_score.points == parameter.strong_points:
-                            comment = parameter.strong_comment
-                            comments.append(comment)
-                        elif fun_score.points == parameter.weak_points:
-                            comment = parameter.weak_comment
-                            comments.append(comment)
-                        elif fun_score.points == parameter.neutral_points:
-                            comment = parameter.neutral_comment
-                            comments.append(comment)                    
-                    function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
-                    functions_details.append({
-                        'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
-                        'score': function_score[0].score if len(function_score) > 0 else 'None',
-                        'description': function.description,
-                        'comments': comment,
-                    })
+                    try:
+                        parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
+                        fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
+                        comment = ''
+                        if fun_score.count() > 0:
+                            if fun_score.points == parameter.strong_points:
+                                comment = parameter.strong_comment
+                                comments.append(comment)
+                            elif fun_score.points == parameter.weak_points:
+                                comment = parameter.weak_comment
+                                comments.append(comment)
+                            elif fun_score.points == parameter.neutral_points:
+                                comment = parameter.neutral_comment
+                                comments.append(comment)                    
+                        function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                        functions_details.append({
+                            'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
+                            'score': function_score[0].score if len(function_score) > 0 else 'None',
+                            'description': function.description,
+                            'comments': comment,
+                        })
+                    except:
+                        pass
                 analytical_heads.append({
                     'analytical_head_name': analytical_head.title,
                     'functions': functions_details,
