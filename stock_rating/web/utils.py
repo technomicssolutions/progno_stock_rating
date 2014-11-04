@@ -227,7 +227,7 @@ def get_rating_details_by_star_count(request, star_count):
         comments = []
         for parameter in parameters:
             function = parameter.function
-            fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+            fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
             if fun_score.count() > 0:
                 if fun_score.points == parameter.strong_points:
                     comments.append(parameter.strong_comment)
@@ -313,7 +313,7 @@ def get_rating_report(request, search_keys):
                 'industry': company.industry.industry_name,
                 'star_rating': "*" * int(model_score.star_rating) if model_score.star_rating else '',
                 'score': model_score.points,
-                'brief_comment': model_score.star_rating.comment,
+                'brief_comment': model_score.star_rating.comment if model_score.star_rating else '',
                 'company_in_watch_list': 'true' if company_in_watch_list else 'false',
                 'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                 'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
@@ -323,14 +323,14 @@ def get_rating_report(request, search_keys):
             comments = []
             for parameter in parameters:
                 function = parameter.function
-                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
                 if fun_score.count() > 0:
                     comments.append(fun_score[0].comment)
             analytical_heads = []
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
                 for function in analytical_head.function_set.all():
-                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, function=function, model=model)
+                    fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
                     comment = ''
                     if fun_score.count() > 0:
                         if fun_score.points == parameter.strong_points:
