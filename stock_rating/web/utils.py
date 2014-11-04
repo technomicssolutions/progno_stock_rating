@@ -4,7 +4,7 @@ import simplejson
 
 from django.conf import settings
 from collections import OrderedDict
-from models import Company, Industry, CompanyStockData, CompanyFunctionScore, \
+from models import Company, Industry, CompanyStockData, CompanyFunctionScore, ParameterLimit, \
  FieldMap, DataFile, CompanyModelScore, CompanyModelFunctionPoint, NSEBSEPrice
 
 from public.models import WatchList, CompareList, PublicUser
@@ -321,15 +321,24 @@ def get_rating_report(request, search_keys):
             model = model_score.analysis_model
             parameters = model.parameterlimit_set.all()
             comments = []
-            for parameter in parameters:
-                function = parameter.function
-                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
-                if fun_score.count() > 0:
-                    comments.append(fun_score[0].comment)
+            # for parameter in parameters:
+            #     function = parameter.function
+            #     fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
+            #     if fun_score.count() > 0:
+            #         if fun_score.points == parameter.strong_points:
+            #             comment = parameter.strong_comment
+            #             comments.append(comment)
+            #         elif fun_score.points == parameter.weak_points:
+            #             comment = parameter.weak_comment
+            #             comments.append(comment)
+            #         elif fun_score.points == parameter.neutral_points:
+            #             comment = parameter.neutral_comment
+            #             comments.append(comment) 
             analytical_heads = []
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
                 for function in analytical_head.function_set.all():
+                    parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
                     fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
                     comment = ''
                     if fun_score.count() > 0:
