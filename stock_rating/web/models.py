@@ -193,7 +193,7 @@ class CompanyModelFunctionPoint(Date):
     points = models.FloatField('Function Point', max_length=5, null=True, blank=True)
 
     def __unicode__(self):
-        return self.company.company_name + " - " + self.function.function_name + " - " + str(self.points)
+        return self.company.company_name + " - " + self.parameter_limit.function.function_name + " - " + str(self.points)
 
 class CompanyModelScore(Date):
     company = models.ForeignKey(Company)
