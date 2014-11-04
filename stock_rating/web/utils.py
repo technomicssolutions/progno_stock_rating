@@ -198,7 +198,8 @@ def get_file_fields():
 def get_rating_details_by_star_count(request, star_count):
     ratings = []
     isin_list = []
-    model_scores = CompanyModelScore.objects.filter(star_rating=star_count)
+    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count)
+    print "model_scores", model_scores
     public_user = PublicUser.objects.filter(user=request.user)
     for model_score in model_scores:
         model = model_score.analysis_model
@@ -229,6 +230,7 @@ def get_rating_details_by_star_count(request, star_count):
             function = parameter.function
             fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
             if fun_score.count() > 0:
+                fun_score = fun_score[0]
                 if fun_score.points == parameter.strong_points:
                     comments.append(parameter.strong_comment)
                 elif fun_score.points == parameter.weak_points:
