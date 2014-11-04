@@ -20,7 +20,7 @@ class CompanyStockDataAdmin(admin.ModelAdmin):
 	search_fields = ['company__company_name']
 
 class CompanyModelFunctionPointAdmin(admin.ModelAdmin):
-	search_fields = ['company__company_name', 'parameter_limit__function__function_name', 'parameter_limit__model__name']
+	search_fields = ['company__company_name', 'parameter_limit__function__function_name', 'parameter_limit__analysis_model__name']
 
 class NSEBSEPriceAdmin(admin.ModelAdmin):
 	search_fields = ['company__company_name']
