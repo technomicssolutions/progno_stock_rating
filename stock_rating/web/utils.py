@@ -250,7 +250,7 @@ def get_rating_details_by_star_count(request, star_count):
             'company_name': company.company_name + ' - ' + company.isin_code,
             'isin_code': company.isin_code,
             'industry': company.industry.industry_name,
-            'star_rating': "*" * int(model_score.star_rating.v) if model_score.star_rating else '',
+            'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
             'score': model_score.points,
             'brief_comment': model_score.star_rating.comment,
             'detailed_comment': comments,
@@ -316,7 +316,7 @@ def get_rating_report(request, search_keys):
                 'brief_comment': model_score.star_rating.comment if model_score.star_rating else '',
                 'company_in_watch_list': 'true' if company_in_watch_list else 'false',
                 'company_in_compare_list': 'true' if company_in_compare_list else 'false',
-                'star_count': int(model_score.star_rating) if model_score.star_rating else 0,
+                'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
             }
             model = model_score.analysis_model
             parameters = model.parameterlimit_set.all()
