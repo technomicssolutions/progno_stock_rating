@@ -343,6 +343,7 @@ def get_rating_report(request, search_keys):
                         fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
                         comment = ''
                         if fun_score.count() > 0:
+                            fun_score = fun_score[0]
                             if fun_score.points == parameter.strong_points:
                                 comment = parameter.strong_comment
                                 comments.append(comment)
@@ -351,7 +352,7 @@ def get_rating_report(request, search_keys):
                                 comments.append(comment)
                             elif fun_score.points == parameter.neutral_points:
                                 comment = parameter.neutral_comment
-                                comments.append(comment)                    
+                                comments.append(comment)  
                         function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
                         functions_details.append({
                             'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
