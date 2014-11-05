@@ -1150,10 +1150,13 @@ class ModelStarRating(View):
                         except Exception as e:
                             continue
                     else:
-                        function_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                        company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, parameter_limit=parameterlimit)
-                        score = score + function_score.score
-                        model_point = model_point + company_model_function_point.points
+                        try:
+                            function_score = CompanyFunctionScore.objects.get(company=company, function=function)
+                            company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, parameter_limit=parameterlimit)
+                            score = score + function_score.score
+                            model_point = model_point + company_model_function_point.points
+                        except:
+                            pass
                 company_model_score.score = score
                 point = float(model_point)/float(model.max_points)*100
                 round_function = lambda point: int(point + 1) if int(point) != point else int(point)
@@ -1173,7 +1176,7 @@ class ModelStarRating(View):
                             company_model_score.save()
                             break;
         response = simplejson.dumps({
-             'result': 'OK'
+            'result': 'OK'
         })
         return HttpResponse(response, status=200, mimetype='application/json')
 
