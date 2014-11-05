@@ -289,7 +289,7 @@ class ViewWatchList(View):
                         'industry': company.industry.industry_name,
                         'star_rating': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
                         'score': model_score.points,
-                        'brief_comment': model_score.comment,
+                        'brief_comment': model_score.star_rating.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                         'added_on': watch_list.added_on.strftime('%d/%m/%Y') if watch_list.added_on else '',
                         'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') if model_score.updated_date else '',
@@ -347,7 +347,6 @@ class ViewCompareList(View):
                                 function_score = function_score[0]
                             else:
                                 function_score = None
-                            print "hereeeeee",function_score
                             functions_details.append({
                                 'funtion_name': function.function_name,
                                 'score': round(function_score.score, 2) if function_score and function_score.score else 'None'
