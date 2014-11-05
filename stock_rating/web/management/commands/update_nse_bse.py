@@ -162,6 +162,7 @@ def get_nse_price():
         if r > 0:
             c=-1
             for coli, value in enumerate(row):
+                latest_pr = None;
                 c = c + 1
                 if c == 5:
                     close_price = value
@@ -172,7 +173,7 @@ def get_nse_price():
                         try:
                             condition = NSEBSEPrice.objects.get(~Q(date=date), company=company, latest=True)
                             if condition:
-                                last = latest_pr = NSEBSEPrice.objects.get(company=company, last_review=True)
+                                last = NSEBSEPrice.objects.get(company=company, last_review=True)
                                 last.last_review = False;
                                 last.save()
                                 latest_pr = NSEBSEPrice.objects.get(company=company, latest=True)

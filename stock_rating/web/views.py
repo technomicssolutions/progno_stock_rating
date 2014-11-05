@@ -1152,7 +1152,7 @@ class ModelStarRating(View):
                     else:
                         try:
                             function_score = CompanyFunctionScore.objects.get(company=company, function=function)
-                            company_model_function_point, created  = CompanyModelFunctionPoint.objects.get_or_create(company=company, parameter_limit=parameterlimit)
+                            company_model_function_point, created = CompanyModelFunctionPoint.objects.get_or_create(company=company, parameter_limit=parameterlimit)
                             score = score + function_score.score
                             model_point = model_point + company_model_function_point.points
                         except:
