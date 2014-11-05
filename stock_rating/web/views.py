@@ -29,6 +29,7 @@ from public.views import is_public_user
 
 def progno_login_required(function, login_url):
     def wrapper(request, *args, **kw):
+        print dir(request)
         user = request.user  
         if user.is_authenticated:
             if is_public_user(request):

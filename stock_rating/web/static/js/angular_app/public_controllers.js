@@ -159,7 +159,8 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                 $scope.msg = "";
                 $scope.reset_user();
                 $scope.edit_flag = false;
-                document.location.href = "/"
+                console.log(data);
+                document.location.href = data.next_url
              }         
              else
                 $scope.msg = "Username already exists";
@@ -185,7 +186,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
         }).success(function(data, status) {   
          if(data.result == 'Ok'){
             $scope.msg = "";
-            document.location.href = "/";
+            document.location.href = data.next_url;
          } else
             $scope.login_msg = "Username or Password is incorrect";
             

@@ -22,6 +22,9 @@ from web.utils import get_rating_details_by_star_count , get_rating_report, get_
 
 def public_login_required(function, login_url):
     def wrapper(request, *args, **kw):
+        print dir(request)
+        print request.get_full_path()
+        request.session['next_url'] = request.get_full_path()
         user = request.user  
         if user.is_authenticated:
             if not is_public_user(request):
@@ -64,15 +67,21 @@ class Login(View):
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
         print "user", user
         if user and user.is_active:
+            if request.session.get('next_url', ''):
+                next_url = request.session.get('next_url', '')
+            else:
+                next_url = '/'
             login(request, user)
             if not is_public_user(request):
                 logout(request)
                 res = {'result': 'error'}
             else: 
-                res = { 'result': 'Ok'}
+                res = { 'result': 'Ok', 'next_url': next_url}
             if request.is_ajax():
                 response = simplejson.dumps(res)
                 return HttpResponse(response, status=200, mimetype='application/json')
+            
+                return HttpResponseRedirect(next_url)
             return HttpResponseRedirect(reverse('home'))
         else:
             result = {
@@ -86,6 +95,10 @@ class Login(View):
 class Signup(View):
 
     def post(self, request, *args, **kwargs):
+        if request.session.get('next_url', ''):
+            next_url = request.session.get('next_url', '')
+        else:
+            next_url = '/'
         if request.is_ajax():
             user_details = ast.literal_eval(request.POST['user_details'])
             user = User()
@@ -100,12 +113,14 @@ class Signup(View):
                 public_user.save()
                 res = {
                     'result': 'ok',
+                    'next_url': next_url
                 }
             except:
                 res = {
                     'result': 'error',
                 }
-            user = authenticate(username=user.username, password=user_details['password'])
+            print "user", user
+            user = authenticate(username=user_details['username'], password=user_details['password'])
             if user and user.is_active:
                 login(request, user)
             response = simplejson.dumps(res)
@@ -272,7 +287,7 @@ class ViewWatchList(View):
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
                         'industry': company.industry.industry_name,
-                        'star_rating': int(model_score.star_rating) if model_score.star_rating else 0,
+                        'star_rating': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
                         'score': model_score.points,
                         'brief_comment': model_score.comment,
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
@@ -312,7 +327,7 @@ class ViewCompareList(View):
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,
                         'industry': company.industry.industry_name,
-                        'star_rating': int(model_score[0].star_rating) if model_score[0].star_rating else 0,
+                        'star_rating': int(model_score[0].star_rating.star_count) if model_score[0].star_rating else 0,
                         'model_score': model_score[0].points
                     }
                     model = model_score[0].analysis_model
