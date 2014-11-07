@@ -3,7 +3,7 @@ function validateEmail(email) {
     var re = /\S+@\S+\.\S+/;
     return re.test(email);
 }
-function add_to_compare_list($scope, $http, star_rating) {
+function add_to_compare_list($scope, $http, star_rating, from_view) {
     $http({
         method: 'post',
         data: $.param(params),
@@ -16,6 +16,9 @@ function add_to_compare_list($scope, $http, star_rating) {
         if (data.result == 'ok') {  
             star_rating.company_in_compare_list = 'true';
             $scope.compare_list_count = parseInt($scope.compare_list_count) + 1;
+            if(from_view){
+                $scope.get_compare_list_details();
+            }
         } else if (data.result == 'error_stock_exceed'){
             $scope.error_message = data.error_message;
         }
@@ -90,18 +93,10 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
             return false;
         } else if(!$scope.new_user.terms) {
             $scope.msg = "Please Agree Terms and Conditions";
-        }else {
-            return true;
-        }
-    }
-    $scope.validate_login = function(){        
-        $scope.login_msg = '';
-        if($scope.username == '') {
-            $scope.login_msg = "Please enter Username";
-        } else if($scope.password == '') {
-            $scope.login_msg = "Please enter Password";
+            return false;
         } else if(Recaptcha.get_response() == '') {
-            $scope.login_msg = "Please enter the text in Image"
+            $scope.msg = "Please enter the text in Image"
+            return false;
         } else {
             $.ajax({
                 url: '//freegeoip.net/json/',
@@ -123,12 +118,14 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                         headers : {
                             'Content-Type' : 'application/x-www-form-urlencoded'
                         }
-                    }).success(function(data, status) {   
-                        if(data=="false"){
-                            $scope.login_msg = "Text Entered is not correct";
+                    }).success(function(data, status) {
+                        if(data.result=="false"){
+                            $scope.msg = "Text Entered is not correct";                            
                             Recaptcha.reload();
+                            console.log($scope.msg);
+                            return false;
                         } else {
-                            $scope.login();
+                            $scope.save_new_user();
                         }
                     }).error(function(data, status){
                         console.log(data);
@@ -136,39 +133,46 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                 }
             });
         }
-        
+    }
+    $scope.validate_login = function(){        
+        $scope.login_msg = '';
+        if($scope.username == '') {
+            $scope.login_msg = "Please enter Username";
+        } else if($scope.password == '') {
+            $scope.login_msg = "Please enter Password";
+        } else {
+            $scope.login();
+        }
     }
 
     $scope.save_new_user = function(){
         $scope.msg = '';
-        if($scope.validate_user()){
-            $scope.new_user.terms = String($scope.new_user.terms);
-            params = { 
-                'user_details': angular.toJson($scope.new_user),
-                "csrfmiddlewaretoken" : $scope.csrf_token,
+        $scope.new_user.terms = String($scope.new_user.terms);
+        params = { 
+            'user_details': angular.toJson($scope.new_user),
+            "csrfmiddlewaretoken" : $scope.csrf_token,
+        }
+        $http({
+            method : 'post',
+            url : "/signup/",
+            data : $.param(params),
+            headers : {
+                'Content-Type' : 'application/x-www-form-urlencoded'
             }
-            $http({
-                method : 'post',
-                url : "/signup/",
-                data : $.param(params),
-                headers : {
-                    'Content-Type' : 'application/x-www-form-urlencoded'
-                }
-            }).success(function(data, status) {   
-             if(data.result == 'ok'){
-                $scope.msg = "";
-                $scope.reset_user();
-                $scope.edit_flag = false;
-                console.log(data);
-                document.location.href = data.next_url
-             }         
-             else
-                $scope.msg = "Username already exists";
-                
-            }).error(function(data, status){
-                $scope.message = data.message;
-            });
-        }        
+        }).success(function(data, status) {   
+         if(data.result == 'ok'){
+            $scope.msg = "";
+            $scope.reset_user();
+            $scope.edit_flag = false;
+            console.log(data);
+            document.location.href = data.next_url
+         }         
+         else
+            $scope.msg = "Username already exists";
+            
+        }).error(function(data, status){
+            $scope.message = data.message;
+        });
     }
     $scope.login = function(){
         params = { 
@@ -364,7 +368,9 @@ function ViewCompareListController($scope, $http) {
         $scope.get_compare_list_details()
     }
     $scope.get_compare_list_details = function(){
+        show_loader();
         $http.get('/compare_list/').success(function(data){
+            hide_loader();
             $scope.compare_list = data.compare_list;
             $scope.analytical_heads = data.analytical_heads;
         }).error(function(data, status){
@@ -401,9 +407,7 @@ function ViewCompareListController($scope, $http) {
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        add_to_compare_list($scope, $http, company);
-        document.location.href = '/compare_list/';
-
+        add_to_compare_list($scope, $http, company, true);       
     }
     $scope.change_compare_list = function(company) {
         $scope.hide_stock_search_popup();
@@ -423,7 +427,7 @@ function ViewCompareListController($scope, $http) {
         }).success(function(data){
             hide_loader();
             if (data.result == 'ok') {  
-                document.location.href = '/compare_list/';
+                $scope.get_compare_list_details()
             }
         }).error(function(data, status){
             console.log('Request failed');

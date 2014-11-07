@@ -357,8 +357,8 @@ def get_rating_report(request, search_keys):
                                 comments.append(comment)  
                         function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
                         functions_details.append({
-                            'function_name': function.function_name + (str(' - ') + str(function_score[0].score) if function_score[0].score else '') if len(function_score) > 0 else '',
-                            'score': function_score[0].score if len(function_score) > 0 else 'None',
+                            'function_name': function.function_name + (str(' - ') + str(round(function_score[0].score, 2)) if function_score[0].score else '') if len(function_score) > 0 else '',
+                            'score': round(function_score[0].score, 2) if len(function_score) > 0 else 'None',
                             'description': function.description,
                             'comments': comment,
                         })

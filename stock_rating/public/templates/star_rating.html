@@ -12,6 +12,17 @@
 					<li>You have added [[compare_list_count]] stocks to compare. Click to View Compare</li>
 				</ul>
 				<p class="error_msg" ng-show="error">No Companies with [[count]] star rating</p>
+				<div class="col-md-6" ng-show="error">
+					<div class="col-md-6 star_list">
+						<p>&nbsp;</p><br /><br />
+						<p> List All </p>
+						<a href="/star_rating/?star_count=5" class="five_star" ng-hide="count==5" ng-click="get_company_star_rating(5)">5 Stars</a>
+						<a href="/star_rating/?star_count=4" class="four_star" ng-hide="count==4">4 Stars</a>
+						<a href="/star_rating/?star_count=3" class="three_star" ng-hide="count==3">3 Stars</a>
+						<a href="/star_rating/?star_count=2" class="two_star" ng-hide="count==2">2 Stars</a>
+						<a href="/star_rating/?star_count=1" class="one_star" ng-hide="count==1">1 Star</a>
+					</div>
+				</div>
 				<p class="error_msg">[[error_message]]</p>				
 			</div>
 		</div>

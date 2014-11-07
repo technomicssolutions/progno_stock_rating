@@ -33,10 +33,14 @@
 						<td ng-repeat="i in range(4-compare_list.length) track by $index" ng-click="add_stock();">Add Stock</td>
 					</tr>
 					<tr>
-						<td>StocklabScore <br /> Industry</td>
+						<td>
+							<p> &nbsp; </p>
+							<p> StocklabScore </p>
+							<p> Industry </p>
+						</td>
 						<td ng-repeat="company in compare_list"> 
-							<p><img ng-repeat="star in range(company.star_rating) track by $index" src="/static/images/star.png" /></p>
-							<p>[[company.model_score]] </p>
+							<p>&nbsp;<img ng-repeat="star in range(company.star_rating) track by $index" src="/static/images/star.png" /></p>
+							<p><b><h5>[[company.model_score]]</h5> </b></p>
 							<p>[[company.industry]] </p>
 						</td>
 					</tr>

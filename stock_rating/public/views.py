@@ -202,57 +202,6 @@ class AddToWatchlist(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
 
-
-class AddToComparelist(View):
-
-    def post(self, request, *args, **kwargs):
-
-        isin_code = request.POST.get('isin_code', '')
-        if request.is_ajax() and isin_code:
-            company = Company.objects.get(isin_code=isin_code)
-            try:
-                public_user = PublicUser.objects.get(user=request.user)
-                compare_list_companies = CompareList.objects.filter(user=public_user)
-                if compare_list_companies.count() < 4:
-                    compare_list, created = CompareList.objects.get_or_create(user=public_user, company=company)
-                    compare_list.save()
-                    res = {
-                        'result': 'ok',
-                    }
-                else:
-                    res = {
-                        'result': 'error_stock_exceed',
-                        'error_message': 'You can add maximum 4 stocks in compare list'
-                    }
-            except:
-                res = {
-                    'result': 'error',
-                }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=200, mimetype='application/json')
-
-class ChangeCompareList(View):
-
-    def post(self, request, *args, **kwargs):
-
-        new_stock = request.POST.get('new_stock_isin_code', '')
-        current_stock = request.POST.get('current_stock_isin_code', '')
-        public_user = PublicUser.objects.get(user=request.user)
-        current_stock = Company.objects.get(isin_code=current_stock)
-        current_stock_in_compare_list = CompareList.objects.filter(user=public_user, company=current_stock)
-        current_stock_in_compare_list.delete();
-        new_stock = Company.objects.get(isin_code=new_stock)
-        compare_list, created = CompareList.objects.get_or_create(user=public_user, company=new_stock)
-        compare_list.save()
-        if request.is_ajax():
-            res = {
-                'result': 'ok',
-            }
-            response = simplejson.dumps(res)
-            return HttpResponse(response, status=200, mimetype='application/json')
-        else:
-            return HttpResponseRedirect(reverse('compare_list'))
-
 class ViewWatchList(View):
 
     def get(self, request, *args, **kwargs):
@@ -310,6 +259,59 @@ class ViewWatchList(View):
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'view_watch_list.html', {})
 
+class AddToComparelist(View):
+
+    def post(self, request, *args, **kwargs):
+
+        isin_code = request.POST.get('isin_code', '')
+        if request.is_ajax() and isin_code:
+            company = Company.objects.get(isin_code=isin_code)
+            try:
+                public_user = PublicUser.objects.get(user=request.user)
+                compare_list_companies = CompareList.objects.filter(user=public_user)
+                if compare_list_companies.count() < 4:
+                    compare_list, created = CompareList.objects.get_or_create(user=public_user, company=company)
+                    compare_list.save()
+                    compare_list = CompareList.objects.filter(user=public_user)
+                    print "count=", compare_list.count()
+                    res = {
+                        'result': 'ok',
+                    }
+                else:
+                    res = {
+                        'result': 'error_stock_exceed',
+                        'error_message': 'You can add maximum 4 stocks in compare list'
+                    }
+            except:
+                res = {
+                    'result': 'error',
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+
+class ChangeCompareList(View):
+
+    def post(self, request, *args, **kwargs):
+
+        new_stock = request.POST.get('new_stock_isin_code', '')
+        current_stock = request.POST.get('current_stock_isin_code', '')
+        public_user = PublicUser.objects.get(user=request.user)
+        current_stock = Company.objects.get(isin_code=current_stock)
+        current_stock_in_compare_list = CompareList.objects.filter(user=public_user, company=current_stock)
+        current_stock_in_compare_list.delete();
+        new_stock = Company.objects.get(isin_code=new_stock)
+        compare_list, created = CompareList.objects.get_or_create(user=public_user, company=new_stock)
+        compare_list.save()
+        if request.is_ajax():
+            res = {
+                'result': 'ok',
+            }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        else:
+            return HttpResponseRedirect(reverse('compare_list'))
+
+
 class ViewCompareList(View):
 
     def get(self, request, *args, **kwargs):
@@ -317,6 +319,7 @@ class ViewCompareList(View):
         if request.is_ajax():
             public_user = PublicUser.objects.get(user=request.user)
             compare_list = CompareList.objects.filter(user=public_user)
+            print "view count=", compare_list.count()
             i = 0
             an_heads = []
             for obj in compare_list:

@@ -2,17 +2,21 @@
 {% block extrahead %}
 	<script type="text/javascript" src="http://www.google.com/recaptcha/api/js/recaptcha_ajax.js"></script>
 	<script type="text/javascript">
-         $(function() {
-           Recaptcha.create("{{recaptcha_public_key}}", 'recaptcha_div', {
-             theme: "clean",
-             callback: Recaptcha.focus_response_field});
-         });
-        
-      </script>
-       <script type="application/javascript">
-           /* function getip(json){
-            	alert(json.ip); // alerts the ip address
-    		}*/
+     $(function() {
+       Recaptcha.create("{{recaptcha_public_key}}", 'recaptcha_div', {
+         theme: "clean",
+         callback: Recaptcha.focus_response_field});
+
+     });
+   /* function clone() {
+      	Recaptcha.focus_response_field()
+    	$('#reg_recaptcha_div').html($('#recaptcha_div').clone(true,true));
+     };*/
+    </script>
+    <script type="application/javascript">
+       /* function getip(json){
+        	alert(json.ip); // alerts the ip address
+		}*/
     </script>
 
     <script type="application/javascript" src="http://jsonip.appspot.com/?callback=getip"></script>
@@ -37,7 +41,6 @@
 								<label> Password </label>
 								<input type="password" name="password" ng-model="password" />
 							</div>							
-							<div class="col-md-12 control" id="recaptcha_div"></div>		 
 							<p class="error_msg">[[login_msg]]</p>
 						</form>
 						<div class="col-md-12 box_head">
@@ -69,6 +72,7 @@
 								<label> Confirm Password </label>
 								<input type="password" name="password" ng-model="new_user.confirm_password" />
 							</div>
+							<div class="col-md-12 control" id="recaptcha_div"></div> 
 							<div class="col-md-12 control_last">
 								<input type="checkbox" name="terms" ng-model="new_user.terms" />
 								<p> &nbsp;&nbsp;Yes, I agree to the <a href=""> terms and conditions </a> of use </p>
@@ -76,9 +80,8 @@
 							</div>
 						</form>
 						<div class="col-md-12 box_head">
-							<button class="signup_button" ng-click="save_new_user()">Signup to your Account</button>
+							<button class="signup_button" ng-click="validate_user()">Signup to your Account</button>
 						</div>
-						
 					</div>
 				</div>
 			</div>
