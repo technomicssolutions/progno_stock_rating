@@ -6,7 +6,7 @@ from django.conf.urls import patterns, url
 from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, \
 	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList, public_login_required,\
      ViewCompareList, SearchResult, SearchCompany, DeleteFromCompareList, ChangeCompareList, \
-     HelpView)
+     HelpView, ActivateAccount)
 
 LOGIN_URL = '/login/'
 
@@ -30,6 +30,8 @@ urlpatterns = patterns('',
     url(r'^search_company/$', SearchCompany.as_view(), name="search_company"),
     url(r'^delete_from_compare_list/$', public_login_required(DeleteFromCompareList.as_view(), login_url="/login/"), name="delete_from_compare_list"),
     url(r'^help/$', public_login_required(HelpView.as_view(), login_url="/login/"), name="help"),
+    url(r'^activate/(?P<user_id>\d+)/$', progno_login_required(ActivateAccount.as_view(), login_url= LOGIN_URL), name="activate_account"),
+
 )
 
 

@@ -92,6 +92,16 @@ class Login(View):
                 return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'login.html', result)     
 
+class ActivateAccount(View):
+    def get(self, request, *args, **kwargs):
+        try:
+            user = User.objects.get(id=kwargs['user_id'])
+            user.is_active = True
+            user.save()
+        except:
+            pass
+        return HttpResponseRedirect(reverse('public_login'))
+
 class Signup(View):
 
     def post(self, request, *args, **kwargs):
@@ -104,22 +114,30 @@ class Signup(View):
             user = User()
             user.username = user_details['username']
             user.first_name = user_details['fullname']
+            user.email = user_details['username']
             if user_details['password']:
                 user.set_password(user_details['password'])
             try:
                 user.save()   
+                user.is_active = False
+                user.save()
+                email_to = user.email
+                subject = " Progno Account Activation "
+                message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "/activate/"+str(user.id)+"/"
+                from_email = settings.DEFAULT_FROM_EMAIL         
+                send_mail(subject, message, from_email,[email_to])
                 public_user = PublicUser()
                 public_user.user = user
                 public_user.save()
                 res = {
                     'result': 'ok',
-                    'next_url': next_url
+                    'next_url': next_url,
+                    'message': 'Account Activation link is sent to you email'
                 }
             except:
                 res = {
                     'result': 'error',
                 }
-            print "user", user
             user = authenticate(username=user_details['username'], password=user_details['password'])
             if user and user.is_active:
                 login(request, user)
@@ -311,7 +329,6 @@ class ChangeCompareList(View):
         else:
             return HttpResponseRedirect(reverse('compare_list'))
 
-
 class ViewCompareList(View):
 
     def get(self, request, *args, **kwargs):
@@ -408,7 +425,6 @@ class SearchResult(View):
             response = get_rating_report(request, [isin_code])
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'search_result.html', {'isin_code': isin_code})
-
 
 class HelpView(View):
 

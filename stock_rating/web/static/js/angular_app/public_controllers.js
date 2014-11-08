@@ -164,8 +164,8 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
             $scope.msg = "";
             $scope.reset_user();
             $scope.edit_flag = false;
-            console.log(data);
-            document.location.href = data.next_url
+            /*document.location.href = data.next_url*/
+             $scope.msg = data.message;
          }         
          else
             $scope.msg = "Username already exists";
