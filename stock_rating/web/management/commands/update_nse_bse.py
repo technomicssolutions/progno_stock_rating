@@ -29,7 +29,7 @@ class Command(BaseCommand):
     help = "Download NSE BSE price and update to db"
 
     def handle(self, *args, **options):
-        #get_nse_price()
+        get_nse_price()
         get_bse_price()
 
 
