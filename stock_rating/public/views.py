@@ -16,7 +16,8 @@ from django.core.mail import send_mail
 
 
 from models import PublicUser, WatchList, CompareList, Help
-from web.models import Company, CompanyModelScore, CompanyFunctionScore, NSEBSEPrice
+from web.models import  ( Company, CompanyModelScore, CompanyFunctionScore, NSEBSEPrice, \
+    CompanyModelFunctionPoint, ParameterLimit)
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
 
@@ -360,17 +361,22 @@ class ViewCompareList(View):
                             }
                         functions_details = []
                         for function in analytical_head.function_set.all():
-                            if i==0:
-                                head['functions'].append(function.function_name)
-                            function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
-                            if function_score.count() > 0:
-                                function_score = function_score[0]
-                            else:
-                                function_score = None
-                            functions_details.append({
-                                'funtion_name': function.function_name,
-                                'score': round(function_score.score, 2) if function_score and function_score.score else 'None'
-                            })
+                            try:                                                     
+                                parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
+                                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
+                                if i==0:
+                                    head['functions'].append(function.function_name)   
+                                function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                                if function_score.count() > 0:
+                                    function_score = function_score[0]
+                                else:
+                                    function_score = None
+                                functions_details.append({
+                                    'funtion_name': function.function_name,
+                                    'score': round(function_score.score, 2) if function_score and function_score.score else 'None'
+                                })
+                            except:
+                                pass
                         analytical_heads.append({
                             'head_name': analytical_head.title,
                             'functions': functions_details,
