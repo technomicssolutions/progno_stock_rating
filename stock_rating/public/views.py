@@ -117,27 +117,27 @@ class Signup(View):
             user.email = user_details['username']
             if user_details['password']:
                 user.set_password(user_details['password'])
-            try:
-                user.save()   
-                user.is_active = False
-                user.save()
-                email_to = user.email
-                subject = " Progno Account Activation "
-                message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "/activate/"+str(user.id)+"/"
-                from_email = settings.DEFAULT_FROM_EMAIL         
-                send_mail(subject, message, from_email,[email_to])
-                public_user = PublicUser()
-                public_user.user = user
-                public_user.save()
-                res = {
-                    'result': 'ok',
-                    'next_url': next_url,
-                    'message': 'Account Activation link is sent to you email'
-                }
-            except:
-                res = {
-                    'result': 'error',
-                }
+            #try:
+            user.save()   
+            user.is_active = False
+            user.save()
+            email_to = user.email
+            subject = " Progno Account Activation "
+            message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "/activate/"+str(user.id)+"/"
+            from_email = settings.DEFAULT_FROM_EMAIL         
+            send_mail(subject, message, from_email,[email_to])
+            public_user = PublicUser()
+            public_user.user = user
+            public_user.save()
+            res = {
+                'result': 'ok',
+                'next_url': next_url,
+                'message': 'Account Activation link is sent to you email'
+            }
+            # except:
+            #     res = {
+            #         'result': 'error',
+            #     }
             user = authenticate(username=user_details['username'], password=user_details['password'])
             if user and user.is_active:
                 login(request, user)
