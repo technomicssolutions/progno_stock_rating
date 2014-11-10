@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^search_company/$', SearchCompany.as_view(), name="search_company"),
     url(r'^delete_from_compare_list/$', public_login_required(DeleteFromCompareList.as_view(), login_url="/login/"), name="delete_from_compare_list"),
     url(r'^help/$', public_login_required(HelpView.as_view(), login_url="/login/"), name="help"),
-    url(r'^activate/(?P<user_id>\d+)/$', public_login_required(ActivateAccount.as_view(), login_url= LOGIN_URL), name="activate_account"),
+    url(r'^activate/(?P<user_id>\d+)/$', ActivateAccount.as_view(), name="activate_account"),
 
 )
 

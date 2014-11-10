@@ -23,8 +23,6 @@ from web.utils import get_rating_details_by_star_count , get_rating_report, get_
 
 def public_login_required(function, login_url):
     def wrapper(request, *args, **kw):
-        print dir(request)
-        print request.get_full_path()
         request.session['next_url'] = request.get_full_path()
         user = request.user  
         if user.is_authenticated:
@@ -66,7 +64,6 @@ class Login(View):
     def post(self, request, *args, **kwargs):
 
         user = authenticate(username=request.POST['username'], password=request.POST['password'])
-        print "user", user
         if user and user.is_active:
             if request.session.get('next_url', ''):
                 next_url = request.session.get('next_url', '')
@@ -99,7 +96,8 @@ class ActivateAccount(View):
             user = User.objects.get(id=kwargs['user_id'])
             user.is_active = True
             user.save()
-        except:
+        except Exception as e:
+            print str(e)
             pass
         return HttpResponseRedirect(reverse('public_login'))
 
@@ -118,30 +116,27 @@ class Signup(View):
             user.email = user_details['username']
             if user_details['password']:
                 user.set_password(user_details['password'])
-            #try:
-            user.save()   
-            user.is_active = False
-            user.save()
-            email_to = user.email
-            subject = " Progno Account Activation "
-            message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "/activate/"+str(user.id)+"/"
-            from_email = settings.DEFAULT_FROM_EMAIL         
-            send_mail(subject, message, from_email,[email_to])
-            public_user = PublicUser()
-            public_user.user = user
-            public_user.save()
-            res = {
-                'result': 'ok',
-                'next_url': next_url,
-                'message': 'Account Activation link is sent to you email'
-            }
-            # except:
-            #     res = {
-            #         'result': 'error',
-            #     }
-            user = authenticate(username=user_details['username'], password=user_details['password'])
-            if user and user.is_active:
-                login(request, user)
+            try:
+                user.save()   
+                user.is_active = False
+                user.save()
+                public_user = PublicUser()
+                public_user.user = user
+                public_user.save()
+                email_to = user.email
+                subject = " Progno Account Activation "
+                message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "activate/"+str(user.id)+"/"
+                from_email = settings.DEFAULT_FROM_EMAIL         
+                send_mail(subject, message, from_email,[email_to])
+                res = {
+                    'result': 'ok',
+                    'next_url': next_url,
+                    'message': 'Account Activation link is sent to you email'
+                }
+            except:
+                res = {
+                    'result': 'error',
+                }
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'home.html', {})
