@@ -132,7 +132,6 @@ class FunctionSettings(View):
                         'id': function.id,
                         'name': function.function_name,
                         'head': function.analytical_head.title,
-                        # 'category': function.category.category_name,
                         'created_date': function.created_date.strftime("%d/%m/%Y"),
                         'modified_date': function.updated_date.strftime("%d/%m/%Y"),
                         'function_type': function.function_type,

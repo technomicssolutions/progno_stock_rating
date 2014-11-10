@@ -122,7 +122,6 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                         if(data.result=="false"){
                             $scope.msg = "Text Entered is not correct";                            
                             Recaptcha.reload();
-                            console.log($scope.msg);
                             return false;
                         } else {
                             $scope.save_new_user();
@@ -160,16 +159,16 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                 'Content-Type' : 'application/x-www-form-urlencoded'
             }
         }).success(function(data, status) {   
-         if(data.result == 'ok'){
-            $scope.msg = "";
-            $scope.reset_user();
-            $scope.edit_flag = false;
-            /*document.location.href = data.next_url*/
-             $scope.msg = data.message;
-         }         
-         else
-            $scope.msg = "Username already exists";
-            
+            if(data.result == 'ok'){
+                $scope.msg = "";
+                $scope.reset_user();
+                $scope.edit_flag = false;
+                $scope.msg = data.message;
+                Recaptcha.reload();
+            } else {
+                $scope.msg = "Username already exists";
+                Recaptcha.reload();
+            }
         }).error(function(data, status){
             $scope.message = data.message;
         });
@@ -188,11 +187,11 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
                 'Content-Type' : 'application/x-www-form-urlencoded'
             }
         }).success(function(data, status) {   
-         if(data.result == 'Ok'){
-            $scope.msg = "";
-            document.location.href = data.next_url;
-         } else
-            $scope.login_msg = "Username or Password is incorrect";
+            if(data.result == 'Ok'){
+                $scope.msg = "";
+                document.location.href = data.next_url;
+            } else
+                $scope.login_msg = "Username or Password is incorrect";
             
         }).error(function(data, status){
             $scope.message = data.message;
