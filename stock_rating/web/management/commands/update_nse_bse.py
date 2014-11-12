@@ -65,7 +65,6 @@ def get_bse_price():
         buffer = page.read(block_sz)
         if not buffer:
             break
-
         file_size_dl += len(buffer)
         f.write(buffer)
         status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)

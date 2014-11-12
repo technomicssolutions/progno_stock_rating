@@ -1843,6 +1843,7 @@ function AnalyticalHeadController($scope, $element, $http, $timeout, $location)
         $scope.new_head.head_name = head.title;
         $scope.new_head.head_description = head.description;
         $scope.new_head.id = head.id;
+        $scope.new_head.function_set = head.function_set;
     }
     $scope.delete_head = function(head){
         show_loader();

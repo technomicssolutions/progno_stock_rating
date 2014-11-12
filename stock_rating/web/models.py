@@ -1,8 +1,8 @@
 
 from jsonfield import JSONField
-
 from django.db import models
 from django.contrib.auth.models import User
+from django.http import HttpResponse
 
 
 class Date(models.Model):
@@ -88,6 +88,7 @@ class Function(Date):
     description = models.TextField('Description', null=True, blank=True)
     function_type = models.CharField('Type', choices=FUNCTION_TYPES, max_length=11)
     formula = models.ForeignKey(Formula, null=True, blank=True)
+    order = models.IntegerField('Order', null=True, blank=True)
 
     def __unicode__(self):
         return self.function_name
@@ -135,6 +136,7 @@ class Company(Date):
 
     def __unicode__(self):
         return self.company_name + ' - ' + self.isin_code
+
 
 class AnalysisModel(Date):
 

@@ -14,7 +14,23 @@
 			<label> Description: </label>
 			<input type="text" name="head_description" ng-model="new_head.head_description" />
 			<p class="error_msg"> [[msg]] </p>
+		</div>
+		<div ng-show="new_head.function_set.length > 0">
+			<h4> Functions </h4>
+			<table class="table table-stripped">
+				<tr> 
+					<th> # </th>
+					<th> Name </th>
+					<th> Order </th>				
+				</tr>
+				<tr ng-repeat="function in new_head.function_set"> 
+					<th> [[$index+1]] </th>
+					<th> [[function.function_name]] </th>
+					<th> <input type="text" name="" ng-model="function.order" /> </th>				
+				</tr>
+			</table>
 			<input type="submit" name="submit" value="Save" ng-click="save_new_head()"/>
+
 		</div>
 	</div>
 	<div class="tab_list">

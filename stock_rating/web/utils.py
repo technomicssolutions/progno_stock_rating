@@ -339,7 +339,7 @@ def get_rating_report(request, search_keys):
             analytical_heads = []
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
-                for function in analytical_head.function_set.all():
+                for function in analytical_head.function_set.all().order_by('order'):
                     try:
                         parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
                         fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)

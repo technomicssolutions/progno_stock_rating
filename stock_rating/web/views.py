@@ -474,6 +474,7 @@ class AnalyticalHeads(View):
                     function_set.append({
                         'function_id': function.id,
                         'function_name': function.function_name,
+                        'order': function.order if function.order else ''
                     })
                 heads.append({
                     'id':head.id,
@@ -503,6 +504,11 @@ class AnalyticalHeads(View):
             head.title = head_details['head_name']
             head.description = head_details['head_description']
             head.created_by = request.user
+            functions = head_details['function_set']
+            for function in functions:
+                fun = Function.objects.get(id=function['function_id'])
+                fun.order = int(function['order']) if function['order'] else None
+                fun.save()
             try:
                 head.save()
                 res = {

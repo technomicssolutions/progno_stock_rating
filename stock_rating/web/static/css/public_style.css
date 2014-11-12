@@ -532,6 +532,13 @@ footer a {
 	color: #87E4DC;
 }
 
+.row_1 .analytical_head_1 {
+	color: red;
+}
+
+.row_1 .analytical_head_2 {
+	color: yellow;
+}
 .blue_text {
 	color: #0066CC;
 }

@@ -126,13 +126,22 @@ INSTALLED_APPS = (
     'south',
     'web',
     'public',
+    'social_auth',
 )
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
     'stock_rating.context_processors.site_variables',
 )
-
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details'
+)
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
@@ -163,6 +172,17 @@ LOGGING = {
     }
 }
 
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+FACEBOOK_APP_ID              = '1497614653848580'
+FACEBOOK_API_SECRET          = '090a60364f1d73e8f0b4516909bd6027'
+FACEBOOK_EXTENDED_PERMISSIONS = ['email', 'user_birthday', 'user_likes', 'publish_actions', 'public_profile']
+SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [('gender', 'gender'),('birthday', 'birthday'), ('location','location')]
+
+LOGIN_URL          = '/login/'
+LOGIN_REDIRECT_URL = '/'
 
 RECAPTCHA_PUBLIC_KEY = '6Ld2gvwSAAAAAFGdHMT6dgfDxL5JUOW4Z_SNAIgo'
 RECAPTCHA_PRIVATE_KEY = '6Ld2gvwSAAAAAElFWJenb8JTeoDW5v2a6JFlPNS5'

@@ -4,6 +4,8 @@ import simplejson
 import ast
 import urllib
 import datetime
+import urllib2
+import json
 
 from django.shortcuts import render
 from django.views.generic.base import View
@@ -45,11 +47,26 @@ def is_public_user(request):
 
 class Home(View):
     def get(self, request, *args, **kwargs):
+        user = request.user
         if request.user.is_authenticated():
-            if  is_public_user(request):
+            if  is_public_user(request):               
                 return render(request, 'home.html', {})
             else:
-                return HttpResponseRedirect(reverse('dashboard'))
+                if user.social_auth.all().count() > 0:
+                    #url = "http://graph.facebook.com/%s/picture?type=large" %
+                    #https://graph.facebook.com/[User FB ID]/og.likes                    
+                    public_user = PublicUser()
+                    public_user.user = user
+                    public_user.save()
+                    social_user = request.user.social_auth.filter(provider='facebook')[0]
+                    url = u"""https://graph.facebook.com/{0}/?access_token={1}""".format(social_user.uid, social_user.extra_data['access_token'],)
+                    request = urllib2.Request(url) 
+                    profile = json.loads(urllib2.urlopen(request).read()).get('data')
+                    if profile:
+                        print profile
+                    return render(request, 'home.html', {})
+                else:
+                    return HttpResponseRedirect(reverse('dashboard'))
         else:
             return render(request, 'home.html', {})
 
@@ -355,7 +372,7 @@ class ViewCompareList(View):
                                 'functions': []
                             }
                         functions_details = []
-                        for function in analytical_head.function_set.all():
+                        for function in analytical_head.function_set.all().order_by('order'):
                             try:                                                     
                                 parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
                                 fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)

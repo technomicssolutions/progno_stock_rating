@@ -21,7 +21,37 @@
 
     <script type="application/javascript" src="http://jsonip.appspot.com/?callback=getip"></script>
 
-	 
+    <script type="text/javascript">
+     window.fbAsyncInit = function() {
+	    // init the FB JS SDK
+	    FB.init({
+	      appId      : '1497614653848580',                        // App ID from the app dashboard
+	      status     : true,                                 // Check Facebook Login status
+	      xfbml      : true                                  // Look for social plugins on the page
+	    });
+	    FB.api(
+		    "/me/og.likes",
+		    function (response) {
+		      if (response && !response.error) {
+		        console.log(response);
+		      }
+		    }
+		);
+	    FB.api(
+		    "/me/og.likes",
+		    "POST",
+		    {
+		        "object": "http:\/\/prognoctok.technomicssolutions.com\/"
+		    },
+		    function (response) {
+		      if (response && !response.error) {
+		        console.log(response);
+		      }
+		    }
+		);
+	    // Additional initialization code such as adding Event Listeners goes here
+	  };
+	</script>
 {% endblock extrahead %}
 
 {% block controller %}ng-controller="LoginRegistrationController" ng-init="init('{{csrf_token}}', '{{recaptcha_private_key}}')" {% endblock controller %}
@@ -48,7 +78,7 @@
 							<p align="center"> Recover Your <a href=""> password </a>
 						</div>
 						<div class="col-md-12">
-							<button class="f_connect"></button>
+							<a href="{% url 'socialauth_begin' 'facebook' %}?{{ redirect_querystring }}"><button class="f_connect"></button></a>
 						</div>
 					</div>
 				</div>
