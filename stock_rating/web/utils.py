@@ -321,21 +321,7 @@ def get_rating_report(request, search_keys):
                 'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
             }
             model = model_score.analysis_model
-            parameters = model.parameterlimit_set.all()
-            comments = []
-            # for parameter in parameters:
-            #     function = parameter.function
-            #     fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
-            #     if fun_score.count() > 0:
-            #         if fun_score.points == parameter.strong_points:
-            #             comment = parameter.strong_comment
-            #             comments.append(comment)
-            #         elif fun_score.points == parameter.weak_points:
-            #             comment = parameter.weak_comment
-            #             comments.append(comment)
-            #         elif fun_score.points == parameter.neutral_points:
-            #             comment = parameter.neutral_comment
-            #             comments.append(comment) 
+            comments = []            
             analytical_heads = []
             for analytical_head in model.analytical_heads.all():
                 functions_details = []
@@ -356,15 +342,28 @@ def get_rating_report(request, search_keys):
                                 comment = parameter.neutral_comment
                                 comments.append(comment)  
                         function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                        if function_score.count() > 0:
+                            function_score = function_score[0]
+                            if function_score.score is not None:
+                                if analytical_head.title != 'Valuation' and parameter.function.function_name != 'Debt to Equity' :
+                                    score = str(round(function_score.score, 2))+'%'
+                                else:
+                                    score = round(function_score.score, 2)
+                            else:
+                                function_score = None
+                        else:
+                            score = None
+                            function_score = None
                         if comment:
                             functions_details.append({
-                                'function_name': function.function_name + (str(' - ') + str(round(function_score[0].score, 2)) if function_score[0].score else '') if len(function_score) > 0 else '',
-                                'score': round(function_score[0].score, 2) if len(function_score) > 0 else 'None',
+                                'function_name': function.function_name + (str(' - ') + str(round(function_score.score, 2)) if function_score.score else ''),
+                                'score': score,
                                 'description': function.description,
                                 'comments': comment,
                             })
                     except:
                         pass
+
                 analytical_heads.append({
                     'analytical_head_name': analytical_head.title,
                     'functions': functions_details,

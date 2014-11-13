@@ -354,6 +354,8 @@ class ViewCompareList(View):
             an_heads = []
             for obj in compare_list:
                 company = obj.company
+                print company.company_name
+
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0: 
                     company_dict = {
@@ -375,18 +377,26 @@ class ViewCompareList(View):
                         for function in analytical_head.function_set.all().order_by('order'):
                             try:                                                     
                                 parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
-                                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
                                 if i==0:
                                     head['functions'].append(function.function_name)   
-                                function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                                function_score = CompanyFunctionScore.objects.filter(function=parameter.function, company=company)
                                 if function_score.count() > 0:
                                     function_score = function_score[0]
+                                    if function_score.score is not None:
+                                        if analytical_head.title != 'Valuation' and parameter.function.function_name != 'Debt to Equity' :
+                                            score = str(round(function_score.score, 2))+'%'
+                                        else:
+                                            score = round(function_score.score, 2)
+                                    else:
+                                        function_score = None
                                 else:
+                                    score = None
                                     function_score = None
-                                functions_details.append({
-                                    'funtion_name': function.function_name,
-                                    'score': round(function_score.score, 2) if function_score and function_score.score else 'None'
-                                })
+                                if score is not None:
+                                    functions_details.append({
+                                        'funtion_name': function.function_name,
+                                        'score': score
+                                    })
                             except:
                                 pass
                         analytical_heads.append({
@@ -425,7 +435,6 @@ class DeleteFromCompareList(View):
             response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         else:
-            print "hsilk"
             return HttpResponseRedirect(reverse('compare_list'))
 
 class SearchCompany(View):
