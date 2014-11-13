@@ -198,8 +198,7 @@ def get_file_fields():
 def get_rating_details_by_star_count(request, star_count):
     ratings = []
     isin_list = []
-    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count)
-    print "model_scores", model_scores
+    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('score')
     public_user = PublicUser.objects.filter(user=request.user)
     for model_score in model_scores:
         model = model_score.analysis_model
@@ -253,7 +252,7 @@ def get_rating_details_by_star_count(request, star_count):
             'isin_code': company.isin_code,
             'industry': company.industry.industry_name,
             'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
-            'score': model_score.points,
+            'score': str(model_score.points) + '%' ,
             'brief_comment': model_score.star_rating.comment,
             'detailed_comment': comments,
             'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
@@ -356,7 +355,7 @@ def get_rating_report(request, search_keys):
                             function_score = None
                         if comment:
                             functions_details.append({
-                                'function_name': function.function_name + (str(' - ') + str(round(function_score.score, 2)) if function_score.score else ''),
+                                'function_name': function.function_name + (str(' - ') + str(score) if score is not None else ''),
                                 'score': score,
                                 'description': function.description,
                                 'comments': comment,

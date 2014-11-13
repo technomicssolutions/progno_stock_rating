@@ -349,13 +349,10 @@ class ViewCompareList(View):
         if request.is_ajax():
             public_user = PublicUser.objects.get(user=request.user)
             compare_list = CompareList.objects.filter(user=public_user)
-            print "view count=", compare_list.count()
             i = 0
             an_heads = []
             for obj in compare_list:
                 company = obj.company
-                print company.company_name
-
                 model_score = CompanyModelScore.objects.filter(company=company)
                 if model_score.count() > 0: 
                     company_dict = {
