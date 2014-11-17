@@ -295,7 +295,6 @@ class ViewWatchList(View):
 class AddToComparelist(View):
 
     def post(self, request, *args, **kwargs):
-
         isin_code = request.POST.get('isin_code', '')
         if request.is_ajax() and isin_code:
             company = Company.objects.get(isin_code=isin_code)
@@ -306,7 +305,6 @@ class AddToComparelist(View):
                     compare_list, created = CompareList.objects.get_or_create(user=public_user, company=company)
                     compare_list.save()
                     compare_list = CompareList.objects.filter(user=public_user)
-                    print "count=", compare_list.count()
                     res = {
                         'result': 'ok',
                     }
@@ -325,7 +323,6 @@ class AddToComparelist(View):
 class ChangeCompareList(View):
 
     def post(self, request, *args, **kwargs):
-
         new_stock = request.POST.get('new_stock_isin_code', '')
         current_stock = request.POST.get('current_stock_isin_code', '')
         public_user = PublicUser.objects.get(user=request.user)
