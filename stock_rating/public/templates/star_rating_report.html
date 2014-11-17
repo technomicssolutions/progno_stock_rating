@@ -49,14 +49,12 @@
 			<div class="col-md-4 price_value">
 				<p> [[star_ratings.0.pricing.date]] </p>
 				<p class="aqua_bold"> NSE </p>
-				<p class="green_bold"> Rs [[star_ratings.0.pricing.nse_price]] </p>
-				<p> Market Capitalization </p>
+				<p class="green_bold"> Rs [[star_ratings.0.pricing.nse_price]] ([[nse_change]])</p>
 			</div>
 			<div class="col-md-4 price_value">
 				<p> [[star_ratings.0.pricing.date]] </p>
 				<p class="aqua_bold"> BSE </p>
-				<p class="green_bold"> Rs [[star_ratings.0.pricing.bse_price]] </p>
-				<p> Market Capitalization </p>
+				<p class="green_bold"> Rs [[star_ratings.0.pricing.bse_price]] ([[bse_change]])</p>
 			</div>
 		</div>			
 	</div>
@@ -78,9 +76,7 @@
 				<div class="col-md-12 white_bg analytical_head_container">
 					<div class="col-md-12">
 						<h4 class="blue_text">Company Financials & Price Data</h4>
-						<p>give links to respective pages in BSE website</p>
-						<h4 class="blue_text">Latest Corporate Announcement</h4>
-						<p>list here the respective links in BSE website</p>
+						<p><a href="http://www.bseindia.com/stock-share-price/{{company.company_name|slugify}}/{{company.bse_scrip_id|lower}}/{{company.BSE_code}}/" target="_blank">Click here</a></p>
 					</div>
 				</div>
 			</div>

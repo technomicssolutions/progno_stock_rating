@@ -53,17 +53,18 @@ class Command(BaseCommand):
                             group = cell_value
                         if field_name == 'ISIN No':
                             isin_code = cell_value
-                            
-                            try:
-                                company = Company.objects.get(isin_code = isin_code)
-                                company.BSE_code = str(bse_code)
-                                company.bse_status = status
-                                company.bse_group = group
-                                company.save()
-                                print "company", company
-                            except Exception as ex:
-                                print str(ex)
-                                pass
+                        if field_name == 'Scrip Id':
+                            scrip_id = cell_value
+                    try:
+                        company = Company.objects.get(isin_code = isin_code)
+                        company.BSE_code = str(bse_code)
+                        company.bse_status = status
+                        company.bse_group = group
+                        company.bse_scrip_id = scrip_id
+                        company.save()
+                        print "company", company
+                    except Exception as ex:
+                        pass
                     
                         
                 

@@ -49,24 +49,18 @@ class Home(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         if request.user.is_authenticated():
-            if  is_public_user(request):               
+            if  is_public_user(request):   
+                if user.social_auth.all().count() > 0:
+                    public_user, created = PublicUser.objects.get_or_create(user=user)
+                    url = """http://graph.facebook.com/{0}/""".format(user.username)
+                    p =  urllib2.urlopen(url)
+                    p = p.readline()
+                    p = ast.literal_eval(p)
+                    public_user.fb_details = p
+                    public_user.save()                             
                 return render(request, 'home.html', {})
             else:
-                if user.social_auth.all().count() > 0:
-                    #url = "http://graph.facebook.com/%s/picture?type=large" %
-                    #https://graph.facebook.com/[User FB ID]/og.likes                    
-                    public_user = PublicUser()
-                    public_user.user = user
-                    public_user.save()
-                    social_user = request.user.social_auth.filter(provider='facebook')[0]
-                    url = u"""https://graph.facebook.com/{0}/?access_token={1}""".format(social_user.uid, social_user.extra_data['access_token'],)
-                    request = urllib2.Request(url) 
-                    profile = json.loads(urllib2.urlopen(request).read()).get('data')
-                    if profile:
-                        print profile
-                    return render(request, 'home.html', {})
-                else:
-                    return HttpResponseRedirect(reverse('dashboard'))
+                return HttpResponseRedirect(reverse('dashboard'))
         else:
             return render(request, 'home.html', {})
 
@@ -180,10 +174,11 @@ class StarRatingReport(View):
     def get(self, request, *args, **kwargs):
 
         isin_code = request.GET.get('isin_code', '')
+        company = Company.objects.get(isin_code=isin_code)
         if request.is_ajax() and isin_code:
             response = get_rating_report(request, [isin_code])
             return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'star_rating_report.html', {'isin_code': isin_code})
+        return render(request, 'star_rating_report.html', {'company': company, 'isin_code': isin_code})
 
 class VerifyRecaptcha(View):
     def post(self, request, *args, **kwargs):

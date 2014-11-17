@@ -1,10 +1,13 @@
 
+from jsonfield import JSONField
 from django.db import models
 from django.contrib.auth.models import User
 from web.models import Company
 
 class PublicUser(models.Model):
 	user = models.ForeignKey(User, unique=True)
+	fb_details = JSONField('FB Details', null=True, blank=True)
+
 
 	def __unicode__(self):
 		return self.user.username

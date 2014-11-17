@@ -29,7 +29,7 @@ class Command(BaseCommand):
     help = "Download NSE BSE price and update to db"
 
     def handle(self, *args, **options):
-        get_nse_price()
+        #get_nse_price()
         get_bse_price()
 
 
@@ -47,7 +47,7 @@ def get_bse_price():
     base_url = "http://www.bseindia.com/download/BhavCopy/Equity/" #2014/OCT/cm29OCT2014bhav.csv.zip"
     bse_file = "EQ"+str(date.day)+str(date.month)+date.strftime('%y')+'_CSV.ZIP'
     url = base_url+bse_file
-    #print url
+    print url
     req = urllib2.Request(url, headers=hdr)
 
     page = urllib2.urlopen(req)
@@ -126,6 +126,7 @@ def get_nse_price():
         'Connection': 'keep-alive'
     }
     base_url = "http://www.nseindia.com/content/historical/EQUITIES/" #2014/OCT/cm29OCT2014bhav.csv.zip"
+    print base_url
     date = datetime.now().date()
     #date = date + timedelta(days=-1)
     directory = str(date.year)+"/"+month[str(date.month)]+"/"
@@ -136,7 +137,8 @@ def get_nse_price():
         day = str(day)
     filename = "cm"+str(day)+month[str(date.month)]+str(date.year)+"bhav.csv.zip"
     url = base_url+directory+filename
-    #print url
+    print url
+    print "/content/historical/EQUITIES/2014/NOV/cm17NOV2014bhav.csv.zip"
     req = urllib2.Request(url, headers=hdr)
     file_name = url.split('/')[-1]
 

@@ -316,6 +316,8 @@ def get_rating_report(request, search_keys):
             model_score = model_score[0]
             rating = {
                 'company_name': company.company_name + ' - ' + company.isin_code,
+                'bse_scrip_id': company.bse_scrip_id,
+                'bse_code': company.BSE_code,
                 'isin_code': company.isin_code,
                 'industry': company.industry.industry_name,
                 'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
@@ -378,10 +380,20 @@ def get_rating_report(request, search_keys):
             pricing = {}
             try:
                 price = NSEBSEPrice.objects.get(company=company, latest=True)
+                last_bse_price = price.parent.BSE_price
+                last_nse_price = price.parent.NSE_price
+                print last_bse_price, price.BSE_price
+                print last_nse_price, price.NSE_price
+                bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
+                nse_change = ((last_nse_price - price.NSE_price)/price.NSE_price)*100
+                print bse_change
+                print nse_change
                 pricing = {
                     'nse_price': price.NSE_price,
                     'bse_price': price.BSE_price,
-                    'date': price.date.strftime('%d %B %Y')
+                    'date': price.date.strftime('%d %B %Y'),
+                    'bse_change': 'up by '+str(abs(bse_change))+ '% since last review' if bse_change>0 else  'down by '+str(abs(bse_change))+ '% since last review',
+                    'nse_change': 'up by '+str(abs(nse_change))+ '% since last review' if nse_change>0 else  'down by '+str(abs(nse_change))+ '% since last review'
                 }
             except Exception as ex:
                 print str(ex)
