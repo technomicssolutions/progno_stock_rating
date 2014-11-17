@@ -195,10 +195,16 @@ def get_file_fields():
                 file_fields = list(set(file_fields + sheet['rows'][0]))
     return file_fields
 
-def get_rating_details_by_star_count(request, star_count):
+def get_rating_details_by_star_count(request, star_count, order_by, start, end):
     ratings = []
     isin_list = []
-    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('score')
+    if start == '':
+        start = 0
+    if end == '':
+        end = 10
+    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('score')[int(start):int(end)]
+    if order_by == 'company_name':
+        model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('company__company_name')[int(start):int(end)]
     public_user = PublicUser.objects.filter(user=request.user)
     for model_score in model_scores:
         model = model_score.analysis_model

@@ -236,9 +236,15 @@ function StarRatingController($scope, $http){
         var n = Math.abs(n);
         return new Array(n);
     }
-    $scope.get_company_star_rating = function(star_count) {
+    $scope.get_company_star_rating = function(star_count, order_by) {
         show_loader()
-        $http.get('/star_rating/?star_count='+star_count+'&ajax=true').success(function(data){
+        if(!order_by){
+            order_by = 'score';
+        }
+        start = 0;
+        end=10;
+        var url = '/star_rating/?star_count='+star_count+'&order_by='+order_by+'&start='+start+'&end='+end+'&ajax=true'
+        $http.get(url).success(function(data){
             hide_loader()
             $scope.star_ratings = data.star_ratings;
             if(data.star_ratings.length == 0){

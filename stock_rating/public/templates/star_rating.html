@@ -32,10 +32,10 @@
 			<div class="col-md-12">
 				<table class="table table-striped list_table" ng-show="visible_list.length > 0">
 					<tr>
-						<th>Company Name</th>
+						<th>Company Name <a href="#" ng-click="get_company_star_rating('{{star_count}}', 'company_name')" class="sort_list"></a></th>
 						<th>Industry</th>
 						<th>Star Rating</th>
-						<th>Score</th>
+						<th style="width: 110px;">Score <a href="#" ng-click="get_company_star_rating('{{star_count}}', 'score')" class="sort_list"></a></th>
 						<th>Price BSE</th>
 						<th>Price NSE</th>
 						<th>Rating Changed on </th>

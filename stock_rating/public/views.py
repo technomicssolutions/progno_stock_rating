@@ -167,9 +167,11 @@ class StarRating(View):
 
     def get(self, request, *args, **kwargs):
         star_count = request.GET.get('star_count', '')
-        print "star_count", star_count
+        order_by = request.GET.get('order_by', '')
+        start = request.GET.get('start', '')
+        end = request.GET.get('end', '')
         if request.is_ajax() and star_count:
-            response = get_rating_details_by_star_count(request, star_count)
+            response = get_rating_details_by_star_count(request, star_count, order_by, start, end)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating.html', {'star_count': star_count})
 
