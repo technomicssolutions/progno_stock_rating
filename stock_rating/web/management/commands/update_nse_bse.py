@@ -29,7 +29,7 @@ class Command(BaseCommand):
     help = "Download NSE BSE price and update to db"
 
     def handle(self, *args, **options):
-        #get_nse_price()
+        get_nse_price()
         get_bse_price()
 
 
@@ -91,24 +91,25 @@ def get_bse_price():
                     close_price = value
                     try:
                         company = Company.objects.get(BSE_code = bse_code)
-                        try:
+                        price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
+                        if created:
                             try:
-                                last = NSEBSEPrice.objects.get(company=company, last_review=True)
-                                last.last_review = False;
-                                last.save()
+                                try:
+                                    last = NSEBSEPrice.objects.get(company=company, last_review=True)
+                                    last.last_review = False;
+                                    last.save()
+                                except:
+                                    pass
+                                latest_pr = NSEBSEPrice.objects.get(company=company, latest=True)
+                                latest_pr.latest = False
+                                latest_pr.last_review = True
+                                latest_pr.save()
                             except:
                                 pass
-                            latest_pr = NSEBSEPrice.objects.get(company=company, latest=True)
-                            latest_pr.latest = False
-                            latest_pr.last_review = True
-                            latest_pr.save()
-                        except:
-                            pass
-                        price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
+                            if latest_pr:
+                                price.parent = latest_pr
                         price.BSE_price = close_price
-                        price.latest = True
-                        if latest_pr:
-                            price.parent = latest_pr
+                        price.latest = True                       
                         price.save()
                     except Exception as ex:
                         print str(ex)
