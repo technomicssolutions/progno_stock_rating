@@ -1,4 +1,4 @@
-
+ 
 @font-face {
     font-family: 'open_sansregular';
     src: url('../fonts/opensans-regular-webfont.eot');
@@ -678,4 +678,11 @@ footer a {
 	display: block;
 	float: right;
 	margin-top: 10px;
+}
+
+.tooltip.bottom .tooltip-inner {
+    background-color: #0066CC;
+}
+.tooltip.bottom .tooltip-arrow {
+      border-bottom-color: #0066CC;
 }

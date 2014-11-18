@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/static/css/public_style.css" />
 
     <script src="/static/js/jquery-1.11.1.min.js"></script>
-    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <!--  Angularjs -->
     <script src="/static/js/angular_app/lib/angular/angular.min.js"></script>
     <script src="/static/js/angular_app/lib/angular/angular-route.js"></script>
@@ -24,6 +24,15 @@
     <script src="/static/js/angular_app/directives.js"></script>
     <script src="/static/js/angular_app/controllers.js"></script>
     <script src="/static/js/angular_app/public_controllers.js"></script>
+
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+
+
     {% block extrahead %}
     {% endblock extrahead %}
     
