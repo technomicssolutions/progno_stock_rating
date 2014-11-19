@@ -380,7 +380,7 @@ def get_rating_report(request, search_keys):
             pricing = {}
             try:
                 price = NSEBSEPrice.objects.get(company=company, latest=True)
-                last_review = NSEBSEPrice.objects.get(company=company, last_review=True)
+                last_review = NSEBSEPrice.objects.filter(company=company, last_review=True)[0]                
                 last_bse_price = last_review.BSE_price
                 last_nse_price = last_review.NSE_price
                 bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
