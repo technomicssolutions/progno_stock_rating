@@ -182,11 +182,11 @@ def get_nse_price():
                     close_price = value
                 if c == 12:
                     isin = value
-                    price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
-                    price.company = company
-                    price.NSE_price = close_price
                     try:
                         company = Company.objects.get(isin_code = isin)
+                        price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
+                        price.company = company
+                        price.NSE_price = close_price
                         try:
                             last = NSEBSEPrice.objects.filter(company=company, last_review=True)
                             if last.count() > 0:
