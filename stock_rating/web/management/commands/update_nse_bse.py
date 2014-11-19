@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
 def get_bse_price():
     date = datetime.now().date()
-    #date = date + timedelta(days=-1)
+    date = date + timedelta(days=-1)
     hdr = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -129,7 +129,7 @@ def get_nse_price():
     base_url = "http://www.nseindia.com/content/historical/EQUITIES/" #2014/OCT/cm29OCT2014bhav.csv.zip"
     print base_url
     date = datetime.now().date()
-    #date = date + timedelta(days=-1)
+    date = date + timedelta(days=-1)
     directory = str(date.year)+"/"+month[str(date.month)]+"/"
     day = date.day
     if day < 10:
@@ -185,12 +185,14 @@ def get_nse_price():
                     try:
                         company = Company.objects.get(isin_code = isin)
                         try:
-                            condition = NSEBSEPrice.objects.get(~Q(date=date), company=company, latest=True)
-                            if condition:
-                                last = NSEBSEPrice.objects.get(company=company, last_review=True)
+                            last = NSEBSEPrice.objects.filter(company=company, last_review=True)
+                            if last.count() > 0:
+                                last = last[0]
                                 last.last_review = False;
                                 last.save()
-                                latest_pr = NSEBSEPrice.objects.get(company=company, latest=True)
+                            latest_pr = NSEBSEPrice.objects.filter(company=company, latest=True)
+                            if latest_pr.count() > 0:
+                                latest_pr = latest_pr[0]
                                 latest_pr.latest = False
                                 latest_pr.last_review = True
                                 latest_pr.save()

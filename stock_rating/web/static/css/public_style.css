@@ -686,3 +686,9 @@ footer a {
 .tooltip.bottom .tooltip-arrow {
       border-bottom-color: #0066CC;
 }
+
+.price_change {
+	font-size: 12px !important;
+	color: #000 !important;
+	font-weight: normal;
+}
