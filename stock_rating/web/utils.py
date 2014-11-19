@@ -385,6 +385,7 @@ def get_rating_report(request, search_keys):
                 last_nse_price = last_review.NSE_price
                 bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
                 nse_change = ((last_nse_price - price.NSE_price)/price.NSE_price)*100
+                print 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
                 pricing = {
                     'nse_price': price.NSE_price,
                     'bse_price': price.BSE_price,
