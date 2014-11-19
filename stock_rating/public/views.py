@@ -266,7 +266,7 @@ class ViewWatchList(View):
                         'industry': company.industry.industry_name,
                         'star_rating': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
                         'score': model_score.points,
-                        'brief_comment': model_score.star_rating.comment,
+                        'brief_comment': model_score.star_rating.comment if model_score.star_rating else '',
                         'company_in_compare_list': 'true' if company_in_compare_list else 'false',
                         'added_on': watch_list.added_on.strftime('%d/%m/%Y') if watch_list.added_on else '',
                         'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') if model_score.updated_date else '',
