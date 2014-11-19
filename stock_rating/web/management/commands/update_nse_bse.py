@@ -182,6 +182,9 @@ def get_nse_price():
                     close_price = value
                 if c == 12:
                     isin = value
+                    price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
+                    price.company = company
+                    price.NSE_price = close_price
                     try:
                         company = Company.objects.get(isin_code = isin)
                         try:
@@ -196,13 +199,9 @@ def get_nse_price():
                                 latest_pr.latest = False
                                 latest_pr.last_review = True
                                 latest_pr.save()
+                                price.parent = latest_pr[0]
                         except:
-                            pass
-                        price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
-                        price.company = company
-                        price.NSE_price = close_price
-                        if latest_pr.count()>0:
-                            price.parent = latest_pr[0]
+                            pass                            
                         price.latest = True
                         price.save()
                     except Exception as ex:
