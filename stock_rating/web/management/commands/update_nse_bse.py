@@ -201,8 +201,8 @@ def get_nse_price():
                         price, created = NSEBSEPrice.objects.get_or_create(company=company, date=date)
                         price.company = company
                         price.NSE_price = close_price
-                        if latest_pr:
-                            price.parent = latest_pr
+                        if latest_pr.count()>0:
+                            price.parent = latest_pr[0]
                         price.latest = True
                         price.save()
                     except Exception as ex:
