@@ -259,7 +259,7 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
                 'isin_code': company.isin_code,
                 'industry': company.industry.industry_name,
                 'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
-                'score': str(model_score.points) + '%' ,
+                'score': str(model_score.points),
                 'brief_comment': model_score.star_rating.comment,
                 'detailed_comment': comments,
                 'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,

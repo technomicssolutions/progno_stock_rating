@@ -396,15 +396,20 @@ function ViewCompareListController($scope, $http) {
         $('.popup').css('display', 'none');
     }
     $scope.add_stock = function(){
+        console.log('in add stock');
+        $scope.company_name = '';
         $scope.show_stock_search_popup();
         $scope.add_stock_flag = true;
         $scope.change_stock_flag = false;
     }
     $scope.change_stock = function(company){
+        console.log('in changes stock');
+        $scope.company_name = '';
         $scope.show_stock_search_popup();
         $scope.current_stock = company;
         $scope.add_stock_flag = false;
         $scope.change_stock_flag = true;
+
     }
     $scope.add_to_compare_list = function(company) {
         $scope.hide_stock_search_popup();
@@ -413,10 +418,12 @@ function ViewCompareListController($scope, $http) {
             'csrfmiddlewaretoken': $scope.csrf_token,
         }
         show_loader();
-        add_to_compare_list($scope, $http, company, true);       
+        add_to_compare_list($scope, $http, company, true); 
+        $scope.company_name = '';      
     }
     $scope.change_compare_list = function(company) {
         $scope.hide_stock_search_popup();
+        $scope.company_name = ''; 
         params = {
             'new_stock_isin_code': company.isin_code,
             'current_stock_isin_code': $scope.current_stock.isin_code,
@@ -442,6 +449,7 @@ function ViewCompareListController($scope, $http) {
 }
 
 function SearchViewController($scope, $http) {
+    $scope.company_name = '';
     $scope.init = function(csrf_token) {
         $scope.csrf_token = csrf_token;
         $scope.help = {
