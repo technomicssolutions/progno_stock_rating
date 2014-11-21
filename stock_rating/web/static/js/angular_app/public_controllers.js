@@ -234,7 +234,8 @@ function StarRatingController($scope, $http){
     }
     $scope.range = function(n) {
         var n = Math.abs(n);
-        return new Array(n);
+        if (n == Number(n))
+            return new Array(n);
     }
     $scope.get_company_star_rating = function(star_count, order_by) {
         show_loader()

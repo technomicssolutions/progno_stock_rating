@@ -209,65 +209,66 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
     for model_score in model_scores:
         model = model_score.analysis_model
         company = model_score.company
-        company_in_watch_list = False
-        company_in_compare_list = False
-        if model_score.star_rating_change and model_score.star_rating_change > 0:
-            change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
-        elif model_score.star_rating_change and model_score.star_rating_change < 0:
-            change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
-        else:
-            change_in_star_rating = ' '
-        if public_user.count() > 0:
+        if company.is_all_data_available:
+            company_in_watch_list = False
+            company_in_compare_list = False
+            if model_score.star_rating_change and model_score.star_rating_change > 0:
+                change_in_star_rating = ' up by '+str("*" * int(model_score.star_rating_change))
+            elif model_score.star_rating_change and model_score.star_rating_change < 0:
+                change_in_star_rating = ' down by '+str("*" * abs(model_score.star_rating_change))
+            else:
+                change_in_star_rating = ' '
+            if public_user.count() > 0:
+                try:
+                    watch_list = WatchList.objects.get(company=company, user=public_user[0])
+                    company_in_watch_list = True
+                except:
+                    company_in_watch_list = False
+                try:
+                    compare_list = CompareList.objects.get(company=company, user=public_user[0])
+                    company_in_compare_list = True
+                except:
+                    company_in_compare_list = False
+            isin_list.append(company.isin_code)
+            parameters = model.parameterlimit_set.all()
+            comments = []
+            for parameter in parameters:
+                function = parameter.function
+                fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
+                if fun_score.count() > 0:
+                    fun_score = fun_score[0]
+                    if fun_score.points == parameter.strong_points:
+                        comments.append(parameter.strong_comment)
+                    elif fun_score.points == parameter.weak_points:
+                        comments.append(parameter.weak_comment)
+                    elif fun_score.points == parameter.neutral_points:
+                        comments.append(parameter.neutral_comment)
+            pricing = {}
             try:
-                watch_list = WatchList.objects.get(company=company, user=public_user[0])
-                company_in_watch_list = True
-            except:
-                company_in_watch_list = False
-            try:
-                compare_list = CompareList.objects.get(company=company, user=public_user[0])
-                company_in_compare_list = True
-            except:
-                company_in_compare_list = False
-        isin_list.append(company.isin_code)
-        parameters = model.parameterlimit_set.all()
-        comments = []
-        for parameter in parameters:
-            function = parameter.function
-            fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
-            if fun_score.count() > 0:
-                fun_score = fun_score[0]
-                if fun_score.points == parameter.strong_points:
-                    comments.append(parameter.strong_comment)
-                elif fun_score.points == parameter.weak_points:
-                    comments.append(parameter.weak_comment)
-                elif fun_score.points == parameter.neutral_points:
-                    comments.append(parameter.neutral_comment)
-        pricing = {}
-        try:
-            price = NSEBSEPrice.objects.get(company=company, latest=True)
-            pricing = {
-                'nse_price': price.NSE_price,
-                'bse_price': price.BSE_price,
-                'date': price.date.strftime('%d %B %Y')
-            }
-        except Exception as ex:
-            print str(ex)
-            pass
-        ratings.append({
-            'company_name': company.company_name + ' - ' + company.isin_code,
-            'isin_code': company.isin_code,
-            'industry': company.industry.industry_name,
-            'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
-            'score': str(model_score.points) + '%' ,
-            'brief_comment': model_score.star_rating.comment,
-            'detailed_comment': comments,
-            'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
-            'company_in_watch_list': 'true' if company_in_watch_list else 'false',
-            'company_in_compare_list': 'true' if company_in_compare_list else 'false',
-            'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
-            'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
-            'pricing': pricing
-        })
+                price = NSEBSEPrice.objects.get(company=company, latest=True)
+                pricing = {
+                    'nse_price': price.NSE_price,
+                    'bse_price': price.BSE_price,
+                    'date': price.date.strftime('%d %B %Y')
+                }
+            except Exception as ex:
+                print str(ex)
+                pass
+            ratings.append({
+                'company_name': company.company_name + ' - ' + company.isin_code,
+                'isin_code': company.isin_code,
+                'industry': company.industry.industry_name,
+                'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
+                'score': str(model_score.points) + '%' ,
+                'brief_comment': model_score.star_rating.comment,
+                'detailed_comment': comments,
+                'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
+                'company_in_watch_list': 'true' if company_in_watch_list else 'false',
+                'company_in_compare_list': 'true' if company_in_compare_list else 'false',
+                'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
+                'change': int(model_score.star_rating_change) if model_score.star_rating_change else 0 ,
+                'pricing': pricing
+            })
     watch_list_count = 0
     compare_list_count = 0
     if public_user.count() > 0:
@@ -299,110 +300,111 @@ def get_rating_report(request, search_keys):
         company_in_watch_list = False
         company_in_compare_list = False
         company = Company.objects.get(isin_code=key)
-        if request.user.is_authenticated() and public_user.count() > 0:
-            try:
-                watch_list = WatchList.objects.get(company=company, user=public_user[0])
-                company_in_watch_list = True
-            except:
-                company_in_watch_list = False
-            try:
-                compare_list = CompareList.objects.get(company=company, user=public_user[0])
-                company_in_compare_list = True
-            except:
-                company_in_compare_list = False
-        isin_list.append(company.isin_code)
-        model_score = CompanyModelScore.objects.filter(company=company)
-        if model_score.count() > 0:
-            model_score = model_score[0]
-            rating = {
-                'company_name': company.company_name + ' - ' + company.isin_code,
-                'bse_scrip_id': company.bse_scrip_id,
-                'bse_code': company.BSE_code,
-                'isin_code': company.isin_code,
-                'industry': company.industry.industry_name,
-                'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
-                'score': model_score.points,
-                'brief_comment': model_score.star_rating.comment if model_score.star_rating else '',
-                'company_in_watch_list': 'true' if company_in_watch_list else 'false',
-                'company_in_compare_list': 'true' if company_in_compare_list else 'false',
-                'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
-            }
-            model = model_score.analysis_model
-            comments = []            
-            analytical_heads = []
-            for analytical_head in model.analytical_heads.all():
-                functions_details = []
-                for function in analytical_head.function_set.all().order_by('order'):
-                    try:
-                        parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
-                        fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
-                        comment = ''
-                        if fun_score.count() > 0:
-                            fun_score = fun_score[0]
-                            if fun_score.points == parameter.strong_points:
-                                comment = parameter.strong_comment
-                                comments.append(comment)
-                            elif fun_score.points == parameter.weak_points:
-                                comment = parameter.weak_comment
-                                comments.append(comment)
-                            elif fun_score.points == parameter.neutral_points:
-                                comment = parameter.neutral_comment
-                                comments.append(comment)  
-                        function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
-                        if function_score.count() > 0:
-                            function_score = function_score[0]
-                            if function_score.score is not None:
-                                if analytical_head.title != 'Valuation' and parameter.function.function_name != 'Debt to Equity' :
-                                    score = str(round(function_score.score, 2))+'%'
-                                else:
-                                    score = round(function_score.score, 2)
-                            else:
-                                function_score = None
-                        else:
-                            score = None
-                            function_score = None
-                        if comment:
-                            functions_details.append({
-                                'function_name': function.function_name + (str(' - ') + str(score) if score is not None else ''),
-                                'score': score,
-                                'description': function.description,
-                                'comments': comment,
-                            })
-                    except:
-                        pass
-
-                analytical_heads.append({
-                    'analytical_head_name': analytical_head.title,
-                    'functions': functions_details,
-                })
-            rating['analytical_heads'] = analytical_heads
-            rating['detailed_comment'] = comments
-            pricing = {}
-            try:
-                price = NSEBSEPrice.objects.get(company=company, latest=True)
-                last_review = NSEBSEPrice.objects.filter(company=company, last_review=True)[0]                
-                last_bse_price = last_review.BSE_price
-                last_nse_price = last_review.NSE_price
-                bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
-                nse_change = ((last_nse_price - price.NSE_price)/price.NSE_price)*100
-                print 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
-                pricing = {
-                    'nse_price': price.NSE_price,
-                    'bse_price': price.BSE_price,
-                    'date': price.date.strftime('%d %B %Y'),
-                    'bse_change': 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
-                    'nse_change': 'up by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else  'down by '+str(round(abs(nse_change), 2))+ '% since last review'
+        if company.is_all_data_available:
+            if request.user.is_authenticated() and public_user.count() > 0:
+                try:
+                    watch_list = WatchList.objects.get(company=company, user=public_user[0])
+                    company_in_watch_list = True
+                except:
+                    company_in_watch_list = False
+                try:
+                    compare_list = CompareList.objects.get(company=company, user=public_user[0])
+                    company_in_compare_list = True
+                except:
+                    company_in_compare_list = False
+            isin_list.append(company.isin_code)
+            model_score = CompanyModelScore.objects.filter(company=company)
+            if model_score.count() > 0:
+                model_score = model_score[0]
+                rating = {
+                    'company_name': company.company_name + ' - ' + company.isin_code,
+                    'bse_scrip_id': company.bse_scrip_id,
+                    'bse_code': company.BSE_code,
+                    'isin_code': company.isin_code,
+                    'industry': company.industry.industry_name,
+                    'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
+                    'score': model_score.points,
+                    'brief_comment': model_score.star_rating.comment if model_score.star_rating else '',
+                    'company_in_watch_list': 'true' if company_in_watch_list else 'false',
+                    'company_in_compare_list': 'true' if company_in_compare_list else 'false',
+                    'star_count': int(model_score.star_rating.star_count) if model_score.star_rating else 0,
                 }
-            except Exception as ex:
-                print str(ex)
-                pass
-            rating['pricing'] = pricing
-        else:
-            rating = {
-                'company_name': company.company_name + ' - ' + company.isin_code,
-                'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
-            }
-        ratings.append(rating)
+                model = model_score.analysis_model
+                comments = []            
+                analytical_heads = []
+                for analytical_head in model.analytical_heads.all():
+                    functions_details = []
+                    for function in analytical_head.function_set.all().order_by('order'):
+                        try:
+                            parameter = ParameterLimit.objects.get(analysis_model=model, function=function)
+                            fun_score = CompanyModelFunctionPoint.objects.filter(company=company, parameter_limit=parameter)
+                            comment = ''
+                            if fun_score.count() > 0:
+                                fun_score = fun_score[0]
+                                if fun_score.points == parameter.strong_points:
+                                    comment = parameter.strong_comment
+                                    comments.append(comment)
+                                elif fun_score.points == parameter.weak_points:
+                                    comment = parameter.weak_comment
+                                    comments.append(comment)
+                                elif fun_score.points == parameter.neutral_points:
+                                    comment = parameter.neutral_comment
+                                    comments.append(comment)  
+                            function_score = CompanyFunctionScore.objects.filter(function=function, company=company)
+                            if function_score.count() > 0:
+                                function_score = function_score[0]
+                                if function_score.score is not None:
+                                    if analytical_head.title != 'Valuation' and parameter.function.function_name != 'Debt to Equity' :
+                                        score = str(round(function_score.score, 2))+'%'
+                                    else:
+                                        score = round(function_score.score, 2)
+                                else:
+                                    function_score = None
+                            else:
+                                score = None
+                                function_score = None
+                            if comment:
+                                functions_details.append({
+                                    'function_name': function.function_name + (str(' - ') + str(score) if score is not None else ''),
+                                    'score': score,
+                                    'description': function.description,
+                                    'comments': comment,
+                                })
+                        except:
+                            pass
+
+                    analytical_heads.append({
+                        'analytical_head_name': analytical_head.title,
+                        'functions': functions_details,
+                    })
+                rating['analytical_heads'] = analytical_heads
+                rating['detailed_comment'] = comments
+                pricing = {}
+                try:
+                    price = NSEBSEPrice.objects.get(company=company, latest=True)
+                    last_review = NSEBSEPrice.objects.filter(company=company, last_review=True)[0]                
+                    last_bse_price = last_review.BSE_price
+                    last_nse_price = last_review.NSE_price
+                    bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
+                    nse_change = ((last_nse_price - price.NSE_price)/price.NSE_price)*100
+                    print 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
+                    pricing = {
+                        'nse_price': price.NSE_price,
+                        'bse_price': price.BSE_price,
+                        'date': price.date.strftime('%d %B %Y'),
+                        'bse_change': 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
+                        'nse_change': 'up by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else  'down by '+str(round(abs(nse_change), 2))+ '% since last review'
+                    }
+                except Exception as ex:
+                    print str(ex)
+                    pass
+                rating['pricing'] = pricing
+            else:
+                rating = {
+                    'company_name': company.company_name + ' - ' + company.isin_code,
+                    'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
+                }
+            ratings.append(rating)
     
     response = simplejson.dumps({
         'star_ratings': ratings,
@@ -415,9 +417,9 @@ def get_rating_report(request, search_keys):
 def get_company_details(request):
 
     if request.GET.get('search_key', ''):
-        companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''))
+        companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''), is_all_data_available=True)
     else:
-        companies = Company.objects.all()
+        companies = Company.objects.filter(is_all_data_available=True)
     company_list = []
     for company in companies:
         company_list.append({
