@@ -30,8 +30,10 @@
 		);
 	    // Additional initialization code such as adding Event Listeners goes here
 	  };
-	</script>
-	
+	    if (window.location.hash == '#_=_') {
+	        window.location.hash = '';
+	    }
+	</script> 
 {% endblock %}
 {% block content %}
 	<div class="container page_content home_first_row">

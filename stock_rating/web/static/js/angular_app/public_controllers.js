@@ -76,7 +76,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
 
     $scope.validate_user = function(){
         $scope.msg = '';
-        if($scope.new_user.fullname == ''){
+        if($scope.new_user.fullname == '' || $scope.new_user.fullname.length == 0){
             $scope.msg = "Please enter Your Name";
             return false;
         } else if($scope.new_user.username == '') {

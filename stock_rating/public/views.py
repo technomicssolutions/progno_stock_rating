@@ -49,17 +49,18 @@ class Home(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         if request.user.is_authenticated():
-            if  is_public_user(request):   
-                if user.social_auth.all().count() > 0:
-                    public_user, created = PublicUser.objects.get_or_create(user=user)
-                    url = """http://graph.facebook.com/{0}/""".format(user.username)
-                    p =  urllib2.urlopen(url)
-                    p = p.readline()
-                    p = ast.literal_eval(p)
-                    public_user.fb_details = p
-                    public_user.save()                             
+            if user.social_auth.all().count() > 0:
+                public_user, created = PublicUser.objects.get_or_create(user=user)
+                url = """http://graph.facebook.com/{0}/""".format(user.username)
+                p =  urllib2.urlopen(url)
+                p = p.readline()
+                p = ast.literal_eval(p)
+                public_user.fb_details = p
+                public_user.save()   
+            if  is_public_user(request):                            
                 return render(request, 'home.html', {})
             else:
+                print "in else"
                 return HttpResponseRedirect(reverse('dashboard'))
         else:
             return render(request, 'home.html', {})
@@ -144,7 +145,8 @@ class Signup(View):
                     'next_url': next_url,
                     'message': 'Account Activation link is sent to you email'
                 }
-            except:
+            except Exception as Ex:
+                print str(Ex)
                 res = {
                     'result': 'error',
                 }
