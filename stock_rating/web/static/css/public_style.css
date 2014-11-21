@@ -271,7 +271,7 @@ footer a {
 	width: 70%;
 	float: left;
 }
-.register form input[type="text"] {
+.register form input[type="text"], .register form input[type="password"] {
 	border: 1px solid #DDDDDD;
 	padding: 5px;
 	width: 100%;
