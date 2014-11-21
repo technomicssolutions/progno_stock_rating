@@ -264,7 +264,7 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
                 'isin_code': company.isin_code,
                 'industry': company.industry.industry_name,
                 'star_rating': "*" * int(model_score.star_rating.star_count) if model_score.star_rating else '',
-                'score': str(model_score.points) + '%' ,
+                'score': str(model_score.points),
                 'brief_comment': model_score.star_rating.comment,
                 'detailed_comment': comments,
                 'rating_changed_date': model_score.updated_date.strftime('%d/%m/%Y') + change_in_star_rating,
@@ -361,7 +361,11 @@ def get_rating_report(request, search_keys):
                                 function_score = function_score[0]
                                 if function_score.score is not None:
                                     if analytical_head.title != 'Valuation' and parameter.function.function_name != 'Debt to Equity' :
-                                        score = str(round(function_score.score, 2))+'%'
+                                        if function.function_name == 'Institutional Investor Holding' or function.function_name == 'Sales Growth FY14' or function.function_name == 'Net Profit Growth FY14' or \
+                                        function.function_name == 'Net Profit Margin FY14' or function.function_name == 'Return on Equity FY14' :
+                                            score = str(round(function_score.score, 2))+'%'
+                                        else:
+                                            score = str(round(function_score.score, 2))
                                     else:
                                         score = round(function_score.score, 2)
                                 else:
