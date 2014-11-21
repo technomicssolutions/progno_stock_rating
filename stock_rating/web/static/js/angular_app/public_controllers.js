@@ -98,38 +98,29 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
             $scope.msg = "Please enter the text in Image"
             return false;
         } else {
-            $.ajax({
-                url: '//freegeoip.net/json/',
-                type: 'POST',
-                dataType: 'jsonp',
-                success: function(location) {
-                    $scope.ip = location.ip;
-                    params = {
-                        privatekey: $scope.recaptcha_private_key,
-                        remoteip: $scope.ip,
-                        challenge: Recaptcha.get_challenge(),
-                        response: Recaptcha.get_response(),
-                        csrfmiddlewaretoken: $scope.csrf_token
-                    }
-                    $http({
-                        method : 'post',
-                        url : "/verify_recaptcha/",
-                        data : $.param(params),
-                        headers : {
-                            'Content-Type' : 'application/x-www-form-urlencoded'
-                        }
-                    }).success(function(data, status) {
-                        if(data.result=="false"){
-                            $scope.msg = "Text Entered is not correct";                            
-                            Recaptcha.reload();
-                            return false;
-                        } else {
-                            $scope.save_new_user();
-                        }
-                    }).error(function(data, status){
-                        console.log(data);
-                    });
+            params = {
+                privatekey: $scope.recaptcha_private_key,
+                challenge: Recaptcha.get_challenge(),
+                response: Recaptcha.get_response(),
+                csrfmiddlewaretoken: $scope.csrf_token
+            }
+            $http({
+                method : 'post',
+                url : "/verify_recaptcha/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
                 }
+            }).success(function(data, status) {
+                if(data.result=="false"){
+                    $scope.msg = "Text Entered is not correct";                            
+                    Recaptcha.reload();
+                    return false;
+                } else {
+                    $scope.save_new_user();
+                }
+            }).error(function(data, status){
+                console.log(data);
             });
         }
     }
@@ -226,8 +217,11 @@ function StarRatingController($scope, $http){
     $scope.init = function(csrf_token, star_count) {
         $scope.csrf_token = csrf_token;
         $scope.count = star_count;
+        $scope.start = 0;
+        $scope.end=0;
         $scope.pages = 0;
-        $scope.visible_list = [];
+        $scope.star_ratings = [];
+        $scope.total_count = 1;
         $scope.error = false;
         if (star_count)
             $scope.get_company_star_rating(star_count);
@@ -238,25 +232,29 @@ function StarRatingController($scope, $http){
             return new Array(n);
     }
     $scope.get_company_star_rating = function(star_count, order_by) {
-        show_loader()
         if(!order_by){
             order_by = 'score';
         }
-        start = 0;
-        end=10;
-        var url = '/star_rating/?star_count='+star_count+'&order_by='+order_by+'&start='+start+'&end='+end+'&ajax=true'
-        $http.get(url).success(function(data){
-            hide_loader()
-            $scope.star_ratings = data.star_ratings;
-            if(data.star_ratings.length == 0){
-                $scope.error = true;
-            }
-            paginate($scope.star_ratings, $scope, 5);
-            $scope.watch_list_count = data.watch_list_count;
-            $scope.compare_list_count = data.compare_list_count;
-        }).error(function(data, status){
-            console.log(data);
-        });
+        if($scope.total_count > $scope.end) {
+            show_loader()
+            $scope.start = $scope.end;
+            $scope.end = $scope.end + 10;
+            var url = '/star_rating/?star_count='+star_count+'&order_by='+order_by+'&start='+$scope.start+'&end='+$scope.end+'&ajax=true'
+            $http.get(url).success(function(data){
+                hide_loader()
+                for(var i=0; i<data.star_ratings.length; i++){
+                    $scope.star_ratings.push(data.star_ratings[i]);
+                }
+                if(data.star_ratings.length == 0){
+                    $scope.error = true;
+                }
+                $scope.total_count = data.total_count;
+                $scope.watch_list_count = data.watch_list_count;
+                $scope.compare_list_count = data.compare_list_count;
+            }).error(function(data, status){
+                console.log(data);
+            });
+        }
     }
     $scope.view_rating_report = function(star_rating){
         document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;

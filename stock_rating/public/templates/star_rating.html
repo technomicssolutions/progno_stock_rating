@@ -30,7 +30,7 @@
 	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-striped list_table" ng-show="visible_list.length > 0">
+				<table class="table table-striped list_table" ng-show="star_ratings.length > 0" infinite-scroll="get_company_star_rating('{{star_count}}')">
 					<tr>
 						<th>Company Name <a href="#" ng-click="get_company_star_rating('{{star_count}}', 'company_name')" class="sort_list"></a></th>
 						<th>Industry</th>
@@ -41,7 +41,7 @@
 						<th>Rating Changed on </th>
 						<th>&nbsp;</th>
 					</tr>
-					<tbody ng-repeat="star_rating in visible_list" >
+					<tbody ng-repeat="star_rating in star_ratings" >
 						<tr>
 							<td>[[star_rating.company_name]]</td>
 							<td>[[star_rating.industry]]</td>

@@ -113,6 +113,26 @@ class ActivateAccount(View):
             pass
         return HttpResponseRedirect(reverse('public_login'))
 
+from socket import gethostname, gethostbyname 
+ip = gethostbyname(gethostname()) 
+class VerifyRecaptcha(View):
+    def post(self, request, *args, **kwargs):
+        url = "http://www.google.com/recaptcha/api/verify"
+        data = urllib.urlencode({
+            'privatekey': settings.RECAPTCHA_PRIVATE_KEY,
+            'remoteip': ip,
+            'challenge': request.POST['challenge'],
+            'response': request.POST['response']
+        })
+        try:
+            result = urllib.urlopen(url, data)
+            result = result.readline().strip()
+        except urllib.URLError, e:
+            print e
+            result = ''
+        response = simplejson.dumps({'result': result})
+        return HttpResponse(response, status=200, mimetype='application/json')
+
 class Signup(View):
 
     def post(self, request, *args, **kwargs):
@@ -182,23 +202,6 @@ class StarRatingReport(View):
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'star_rating_report.html', {'company': company, 'isin_code': isin_code})
 
-class VerifyRecaptcha(View):
-    def post(self, request, *args, **kwargs):
-        url = "http://www.google.com/recaptcha/api/verify"
-        data = urllib.urlencode({
-            'privatekey': settings.RECAPTCHA_PRIVATE_KEY,
-            'remoteip': request.POST['remoteip'],
-            'challenge': request.POST['challenge'],
-            'response': request.POST['response']
-        })
-        try:
-            result = urllib.urlopen(url, data)
-            result = result.readline().strip()
-        except urllib.URLError, e:
-            print e
-            result = ''
-        response = simplejson.dumps({'result': result})
-        return HttpResponse(response, status=200, mimetype='application/json')
 
 class AddToWatchlist(View):
 

@@ -202,7 +202,12 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
         start = 0
     if end == '':
         end = 10
-    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('score')[int(start):int(end)]
+    model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('score')
+    total_count = model_scores.count()
+    try:
+        model_scores = model_scores[int(start):int(end)]
+    except:
+        model_scores = model_scores[int(start):]
     if order_by == 'company_name':
         model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('company__company_name')[int(start):int(end)]
     public_user = PublicUser.objects.filter(user=request.user)
@@ -281,6 +286,7 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
         'isin_list': isin_list,
         'watch_list_count': watch_list_count,
         'compare_list_count': compare_list_count,
+        'total_count': total_count
     })
     return response
 

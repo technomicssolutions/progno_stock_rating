@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('stock', ['stock.services', 'stock.directives', 'ngDraggable', 'ngRoute']);
+var app = angular.module('stock', ['stock.services', 'stock.directives', 'ngDraggable', 'ngRoute', 'infinite-scroll']);
 
 app.config(function($interpolateProvider)
 {
