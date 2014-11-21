@@ -476,6 +476,7 @@ function SearchViewController($scope, $http) {
     }
     $scope.select_company = function(company) {
         $scope.companies = [];
+        $scope.company_name = company.name;
         document.location.href ='/search_result/?isin_code='+company.isin_code;
     }
     $scope.show_popup = function(){
@@ -538,7 +539,8 @@ function SearchResultController($scope, $http) {
     }
     $scope.range = function(n) {
         var n = Math.abs(n);
-        return new Array(n);
+        if ( n == Number(n))
+            return new Array(n);
     }
     $scope.add_to_watch_list = function(company){
         params = {
