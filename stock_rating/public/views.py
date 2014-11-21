@@ -439,10 +439,14 @@ class SearchResult(View):
 
     def get(self, request, *args, **kwargs):
         isin_code = request.GET.get('isin_code', '')
+        company_name = ''
+        if isin_code:
+            company = Company.objects.get(isin_code=isin_code)
+            company_name = company.company_name
         if request.is_ajax() and isin_code:
             response = get_rating_report(request, [isin_code])
             return HttpResponse(response, status=200, mimetype='application/json')
-        return render(request, 'search_result.html', {'isin_code': isin_code})
+        return render(request, 'search_result.html', {'isin_code': isin_code, 'company_name': company_name})
 
 class HelpView(View):
 
@@ -454,7 +458,6 @@ class HelpView(View):
         help_obj.message =  help['message']
         help_obj.save()
         email_to = User.objects.filter(is_superuser=True)[0].email
-        print email_to
         subject = " Help Request From Stoklab "
         message = help['message']
         from_email = settings.DEFAULT_FROM_EMAIL         

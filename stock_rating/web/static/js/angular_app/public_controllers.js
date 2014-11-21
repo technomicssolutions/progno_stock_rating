@@ -522,9 +522,10 @@ function SearchViewController($scope, $http) {
     }
 }
 function SearchResultController($scope, $http) {
-    $scope.init = function(csrf_token, isin_code) {
+    $scope.init = function(csrf_token, isin_code, company_name) {
         $scope.csrf_token = csrf_token;
         $scope.isin_code = isin_code;
+        $scope.company_name = company_name;
         $scope.get_company_details();
     }
     $scope.get_company_details = function() {

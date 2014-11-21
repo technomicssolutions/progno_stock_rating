@@ -1,5 +1,5 @@
 {% extends 'public_base.html' %}
-{% block controller %}ng-controller="SearchResultController" ng-init="init('{{csrf_token}}', '{{isin_code}}')" {% endblock controller %}
+{% block controller %}ng-controller="SearchResultController" ng-init="init('{{csrf_token}}', '{{isin_code}}', '{{company_name}}')" {% endblock controller %}
 {% block body_id %}search_result{% endblock %}
 {% block content %}
 	<div class="container page_content  report_container">
