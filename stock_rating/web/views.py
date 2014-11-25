@@ -266,7 +266,11 @@ class Companies(View):
             if company_file.processing_completed:
                 pass
             else:
-                process_company_file(company_file)
+                try:
+                    process_company_file(company_file)
+                except Exception as e:
+                    p = str(e).split('\n')
+                    return HttpResponse("<html><body><div style='width: 60%; margin: auto; margin-top: 100px; color: red;'><p>"+p[0] + "</p><p>" + p[0] + "</p><p>The error may due to the change in ISIN code.</p></div></body></html>")
         else:
             company_file = None
         # if request.GET.get('search_key', ''):
@@ -299,7 +303,10 @@ class Companies(View):
         company_file.uploaded_file = request.FILES['data_file']
         company_file.uploaded_by = request.user
         company_file.save()    
-        process_company_file(company_file)
+        try:
+            process_company_file(company_file)
+        except Exception as e:
+            return HttpResponse("<html><body><h1>"+str(e) + "</h1></body></html>")
         if request.is_ajax():
             response = simplejson.dumps({
                'result': 'OK',
