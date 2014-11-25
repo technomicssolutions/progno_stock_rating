@@ -75,7 +75,11 @@ def process_company_file(data_file):
             industry, created = Industry.objects.get_or_create(industry_name=industry)
             industry.created_by = data_file.uploaded_by
             industry.save()
-            company, created = Company.objects.get_or_create(isin_code=isin)
+            try:
+                company = Company.objects.get_or_create(isin_code=isin)
+            except:
+                company = Company()
+                company.isin_code = isin
             company.industry = industry
             company.company_name = company_name
             company.created_by = data_file.uploaded_by
