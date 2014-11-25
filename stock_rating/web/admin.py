@@ -102,7 +102,7 @@ class UserPermissionAdmin(admin.ModelAdmin):
     search_fields = ['username']
 
 class CompanyAdmin(admin.ModelAdmin):
-    search_fields = ['industry__industry_name', 'company_name']
+    search_fields = ['industry__industry_name', 'company_name', 'isin_code']
     list_filter = ('is_all_data_available',)
     actions = [export_csv, export_xls]
         
