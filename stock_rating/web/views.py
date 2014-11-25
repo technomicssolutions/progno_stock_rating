@@ -29,7 +29,6 @@ from public.views import is_public_user
 
 def progno_login_required(function, login_url):
     def wrapper(request, *args, **kw):
-        print dir(request)
         user = request.user  
         if user.is_authenticated:
             if is_public_user(request):
@@ -1084,7 +1083,6 @@ class ModelStarRating(View):
             function = parameterlimit.function
             model_max_point = model_max_point + parameterlimit.strong_points  
         model.max_points = model_max_point
-        print "model_max_point=", model_max_point
         model.save()
         model_ratings = model.starrating_set.all() 
         for industry in industries:
