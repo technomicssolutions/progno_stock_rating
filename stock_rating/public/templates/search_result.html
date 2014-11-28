@@ -6,7 +6,8 @@
 		<div class="container white_bg">
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-striped list_table">
+				<p class="error_msg search_result_error" align="center">[[message_no_data]]</p>
+				<table class="table table-striped list_table" ng-show="is_all_data">
 					<tr>
 						<th>Company Name</th>
 						<th>Industry</th>
@@ -38,7 +39,7 @@
 				</table>
 			</div>
 		</div>
-		<div class="row">
+		<div class="row" ng-show="is_all_data">
 			<div class="col-md-1"> <!-- this is a place holder For alignment of below div -->
 			</div>
 			<div class="col-md-4 price_value">

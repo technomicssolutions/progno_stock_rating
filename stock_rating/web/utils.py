@@ -311,6 +311,7 @@ def get_rating_report(request, search_keys):
         company_in_compare_list = False
         company = Company.objects.get(isin_code=key)
         if company.is_all_data_available:
+            print "in if"
             if request.user.is_authenticated() and public_user.count() > 0:
                 try:
                     watch_list = WatchList.objects.get(company=company, user=public_user[0])
@@ -414,6 +415,7 @@ def get_rating_report(request, search_keys):
                     pass
                 rating['pricing'] = pricing
             else:
+                print "in else"
                 rating = {
                     'company_name': company.company_name + ' - ' + company.isin_code,
                     'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
@@ -431,9 +433,9 @@ def get_rating_report(request, search_keys):
 def get_company_details(request):
 
     if request.GET.get('search_key', ''):
-        companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''), is_all_data_available=True)
+        companies = Company.objects.filter(company_name__istartswith=request.GET.get('search_key', ''))
     else:
-        companies = Company.objects.filter(is_all_data_available=True)
+        companies = Company.objects.all()
     company_list = []
     for company in companies:
         company_list.append({

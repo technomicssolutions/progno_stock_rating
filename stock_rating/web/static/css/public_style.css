@@ -697,3 +697,6 @@ footer a {
 	color: #000 !important;
 	font-weight: normal;
 }
+.search_result_error {
+	font-size: 18px;
+}
