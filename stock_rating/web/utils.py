@@ -311,7 +311,6 @@ def get_rating_report(request, search_keys):
         company_in_compare_list = False
         company = Company.objects.get(isin_code=key)
         if company.is_all_data_available:
-            print "in if"
             if request.user.is_authenticated() and public_user.count() > 0:
                 try:
                     watch_list = WatchList.objects.get(company=company, user=public_user[0])
@@ -394,6 +393,7 @@ def get_rating_report(request, search_keys):
                     })
                 rating['analytical_heads'] = analytical_heads
                 rating['detailed_comment'] = comments
+                rating['message'] = ''
                 pricing = {}
                 try:
                     price = NSEBSEPrice.objects.get(company=company, latest=True)
@@ -402,7 +402,6 @@ def get_rating_report(request, search_keys):
                     last_nse_price = last_review.NSE_price
                     bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
                     nse_change = ((last_nse_price - price.NSE_price)/price.NSE_price)*100
-                    print 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
                     pricing = {
                         'nse_price': price.NSE_price,
                         'bse_price': price.BSE_price,
@@ -415,13 +414,18 @@ def get_rating_report(request, search_keys):
                     pass
                 rating['pricing'] = pricing
             else:
-                print "in else"
+                
                 rating = {
                     'company_name': company.company_name + ' - ' + company.isin_code,
+                    'message': '',
                     'star_rating': 'Data not available' if not company.is_all_data_available else 'No Rating available'
                 }
             ratings.append(rating)
-    
+        else:
+            rating = {
+                'message': 'Not all data is available for '+company.company_name
+            }
+            ratings.append(rating)
     response = simplejson.dumps({
         'star_ratings': ratings,
         'isin_list': isin_list,

@@ -459,7 +459,7 @@ class SearchResult(View):
             else:
                 res = {
                     'result': 'error',
-                    'message': 'All data is not available for '+ company_name,
+                    'message': 'Not all data is available for '+ company_name,
                     'company_name': company_name,
                 }
                 response = simplejson.dumps(res)

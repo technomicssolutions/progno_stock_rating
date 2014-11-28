@@ -1222,7 +1222,7 @@ class RatingReport(View):
         })
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
-            search_keys = ast.literal_eval(request.POST['search_keys'])
+            search_keys = ast.literal_eval(request.POST['search_keys'])   
             response = get_rating_report(request, search_keys)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'rating_report.html', {})
