@@ -454,7 +454,15 @@ class SearchResult(View):
             company = Company.objects.get(isin_code=isin_code)
             company_name = company.company_name
         if request.is_ajax() and isin_code:
-            response = get_rating_report(request, [isin_code])
+            if company.is_all_data_available:
+                response = get_rating_report(request, [isin_code])
+            else:
+                res = {
+                    'result': 'error',
+                    'message': 'Not all data is available for '+ company_name,
+                    'company_name': company_name,
+                }
+                response = simplejson.dumps(res)
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'search_result.html', {'isin_code': isin_code, 'company_name': company_name})
 

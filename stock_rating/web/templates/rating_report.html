@@ -50,19 +50,20 @@
 					<th> &nbsp; </th>
 				</tr>
 				<tr ng-repeat="rating in star_ratings">
-					<td>[[rating.company_name]]</td>
-					<td>[[rating.industry]]</td>
-					<td>[[rating.star_rating]]</td>
-					<td>[[rating.score]]</td>
-					<td>[[rating.brief_comment]]</td>
-					<td>
+					<td ng-show="rating.message.length == 0">[[rating.company_name]]</td>
+					<td ng-show="rating.message.length == 0">[[rating.industry]]</td>
+					<td ng-show="rating.message.length == 0">[[rating.star_rating]]</td>
+					<td ng-show="rating.message.length == 0">[[rating.score]]</td>
+					<td ng-show="rating.message.length == 0">[[rating.brief_comment]]</td>
+					<td ng-show="rating.message.length == 0">
 						<ul id="long_comment_[[$index]]" style="display: none; float: left;">
 							<li ng-repeat="comment in rating.detailed_comment track by $index">[[comment]]</li>							
 						</ul>
 						<input type="button" value="+" ng-click="expand_long_comment($index)" id="expand_button_[[$index]]" style="display: block; float: right;"/>
 						<input type="button" value="-" ng-click="shrink_long_comment($index)" id="shrink_button_[[$index]]" style="display: none; float: right;" />
 					</td>
-					<td> <input type="button" value="X" ng-click="remove_search_result($index)" /> </td>
+					<td ng-show="rating.message.length == 0"> <input type="button" value="X" ng-click="remove_search_result($index)" /> </td>
+					<td ng-show="rating.message.length > 0" colspan="7" align="center" class="error_msg">[[rating.message]]</td>
 				</tr>
 			</table>
 		</div>
