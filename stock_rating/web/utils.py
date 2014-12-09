@@ -151,6 +151,7 @@ def calculate_consistency_function_score(function, company):
         try:
             value = CompanyFunctionScore.objects.get(function=fun, company=company)     
             value = value.score       
+            print fun, value
         except:
             value = calculate_general_function_score(fun, company)        
         operands_sum = operands_sum + value

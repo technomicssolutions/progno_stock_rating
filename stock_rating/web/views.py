@@ -1096,22 +1096,26 @@ class ModelStarRating(View):
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
-                #company = Company.objects.get(isin_code='INE987B01018')
+                company = Company.objects.get(isin_code='INE031B01031')
                 if not company.is_all_data_available:
                     continue
                 model_point = 0
                 score = 0
                 company_model_score, created = CompanyModelScore.objects.get_or_create(company=company, analysis_model=model)
                 if parameter_id:
-                    passed_parameter = ParameterLimit.objects.filter(id=int(parameter_id))
-                    flag = False
+                    passed_parameter = ParameterLimit.objects.get(id=int(parameter_id))
+                    passed_flag = True
                 else:
-                    flag = True
+                    passed_flag = False
                 for parameterlimit in parameterlimits:
                     function = parameterlimit.function
-                    if flag == False:
+                    if passed_flag == True:
                         if parameterlimit == passed_parameter:
                             flag = True
+                        else:
+                            flag = False
+                    else:
+                        flag = True
                     if flag:
                         try:
                             if function.function_type == 'general':
@@ -1160,6 +1164,7 @@ class ModelStarRating(View):
                             score = score + function_score.score
                             model_point = model_point + company_model_function_point.points
                         except Exception as e:
+                            print "exception", str(e)
                             continue
                     else:
                         try:
@@ -1169,6 +1174,7 @@ class ModelStarRating(View):
                             model_point = model_point + company_model_function_point.points
                         except:
                             pass
+
                 company_model_score.score = score
                 point = float(model_point)/float(model.max_points)*100
                 round_function = lambda point: int(point + 1) if int(point) != point else int(point)
