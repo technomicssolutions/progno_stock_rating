@@ -107,7 +107,7 @@ def create_stock_data(data_file):
                             company_stock.stock_data[labels[i]] = row[i]
                             company_stock.created_by = data_file.uploaded_by
                             company_stock.save()
-                            if row[i] == '':
+                            if row[i] == '' and row[i].length <= 0:
                                 company.is_all_data_available = False
                                 company.save()
     data_file.processing_completed = True
