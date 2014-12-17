@@ -97,6 +97,9 @@ def create_stock_data(data_file):
                     if i == 0:
                         try:
                             company = Company.objects.get(isin_code=row[i])
+                            if company.unavailable_data is None:
+                                company.unavailable_data = []
+                                company.save()
                             company_stock, created = CompanyStockData.objects.get_or_create(company=company)
                         except:
                             continue
@@ -108,8 +111,9 @@ def create_stock_data(data_file):
                             company_stock.created_by = data_file.uploaded_by
                             company_stock.save()
                             if row[i] == '' and len(row[i]) <= 0:
-                                company.is_all_data_available = False
                                 company.unavailable_data.append(labels[i])
+                            if len(company.unavailable_data) > 0:
+                                company.is_all_data_available = False
                             else:
                                 company.is_all_data_available = True
                             company.save()
