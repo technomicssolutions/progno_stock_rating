@@ -109,7 +109,10 @@ def create_stock_data(data_file):
                             company_stock.save()
                             if row[i] == '' and len(row[i]) <= 0:
                                 company.is_all_data_available = False
-                                company.save()
+                                company.unavailable_data.append(labels[i])
+                            else:
+                                company.is_all_data_available = True
+                            company.save()
     data_file.processing_completed = True
     data_file.save()
 

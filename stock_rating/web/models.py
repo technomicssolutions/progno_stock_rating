@@ -134,7 +134,8 @@ class Company(Date):
     bse_group = models.CharField('BSE Group', max_length=50, null=True, blank=True)
     is_all_data_available = models.BooleanField('Is all data avaialble', default=True)
     bse_scrip_id = models.CharField('Scrip Id', max_length=50, null=True, blank=True)
-
+    unavailable_data = JSONField('Unavailable Data', null=True, blank=True)
+    
     def __unicode__(self):
         return self.company_name + ' - ' + self.isin_code
 

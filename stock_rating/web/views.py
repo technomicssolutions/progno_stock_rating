@@ -1096,7 +1096,9 @@ class ModelStarRating(View):
         for industry in industries:
             companies = industry.company_set.all()
             for company in companies:
-                #company = Company.objects.get(isin_code='INE031B01031')
+                # company1 = Company.objects.get(isin_code='INE040D01038')
+                # if company != company1:
+                #     continue
                 if not company.is_all_data_available:
                     continue
                 model_point = 0
