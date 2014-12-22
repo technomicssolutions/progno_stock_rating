@@ -466,7 +466,7 @@ class FileFields(View):
 class AnalyticalHeads(View):
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
-            head_objects = AnalyticalHead.objects.all()
+            head_objects = AnalyticalHead.objects.all().order_by('id')
             heads = []
             function_set = []
             for head in head_objects:
