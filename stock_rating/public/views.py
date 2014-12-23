@@ -60,7 +60,6 @@ class Home(View):
             if  is_public_user(request):                            
                 return render(request, 'home.html', {})
             else:
-                print "in else"
                 return HttpResponseRedirect(reverse('dashboard'))
         else:
             return render(request, 'home.html', {})

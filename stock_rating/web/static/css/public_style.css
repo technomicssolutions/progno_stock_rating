@@ -525,11 +525,11 @@ footer a {
 	margin-bottom: 30px;
 }
 
-.analytical_head_1 {
+.Profitability {
 	color: #058411;
 }
 
-.analytical_head_2 {
+.Growth {
 	color: #9B6038;
 }
 
@@ -537,11 +537,11 @@ footer a {
 	color: #87E4DC;
 }
 
-.row_1 .analytical_head_1 {
+.row_1 .Risk {
 	color: red;
 }
 
-.row_1 .analytical_head_2 {
+.row_1 .Valuation {
 	color: yellow;
 }
 .blue_text {

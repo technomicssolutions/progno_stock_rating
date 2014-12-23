@@ -63,7 +63,7 @@
 			<div class="col-md-4 " ng-repeat="analytical_head in list">
 				<div class="col-md-12 white_bg analytical_head_container">
 					<div class="analytical_header">
-						<h3 class="analytical_head analytical_head_[[$index+1]]">[[analytical_head.analytical_head_name]]</h3>
+						<h3 class="analytical_head [[analytical_head.analytical_head_name]]">[[analytical_head.analytical_head_name]]</h3>
 						<hr />
 					</div>
 					<div ng-repeat="function in analytical_head.functions" class="col-md-12 with_margin">
