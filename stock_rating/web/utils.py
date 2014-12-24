@@ -5,7 +5,7 @@ import simplejson
 from django.conf import settings
 from collections import OrderedDict
 from models import Company, Industry, CompanyStockData, CompanyFunctionScore, ParameterLimit, \
- FieldMap, DataFile, CompanyModelScore, CompanyModelFunctionPoint, NSEBSEPrice
+ FieldMap, DataFile, CompanyModelScore, CompanyModelFunctionPoint, NSEPrice, BSEPrice
 
 from public.models import WatchList, CompareList, PublicUser
 
@@ -262,11 +262,13 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
                         comments.append(parameter.neutral_comment)
             pricing = {}
             try:
-                price = NSEBSEPrice.objects.get(company=company, latest=True)
+                nse_price = BSEPrice.objects.get(company=company, latest=True)
+                bse_price = BSEPrice.objects.get(company=company, latest=True)
                 pricing = {
-                    'nse_price': price.NSE_price,
-                    'bse_price': price.BSE_price,
-                    'date': price.date.strftime('%d %B %Y')
+                    'nse_price': nse_price.NSE_price,
+                    'bse_price': bse_price.BSE_price,
+                    'nse_date': nse_price.date.strftime('%d %B %Y'),
+                    'bse_date': bse_price.date.strftime('%d %B %Y'),
                 }
             except Exception as ex:
                 print str(ex)
@@ -403,23 +405,64 @@ def get_rating_report(request, search_keys):
                 rating['detailed_comment'] = comments
                 rating['message'] = ''
                 pricing = {}
+                nse_change = ''
+                nse_price = ''
+                bse_change = ''
+                bse_price = ''
                 try:
-                    price = NSEBSEPrice.objects.get(company=company, latest=True)
-                    last_review = NSEBSEPrice.objects.filter(company=company, last_review=True)[0]                
-                    last_bse_price = last_review.BSE_price
-                    last_nse_price = last_review.NSE_price
-                    bse_change = ((last_bse_price - price.BSE_price)/price.BSE_price)*100
-                    nse_change = ((last_nse_price - price.NSE_price)/price.NSE_price)*100
+                    nse_price_list = NSEPrice.objects.filter(company=company).order_by('-id')
+                    bse_price_list = BSEPrice.objects.filter(company=company).order_by('-id')
+                    if nse_price_list.count() > 0:
+                        nse_price = nse_price_list[0]
+                        try:
+                            last_nse_price = nse_price_list[1].NSEPrice
+                            nse_change = ((last_nse_price - nse_price.NSE_price)/nse_price.NSE_price)*100
+                        except:
+                            try:
+                                index = 1
+                                nse_flag = False
+                                end = nse_price_list.count() if nse_price_list.count() < 10 else 10
+                                while index < end:
+                                    if not nse_flag:
+                                        last_nse_price = nse_price_list[index].NSEPrice
+                                        nse_change = ((last_nse_price - nse_price.NSE_price)/nse_price.NSE_price)*100
+                                        nse_flag = True
+                                    index = index + 1
+                            except:
+                                pass
+                        
+                    if bse_price_list.count() > 0:
+                        bse_price = bse_price_list[0]
+                        try:
+                            last_bse_price = bse_price_list[1].BSEPrice
+                            bse_change = ((last_bse_price - bse_price.BSE_price)/bse_price.BSE_price)*100
+                        except:
+                            try:
+                                index = 1
+                                bse_flag = False
+                                end = bse_price_list.count() if bse_price_list.count() < 10 else 10
+                                while index < end:
+                                    if not bse_flag:
+                                        last_bse_price = bse_price_list[index].BSE_price
+                                        bse_change = ((last_bse_price - bse_price.BSE_price)/bse_price.BSE_price)*100
+                                        bse_flag = True
+                                    index = index + 1
+                            except:
+                                pass
+                        
+
                     pricing = {
-                        'nse_price': price.NSE_price,
-                        'bse_price': price.BSE_price,
-                        'date': price.date.strftime('%d %B %Y'),
-                        'bse_change': 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else  'down by '+str(round(abs(bse_change), 2))+ '% since last review',
-                        'nse_change': 'up by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else  'down by '+str(round(abs(nse_change), 2))+ '% since last review'
+                        'nse_price': nse_price.NSE_price if nse_price else '',
+                        'bse_price': bse_price.BSE_price if bse_price else '',
+                        'nse_date': nse_price.date.strftime('%d %B %Y') if nse_price else '',
+                        'bse_date': bse_price.date.strftime('%d %B %Y') if bse_price else '',
+                        'bse_change': bse_change,
+                        'nse_change': nse_change
                     }
                 except Exception as ex:
                     print str(ex)
                     pass
+                
                 rating['pricing'] = pricing
             else:
                 

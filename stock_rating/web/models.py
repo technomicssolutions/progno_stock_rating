@@ -219,14 +219,30 @@ class CompanyStockData(Date):
         return self.company.company_name
 
 
-class NSEBSEPrice(models.Model):
+# class NSEBSEPrice(models.Model):
+#     company = models.ForeignKey(Company)
+#     date = models.DateField('Date')
+#     NSE_price = models.DecimalField('NSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
+#     BSE_price = models.DecimalField('BSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
+#     latest = models.BooleanField('Is Latest', default=True)
+#     last_review = models.BooleanField('Is last review', default=False)
+#     parent = models.ForeignKey('self', null=True, blank=True)
+
+#     def __unicode__(self):
+#         return self.company.company_name + '-' + str(self.date)
+
+class NSEPrice(models.Model):
     company = models.ForeignKey(Company)
     date = models.DateField('Date')
     NSE_price = models.DecimalField('NSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
-    BSE_price = models.DecimalField('BSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
-    latest = models.BooleanField('Is Latest', default=True)
-    last_review = models.BooleanField('Is last review', default=False)
-    parent = models.ForeignKey('self', null=True, blank=True)
 
     def __unicode__(self):
-        return self.company.company_name
+        return self.company.company_name + '-' + str(self.date)
+
+class BSEPrice(models.Model):
+    company = models.ForeignKey(Company)
+    date = models.DateField('Date')
+    BSE_price = models.DecimalField('BSE Price', max_digits=10, decimal_places=5, null=True, blank=True)
+
+    def __unicode__(self):
+        return self.company.company_name + '-' + str(self.date)

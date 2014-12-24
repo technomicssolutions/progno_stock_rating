@@ -123,7 +123,10 @@ class CompanyStockDataAdmin(admin.ModelAdmin):
 class CompanyModelFunctionPointAdmin(admin.ModelAdmin):
     search_fields = ['company__company_name', 'parameter_limit__function__function_name', 'parameter_limit__analysis_model__name']
 
-class NSEBSEPriceAdmin(admin.ModelAdmin):
+class BSEPriceAdmin(admin.ModelAdmin):
+    search_fields = ['company__company_name']
+
+class NSEPriceAdmin(admin.ModelAdmin):
     search_fields = ['company__company_name']
 
 admin.site.register(UserPermission, UserPermissionAdmin)
@@ -147,7 +150,8 @@ admin.site.register(CompanyModelScore, CompanyModelScoreAdmin)
 admin.site.register(CompanyFile)
 admin.site.register(CompanyStockData, CompanyStockDataAdmin)
 admin.site.register(CompanyModelFunctionPoint, CompanyModelFunctionPointAdmin)
-admin.site.register(NSEBSEPrice, NSEBSEPriceAdmin)
+admin.site.register(NSEPrice, NSEPriceAdmin)
+admin.site.register(BSEPrice, BSEPriceAdmin)
 
 
 

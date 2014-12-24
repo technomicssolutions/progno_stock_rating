@@ -18,7 +18,7 @@ from django.core.mail import send_mail
 
 
 from models import PublicUser, WatchList, CompareList, Help
-from web.models import  ( Company, CompanyModelScore, CompanyFunctionScore, NSEBSEPrice, \
+from web.models import  ( Company, CompanyModelScore, CompanyFunctionScore, NSEPrice, BSEPrice, \
     CompanyModelFunctionPoint, ParameterLimit)
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
 
@@ -255,11 +255,12 @@ class ViewWatchList(View):
                         company_in_compare_list = False
                     pricing = {}
                     try:
-                        price = NSEBSEPrice.objects.get(company=company, latest=True)
+                        nse_price = NSEPrice.objects.get(company=company, latest=True)
+                        bse_price = BSEPrice.objects.get(company=company, latest=True)
                         pricing = {
-                            'nse_price': price.NSE_price,
-                            'bse_price': price.BSE_price,
-                            'date': price.date.strftime('%d %B %Y')
+                            'nse_price': nse_price.NSE_price,
+                            'bse_price': bse_price.BSE_price,
+                            'date': nse_price.date.strftime('%d %B %Y')
                         }
                     except Exception as ex:
                         print str(ex)

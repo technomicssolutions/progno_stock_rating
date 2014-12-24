@@ -34,7 +34,6 @@ def progno_login_required(function, login_url):
             if is_public_user(request):
                 return HttpResponseRedirect(login_url)
             else:
-                print "function", function
                 return function(request, *args, **kw)
         else:
             return HttpResponseRedirect(login_url)        

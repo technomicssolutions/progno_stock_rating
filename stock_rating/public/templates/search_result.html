@@ -26,7 +26,7 @@
 						<td>[[detail.brief_comment]]</td>
 						<td>
 							{% if user.is_authenticated %}
-								<a href="" ng-click="view_rating_report(detail)"class="aqua_button with_margin" >View Report</a> <br/>
+								<a href="" ng-click="view_rating_report(detail)"class="aqua_button with_margin" ng-show="detail.star_count">View Report</a> <br/>
 								<a href="" ng-show="detail.company_in_watch_list == 'false' " ng-click="add_to_watch_list(detail)"class="aqua_button with_margin" >Add to Watch List</a><br/>
 								<a href="" ng-show="detail.company_in_compare_list == 'false' " ng-click="add_to_compare_list(detail)"class="aqua_button with_margin" >Add to Compare</a>
 							{% else %}
@@ -43,12 +43,12 @@
 			<div class="col-md-1"> <!-- this is a place holder For alignment of below div -->
 			</div>
 			<div class="col-md-4 price_value">
-				<p> [[pricing.date]] </p>
+				<p> [[pricing.nse_date]] </p>
 				<p class="aqua_bold"> NSE </p>
 				<p class="green_bold"> Rs [[pricing.nse_price]] <span class="price_change">([[pricing.nse_change]])</span> </p>
 			</div>
 			<div class="col-md-4 price_value">
-				<p> [[pricing.date]] </p>
+				<p> [[pricing.bse_date]] </p>
 				<p class="aqua_bold"> BSE </p>
 				<p class="green_bold"> Rs [[pricing.bse_price]] <span class="price_change">([[pricing.bse_change]])</span></p>
 			</div>
