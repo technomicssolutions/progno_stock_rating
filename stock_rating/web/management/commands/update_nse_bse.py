@@ -29,13 +29,15 @@ class Command(BaseCommand):
     help = "Download NSE BSE price and update to db"
 
     def handle(self, *args, **options):
-        get_nse_price()
+        
         get_bse_price()
+        get_nse_price()
 
 
 def get_bse_price():
     date = datetime.now().date()
     #date = date + timedelta(days=-1)
+    print date
     hdr = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -44,12 +46,9 @@ def get_bse_price():
         'Accept-Language': 'en-US,en;q=0.8',
         'Connection': 'keep-alive'
     }
-    print "here"
     base_url = "http://www.bseindia.com/download/BhavCopy/Equity/" #2014/OCT/cm29OCT2014bhav.csv.zip"
     bse_file = "EQ"+str(date.day)+str(date.month)+date.strftime('%y')+'_CSV.ZIP'
-    print bse_file
     url = base_url+bse_file
-    print url
     req = urllib2.Request(url, headers=hdr)
 
     page = urllib2.urlopen(req)
@@ -114,7 +113,6 @@ def get_nse_price():
             'Connection': 'keep-alive'
         }
         base_url = "http://www.nseindia.com/content/historical/EQUITIES/" #2014/OCT/cm29OCT2014bhav.csv.zip"
-        print base_url
         date = datetime.now().date()
         #date = date + timedelta(days=-1)
         directory = str(date.year)+"/"+month[str(date.month)]+"/"

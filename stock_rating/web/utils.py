@@ -415,8 +415,10 @@ def get_rating_report(request, search_keys):
                     if nse_price_list.count() > 0:
                         nse_price = nse_price_list[0]
                         try:
-                            last_nse_price = nse_price_list[1].NSEPrice
+                            last_nse_price = nse_price_list[1].NSE_price
                             nse_change = ((last_nse_price - nse_price.NSE_price)/nse_price.NSE_price)*100
+                            nse_change = 'Down by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else 'Up by '+str(round(abs(nse_change), 2))+ '% since last review'
+
                         except:
                             try:
                                 index = 1
@@ -424,9 +426,9 @@ def get_rating_report(request, search_keys):
                                 end = nse_price_list.count() if nse_price_list.count() < 10 else 10
                                 while index < end:
                                     if not nse_flag:
-                                        last_nse_price = nse_price_list[index].NSEPrice
+                                        last_nse_price = nse_price_list[index].NSE_price
                                         nse_change = ((last_nse_price - nse_price.NSE_price)/nse_price.NSE_price)*100
-                                        nse_change = 'up by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else 'down by '+str(round(abs(nse_change), 2))+ '% since last review'
+                                        nse_change = 'Down by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else 'up by '+str(round(abs(nse_change), 2))+ '% since last review'
                                         nse_flag = True
                                     index = index + 1
                             except:
@@ -435,8 +437,10 @@ def get_rating_report(request, search_keys):
                     if bse_price_list.count() > 0:
                         bse_price = bse_price_list[0]
                         try:
-                            last_bse_price = bse_price_list[1].BSEPrice
+                            last_bse_price = bse_price_list[1].BSE_price
                             bse_change = ((last_bse_price - bse_price.BSE_price)/bse_price.BSE_price)*100
+                            bse_change = 'Down by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else 'Up by '+str(round(abs(bse_change), 2))+ '% since last review'
+
                         except:
                             try:
                                 index = 1
@@ -446,7 +450,7 @@ def get_rating_report(request, search_keys):
                                     if not bse_flag:
                                         last_bse_price = bse_price_list[index].BSE_price
                                         bse_change = ((last_bse_price - bse_price.BSE_price)/bse_price.BSE_price)*100
-                                        bse_change = 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else 'down by '+str(round(abs(bse_change), 2))+ '% since last review'
+                                        bse_change = 'Down by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else 'Up by '+str(round(abs(bse_change), 2))+ '% since last review'
                                         bse_flag = True
                                     index = index + 1
                             except:
