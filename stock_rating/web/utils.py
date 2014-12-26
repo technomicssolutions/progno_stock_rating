@@ -426,6 +426,7 @@ def get_rating_report(request, search_keys):
                                     if not nse_flag:
                                         last_nse_price = nse_price_list[index].NSEPrice
                                         nse_change = ((last_nse_price - nse_price.NSE_price)/nse_price.NSE_price)*100
+                                        nse_change = 'up by '+str(round(abs(nse_change), 2))+ '% since last review' if nse_change>0 else 'down by '+str(round(abs(nse_change), 2))+ '% since last review'
                                         nse_flag = True
                                     index = index + 1
                             except:
@@ -445,12 +446,11 @@ def get_rating_report(request, search_keys):
                                     if not bse_flag:
                                         last_bse_price = bse_price_list[index].BSE_price
                                         bse_change = ((last_bse_price - bse_price.BSE_price)/bse_price.BSE_price)*100
+                                        bse_change = 'up by '+str(round(abs(bse_change), 2))+ '% since last review' if bse_change>0 else 'down by '+str(round(abs(bse_change), 2))+ '% since last review'
                                         bse_flag = True
                                     index = index + 1
                             except:
                                 pass
-                        
-
                     pricing = {
                         'nse_price': nse_price.NSE_price if nse_price else '',
                         'bse_price': bse_price.BSE_price if bse_price else '',
