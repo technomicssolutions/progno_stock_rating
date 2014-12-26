@@ -39,9 +39,10 @@
 							<p> Industry </p>
 						</td>
 						<td ng-repeat="company in compare_list"> 
-							<p>&nbsp;<img ng-repeat="star in range(company.star_rating) track by $index" src="/static/images/star.png" /></p>
-							<p><b><h5>[[company.model_score]]</h5> </b></p>
-							<p>[[company.industry]] </p>
+							<p ng-show="company.star_count">&nbsp;<img ng-repeat="star in range(company.star_count) track by $index" src="/static/images/star.png" /></p>
+							<p ng-show="company.star_count"><b><h5>[[company.model_score]]</h5> </b></p>
+							<p ng-show="company.star_count">[[company.industry]] </p>
+							<p ng-hide="company.star_count">[[company.star_rating]] </p>
 						</td>
 					</tr>
 					<tbody>
