@@ -488,6 +488,14 @@ class HelpView(View):
             return HttpResponse(response, status=200, mimetype='application/json')
         return render(request, 'home.html', {})
 
+class Disclaimer(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'disclaimer.html', {})
 
+class PrivacyPolicy(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'privacy_policy.html', {})
 
-
+class TermsOfUse(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'terms_of_use.html', {})
