@@ -5,3 +5,5 @@ simplejson==3.5.3
 xlrd==0.9.3
 django-jsonfield==0.9.13
 django-recaptcha
+django-social-auth==0.7.28
+lxml==3.3.6

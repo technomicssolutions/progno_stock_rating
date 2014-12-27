@@ -222,6 +222,11 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
         model_scores = model_scores[int(start):]
     if order_by == 'company_name':
         model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('company__company_name')[int(start):int(end)]
+    elif order_by == 'industry':
+        model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('company__industry__industry_name')[int(start):int(end)]
+    elif order_by == 'star_rating':
+        model_scores = CompanyModelScore.objects.filter(star_rating__star_count=star_count).order_by('star_rating__star_count')[int(start):int(end)]
+
     public_user = PublicUser.objects.filter(user=request.user)
     for model_score in model_scores:
         model = model_score.analysis_model
@@ -262,11 +267,13 @@ def get_rating_details_by_star_count(request, star_count, order_by, start, end):
                         comments.append(parameter.neutral_comment)
             pricing = {}
             try:
-                nse_price = BSEPrice.objects.get(company=company, latest=True)
-                bse_price = BSEPrice.objects.get(company=company, latest=True)
+                nse_price = NSEPrice.objects.filter(company=company).order_by('-id')
+                bse_price = BSEPrice.objects.filter(company=company).order_by('-id')
+                nse_price = nse_price[0] if nse_price.count() > 0 else None
+                bse_price = bse_price[0] if bse_price.count() > 0 else None
                 pricing = {
-                    'nse_price': nse_price.NSE_price,
-                    'bse_price': bse_price.BSE_price,
+                    'nse_price': nse_price.NSE_price if nse_price else '',
+                    'bse_price': bse_price.BSE_price if bse_price else '',
                     'nse_date': nse_price.date.strftime('%d %B %Y'),
                     'bse_date': bse_price.date.strftime('%d %B %Y'),
                 }

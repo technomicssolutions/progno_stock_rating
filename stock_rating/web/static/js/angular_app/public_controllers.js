@@ -27,6 +27,7 @@ function add_to_compare_list($scope, $http, star_rating, from_view) {
     });
 }
 function add_to_watch_list($scope, $http, star_rating){
+    console.log(params);
     $http({
         method: 'post',
         data: $.param(params),
@@ -223,38 +224,57 @@ function StarRatingController($scope, $http){
         $scope.star_ratings = [];
         $scope.total_count = 1;
         $scope.error = false;
+        $scope.sort_key = 'star_count';
+        $scope.scroll = false;
         if (star_count)
-            $scope.get_company_star_rating(star_count);
+            $scope.send_request();
     }
     $scope.range = function(n) {
         var n = Math.abs(n);
         if (n == Number(n))
             return new Array(n);
     }
-    $scope.get_company_star_rating = function(star_count, order_by) {
+    $scope.sort_rating_list = function(order_by){
         if(!order_by){
             order_by = 'score';
+            $scope.sort_key = 'score';
+        } else {
+            $scope.sort_key = order_by;
         }
+        $scope.send_request();
+    }
+    $scope.get_company_star_rating_by_scroll = function() {
         if($scope.total_count > $scope.end) {
-            show_loader()
             $scope.start = $scope.end;
             $scope.end = $scope.end + 10;
-            var url = '/star_rating/?star_count='+star_count+'&order_by='+order_by+'&start='+$scope.start+'&end='+$scope.end+'&ajax=true'
-            $http.get(url).success(function(data){
-                hide_loader()
+            $scope.scroll = true;
+            $scope.send_request();
+        }
+    }
+    $scope.send_request = function(){
+        show_loader()        
+        var url = '/star_rating/?star_count='+$scope.count+'&order_by='+$scope.sort_key+'&start='+$scope.start+'&end='+$scope.end+'&ajax=true'
+        $http.get(url).success(function(data){
+            hide_loader()
+            if($scope.scroll) {
                 for(var i=0; i<data.star_ratings.length; i++){
                     $scope.star_ratings.push(data.star_ratings[i]);
                 }
-                if(data.star_ratings.length == 0){
-                    $scope.error = true;
-                }
-                $scope.total_count = data.total_count;
-                $scope.watch_list_count = data.watch_list_count;
-                $scope.compare_list_count = data.compare_list_count;
-            }).error(function(data, status){
-                console.log(data);
-            });
-        }
+                $scope.scroll = false;
+            } else {
+                $scope.star_ratings = data.star_ratings;
+            }
+            if(data.star_ratings.length == 0){
+                $scope.error = true;
+            } else {
+                $scope.error = false;
+            }
+            $scope.total_count = data.total_count;
+            $scope.watch_list_count = data.watch_list_count;
+            $scope.compare_list_count = data.compare_list_count;
+        }).error(function(data, status){
+            console.log(data);
+        });
     }
     $scope.view_rating_report = function(star_rating){
         document.location.href = '/star_rating_report/?isin_code='+star_rating.isin_code;
@@ -266,6 +286,14 @@ function StarRatingController($scope, $http){
         }
         show_loader();
         add_to_compare_list($scope, $http, star_rating);
+    }
+    $scope.add_to_watch_list = function(star_rating) {
+        params = {
+            'isin_code': star_rating.isin_code,
+            'csrfmiddlewaretoken': $scope.csrf_token,
+        }
+        show_loader();
+        add_to_watch_list($scope, $http, star_rating);
     }
     $scope.select_page = function(page){
         select_page(page, $scope.star_ratings, $scope);

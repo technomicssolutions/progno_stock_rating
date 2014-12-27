@@ -30,14 +30,14 @@
 	<div class="container page_content">
 		<div class="row">
 			<div class="col-md-12">
-				<table class="table table-striped list_table" ng-show="star_ratings.length > 0" infinite-scroll="get_company_star_rating('{{star_count}}')">
+				<table class="table table-striped list_table" ng-show="star_ratings.length > 0" infinite-scroll="get_company_star_rating_by_scroll()">
 					<tr>
-						<th>Company Name <a href="#" ng-click="get_company_star_rating('{{star_count}}', 'company_name')" class="sort_list"></a></th>
-						<th>Industry</th>
-						<th>Star Rating</th>
-						<th style="width: 110px;">Score <a href="#" ng-click="get_company_star_rating('{{star_count}}', 'score')" class="sort_list"></a></th>
+						<th>Company Name <a href="#" ng-click="sort_rating_list('company_name')" class="sort_list"></a></th>
+						<th>Industry <a href="#" ng-click="sort_rating_list('industry')" class="sort_list"></a></th>
+						<th>Star Rating <a href="#" ng-click="sort_rating_list('star_rating')" class="sort_list"></a></th>
+						<th style="width: 110px;">Score <a href="#" ng-click="sort_rating_list('score')" class="sort_list"></a></th>
+						<!-- <th>Price NSE</th> -->
 						<th>Price BSE</th>
-						<th>Price NSE</th>
 						<th>Rating Changed on </th>
 						<th>&nbsp;</th>
 					</tr>
@@ -49,9 +49,10 @@
 								<img ng-repeat="star in range(star_rating.star_count) track by $index" src="/static/images/star.png" />
 							</td>
 							<td>[[star_rating.score]]</td>
-							<td>[[star_rating.pricing.nse_price]]</td>
+							<!-- <td>[[star_rating.pricing.nse_price]]</td> -->
 							<td>[[star_rating.pricing.bse_price]]</td>
 							<td>
+								[[star_rating.rating_changed_date]]
 								<span ng-show="star_rating.change>0"> 
 									up by <img ng-repeat="star in range(star_rating.change) track by $index" src="/static/images/star.png" />
 								</span>
@@ -62,6 +63,7 @@
 							<td class="">
 								<a href="" ng-click="view_rating_report(star_rating)" class="aqua_button">View Report</a> 
 								<a href="" ng-show="star_rating.company_in_compare_list == 'false' " ng-click="add_to_compare_list(star_rating)" class="aqua_button with_margin">Add to Compare</a>
+								<a href="" ng-show="star_rating.company_in_watch_list == 'false'" ng-click="add_to_watch_list(star_rating)" class="aqua_button with_margin">Add to Watch List</a>
 							</td>
 						</tr>
 					</tbody>
