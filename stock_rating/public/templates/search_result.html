@@ -30,9 +30,9 @@
 								<a href="" ng-show="detail.company_in_watch_list == 'false' " ng-click="add_to_watch_list(detail)"class="aqua_button with_margin" >Add to Watch List</a><br/>
 								<a href="" ng-show="detail.company_in_compare_list == 'false' " ng-click="add_to_compare_list(detail)"class="aqua_button with_margin" >Add to Compare</a>
 							{% else %}
-								<a href="{% url 'public_login' %}" class="aqua_button with_margin" >View Report</a> <br/>
-								<a href="{% url 'public_login' %}" class="aqua_button with_margin" >Add to Watch List</a><br/>
-								<a href="{% url 'public_login' %}" class="aqua_button with_margin" >Add to Compare</a>
+								<a href="{% url 'star_rating_report' %}?isin_code=[[detail.isin_code]]" class="aqua_button with_margin" >View Report</a> <br/>
+								<a href="{% url 'search_result' %}?isin_code=[[detail.isin_code]]" class="aqua_button with_margin" >Add to Watch List</a><br/>
+								<a href="{% url 'search_result' %}?isin_code=[[detail.isin_code]]" class="aqua_button with_margin" >Add to Compare</a>
 							{% endif %}
 						</td>
 					</tr>

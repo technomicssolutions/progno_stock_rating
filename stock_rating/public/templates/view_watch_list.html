@@ -26,7 +26,7 @@
 						<th>Score</th>
 						<th>Added on</th>
 						<th>Price BSE</th>
-						<th>Price NSE</th>
+						<!-- <th>Price NSE</th> -->
 						<th>Rating Changed on</th>
 					</tr>
 					<tbody ng-repeat="star_rating in watch_list">
@@ -38,8 +38,8 @@
 							</td>
 							<td>[[star_rating.score]]</td>
 							<td>[[star_rating.added_on]]</td>
-							<td>[[star_rating.pricing.nse_price]]</td>
-							<td>[[star_rating.pricing.bse_price]]</td>
+							<!-- <td>[[star_rating.pricing.nse_price]]</td> -->
+							<td>[[star_rating.pricing.bse_price]]<br /> <span>[[star_rating.pricing.watch_list_bse_change]]</span></td>
 							<td>
 								[[star_rating.rating_changed_date]] 
 								<span ng-show="star_rating.change>0"> 

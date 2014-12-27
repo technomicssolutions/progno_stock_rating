@@ -78,7 +78,7 @@
 							<p align="center"> Recover Your <a href=""> password </a>
 						</div>
 						<div class="col-md-12">
-							<a href="{% url 'socialauth_begin' 'facebook' %}?{{ redirect_querystring }}"><button class="f_connect"></button></a>
+							<a href="{% url 'socialauth_begin' 'facebook' %}?next_url={{next_url}}"><button class="f_connect"></button></a>
 						</div>
 					</div>
 				</div>

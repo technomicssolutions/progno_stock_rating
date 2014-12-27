@@ -20,7 +20,7 @@ from django.core.mail import send_mail
 from models import PublicUser, WatchList, CompareList, Help
 from web.models import  ( Company, CompanyModelScore, CompanyFunctionScore, NSEPrice, BSEPrice, \
     CompanyModelFunctionPoint, ParameterLimit)
-from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details
+from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details, get_pricing
 
 
 def public_login_required(function, login_url):
@@ -57,7 +57,9 @@ class Home(View):
                 p = ast.literal_eval(p)
                 public_user.fb_details = p
                 public_user.save()   
-            if  is_public_user(request):                            
+            if  is_public_user(request):     
+                if request.session.get('next_url', ''):
+                    return HttpResponseRedirect(request.session.get('next_url', ''))
                 return render(request, 'home.html', {})
             else:
                 return HttpResponseRedirect(reverse('dashboard'))
@@ -69,7 +71,8 @@ class Login(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'public_login.html', {
             'recaptcha_public_key': settings.RECAPTCHA_PUBLIC_KEY,
-            'recaptcha_private_key': settings.RECAPTCHA_PRIVATE_KEY
+            'recaptcha_private_key': settings.RECAPTCHA_PRIVATE_KEY,
+            'next_url': request.session.get('next_url', ''),
         })
 
     def post(self, request, *args, **kwargs):
@@ -253,18 +256,7 @@ class ViewWatchList(View):
                         company_in_compare_list = True
                     else:
                         company_in_compare_list = False
-                    pricing = {}
-                    try:
-                        nse_price = NSEPrice.objects.get(company=company, latest=True)
-                        bse_price = BSEPrice.objects.get(company=company, latest=True)
-                        pricing = {
-                            'nse_price': nse_price.NSE_price,
-                            'bse_price': bse_price.BSE_price,
-                            'date': nse_price.date.strftime('%d %B %Y')
-                        }
-                    except Exception as ex:
-                        print str(ex)
-                        pass
+                    pricing = get_pricing(company, request)
                     rating = {
                         'company_name': company.company_name + ' - ' + company.isin_code,
                         'isin_code': company.isin_code,

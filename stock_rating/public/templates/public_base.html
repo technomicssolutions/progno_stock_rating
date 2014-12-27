@@ -31,6 +31,9 @@
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
         });
+        if (window.location.hash == '#_=_') {
+            window.location.hash = '';
+        }
     </script>
 
 
