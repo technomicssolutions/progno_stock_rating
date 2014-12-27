@@ -33,6 +33,10 @@ def export_xls(modeladmin, request, queryset):
     columns = [
         (u"Name", 2000),
         (u"ISIN", 6000),
+        (u"Industry", 2000),
+        (u"Score", 2000),
+        (u"Starcount", 1000),
+        (u"Brief Comment", 1000),
     ]
 
     font_style = xlwt.XFStyle()
@@ -47,10 +51,23 @@ def export_xls(modeladmin, request, queryset):
     font_style.alignment.wrap = 1
     
     for obj in queryset:
+        model_score = CompanyModelScore.objects.filter(company=obj)
+        if model_score.count() > 0:
+            score = model_score[0].score
+            stars = model_score[0].star_rating.star_count
+            brief_comment = model_score[0].star_rating.comment
+        else:
+            score = ''
+            stars = ''
+            brief_comment = ''
         row_num += 1
         row = [
             obj.company_name,
             obj.isin_code,
+            obj.industry.industry_name,
+            score,
+            stars,
+            brief_comment
         ]
         for col_num in xrange(len(row)):
             ws.write(row_num, col_num, row[col_num], font_style)
