@@ -12,12 +12,12 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2 ', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'stocklab',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'USER': 'progno',
+        'PASSWORD': 'progno!@#11070',
+        'HOST': 'localhost',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',                      # Set to empty string for default.
     }
 }
@@ -182,7 +182,7 @@ FACEBOOK_EXTENDED_PERMISSIONS = ['email', 'user_birthday', 'user_likes', 'publis
 SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [('gender', 'gender'),('birthday', 'birthday'), ('location','location')]
 
 LOGIN_URL          = '/login/'
-LOGIN_REDIRECT_URL = '/fb_login_redirect/'
+LOGIN_REDIRECT_URL = '/'
 
 RECAPTCHA_PUBLIC_KEY = '6Ld2gvwSAAAAAFGdHMT6dgfDxL5JUOW4Z_SNAIgo'
 RECAPTCHA_PRIVATE_KEY = '6Ld2gvwSAAAAAElFWJenb8JTeoDW5v2a6JFlPNS5'
