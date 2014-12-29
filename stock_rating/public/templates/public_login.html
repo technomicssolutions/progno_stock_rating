@@ -75,7 +75,7 @@
 						</form>
 						<div class="col-md-12 box_head">
 							<button class="signin_button" ng-click="validate_login()">Sign In</button>
-							<p align="center"> Recover Your <a href=""> password </a>
+							<p align="center"> Recover Your <a href="{% url 'forgot_password' %}"> password </a>
 						</div>
 						<div class="col-md-12">
 							<a href="{% url 'socialauth_begin' 'facebook' %}?next_url={{next_url}}"><button class="f_connect"></button></a>

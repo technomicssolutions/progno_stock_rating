@@ -619,3 +619,84 @@ function SearchResultController($scope, $http) {
         document.location.href = '/star_rating_report/?isin_code='+company.isin_code;
     }
 }
+
+function ForgotPasswordController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token, recaptcha_private_key){
+        $scope.csrf_token = csrf_token;
+        $scope.email = '';
+        $scope.mail_flag = true;
+    }
+    $scope.send_email = function(){
+        if($scope.email == '') {
+            $scope.msg = "Please enter Email";
+        } else if(!validateEmail($scope.email)) {
+            $scope.msg = "Please Enter a valid Email";
+        } else {
+            params = { 
+                'email': $scope.email,
+                "csrfmiddlewaretoken" : $scope.csrf_token,
+            }
+            $http({
+                method : 'post',
+                url : "/forgot_password/",
+                data : $.param(params),
+                headers : {
+                    'Content-Type' : 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data, status) {   
+                if(data.result == 'ok'){
+                    $scope.msg = "";
+                    $scope.mail_flag = true;
+                } else {
+                    $scope.msg = data.message;
+                }
+            }).error(function(data, status){
+                $scope.message = data.message;
+            });
+        }
+    }
+}
+
+function ResetPasswordController($scope, $element, $http, $timeout, $location)
+{
+    $scope.init = function(csrf_token, token_id){
+        $scope.csrf_token = csrf_token;
+        if(token_id != ''){
+            $scope.token_id = token_id;
+        } else {
+            $scope.token_id = ''
+        }
+        $scope.new_password = '';
+        $scope.confirm_password = '';
+    } 
+    $scope.save_new_password = function(){
+        params = {
+            'token_id': $scope.token_id,
+            'new_password': $scope.new_password,
+            'confirm_password': $scope.confirm_password,
+            "csrfmiddlewaretoken": $scope.csrf_token,
+        }
+        if($scope.new_password == $scope.confirm_password && $scope.new_password != ''){
+            $http({
+                method: 'post',
+                url: '/reset_password/',
+                data: $.param(params),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).success(function(data){
+                $scope.error_message = data.message;
+                $scope.new_password = '';
+                $scope.confirm_password = '';
+            }).error(function(data){
+
+            })
+        } else {
+            if($scope.new_password == '')
+                $scope.error_message = "Please enter Password";
+            else
+                $scope.error_message = "Password miss match"
+        }
+    } 
+}

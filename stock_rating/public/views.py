@@ -506,3 +506,85 @@ class PrivacyPolicy(View):
 class TermsOfUse(View):
     def get(self, request, *args, **kwargs):
         return render(request, 'terms_of_use.html', {})
+
+
+class ForgotPassword(View):
+
+    def get(self, request, *args, **kwargs):
+
+        return render(request, 'forgot_password.html', {})
+
+    def post(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            pass_dict = request.POST
+            try:
+                user = User.objects.get(username=pass_dict['email'])
+                user.save()
+                token, created = Token.objects.get_or_create(user=user)
+                token = token.token
+                email_to = user.email
+                subject = " Password Reset Email - Stocklab "
+                message = " You can reset your password by clicking the following link " + settings.SITE_ROOT + "reset_password/?token="+token
+                from_email = settings.DEFAULT_FROM_EMAIL  
+                send_mail(subject, message, from_email,[email_to])
+                res = {
+                    'result': 'Ok',
+                    'message': 'Email with instructions to change the password has been sent to this email, Resend the Email, if you have not received ',
+                }
+            except User.DoesNotExist:
+                res = {
+                    'result': 'This email is not registered',
+                    'message': 'This email is not registered',
+                }
+            except Exception as e:
+                print "ex", str(e)
+                res = {
+                    'message': 'Some thing went wrong',
+                    'result': str(e),
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'reset_password.html', {})
+
+class ResetPassword(View):
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_anonymous():
+            token = request.GET.get('token', '')
+            try:
+                token = Token.objects.get(token=token)
+                user = token.user
+            except:
+                return HttpResponse('Invalid Token')
+            return render(request, 'reset_password.html', {
+                'token_id': user.id
+            })
+        else:
+            return render(request, 'reset_password.html', {
+            })
+
+    def post(self, request, *args, **kwargs):
+
+        if request.is_ajax():
+            pass_dict = request.POST
+            try:
+                token_id = pass_dict.get('token_id', '')
+                if token_id:
+                    user = User.objects.get(id=int(token_id))
+                else:
+                    user = request.user
+                user.set_password(pass_dict['new_password'])
+                user.save()
+                res = {
+                    'result': 'ok',
+                    'message': 'Password Changed Successfully',
+                }
+            except:
+                res = {
+                    'result': 'ok',
+                    'message': 'User Doest Not Exists',
+                }
+            response = simplejson.dumps(res)
+            return HttpResponse(response, status=200, mimetype='application/json')
+        return render(request, 'reset_password.html', {})
