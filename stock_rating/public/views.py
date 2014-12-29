@@ -17,7 +17,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 
-from models import PublicUser, WatchList, CompareList, Help
+from models import PublicUser, WatchList, CompareList, Help, Token
 from web.models import  ( Company, CompanyModelScore, CompanyFunctionScore, NSEPrice, BSEPrice, \
     CompanyModelFunctionPoint, ParameterLimit)
 from web.utils import get_rating_details_by_star_count , get_rating_report, get_company_details, get_pricing
@@ -114,12 +114,14 @@ class Login(View):
 class ActivateAccount(View):
     def get(self, request, *args, **kwargs):
         try:
-            user = User.objects.get(id=kwargs['user_id'])
+            token = request.GET.get('token', '')
+            token = Token.objects.get(token=token)
+            user = token.user
             user.is_active = True
             user.save()
         except Exception as e:
             print str(e)
-            pass
+            return HttpResponse('Activation link is invalid')
         return HttpResponseRedirect(reverse('public_login'))
 
 from socket import gethostname, gethostbyname 
@@ -165,8 +167,10 @@ class Signup(View):
                 public_user.user = user
                 public_user.save()
                 email_to = user.email
+                token = Token.objects.create(user=user) 
+                token = token.token   
                 subject = " Progno Account Activation "
-                message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "activate/"+str(user.id)+"/"
+                message = " Please activate your account by clicking the following link " + settings.SITE_ROOT + "activate/"+"?token="+token
                 from_email = settings.DEFAULT_FROM_EMAIL         
                 send_mail(subject, message, from_email,[email_to])
                 res = {
