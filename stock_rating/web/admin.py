@@ -53,7 +53,7 @@ def export_xls(modeladmin, request, queryset):
     for obj in queryset:
         model_score = CompanyModelScore.objects.filter(company=obj)
         if model_score.count() > 0:
-            score = model_score[0].score
+            score = model_score[0].points
             stars = model_score[0].star_rating.star_count
             brief_comment = model_score[0].star_rating.comment
         else:

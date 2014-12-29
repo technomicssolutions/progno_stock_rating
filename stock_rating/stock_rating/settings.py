@@ -182,7 +182,7 @@ FACEBOOK_EXTENDED_PERMISSIONS = ['email', 'user_birthday', 'user_likes', 'publis
 SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [('gender', 'gender'),('birthday', 'birthday'), ('location','location')]
 
 LOGIN_URL          = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/fb_login_redirect/'
 
 RECAPTCHA_PUBLIC_KEY = '6Ld2gvwSAAAAAFGdHMT6dgfDxL5JUOW4Z_SNAIgo'
 RECAPTCHA_PRIVATE_KEY = '6Ld2gvwSAAAAAElFWJenb8JTeoDW5v2a6JFlPNS5'

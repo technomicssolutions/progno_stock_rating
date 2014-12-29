@@ -401,7 +401,7 @@ function ViewCompareListController($scope, $http) {
     }
     $scope.get_compare_list_details = function(){
         show_loader();
-        $http.get('/compare_list/').success(function(data){
+        $http.get('/compare_list/?ajax=true').success(function(data){
             hide_loader();
             $scope.compare_list = data.compare_list;
             $scope.analytical_heads = data.analytical_heads;
@@ -494,6 +494,9 @@ function SearchViewController($scope, $http) {
             show_loader();
             $http.get(url).success(function(data) {
                 $scope.companies = data.companies;
+                if(data.companies.length > 0){
+                    $('#header_search_overlay').css('display', 'block');
+                }
                 paginate($scope.companies, $scope);
                 hide_loader();
             })
@@ -515,6 +518,10 @@ function SearchViewController($scope, $http) {
             return false;
         }
         return true;
+    }
+    $scope.hide_search_popup = function(){
+        $('#header_search_overlay').css('display', 'none');
+        $scope.companies = [];
     }
     $scope.select_company = function(company) {
         $scope.companies = [];
