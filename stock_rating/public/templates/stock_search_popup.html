@@ -1,5 +1,8 @@
 
 <div ng-controller="SearchViewController" ng-init="init('{{csrf_token}}')" class="search_div">
+    
+       <img src="/static/images/close_btn_blue.png" ng-click="hide_stock_search_popup()" align="right" style="width:25px;position:absolute;right: 20px;top: 15px "/>
+   
 	<input type="text" name="header_search" placeholder="Search" class="search_box" ng-change="search_companies()" ng-model="company_name">
 	<ul ng-show="companies.length > 0 && add_stock_flag">
 		<li ng-repeat="company in companies" ng-click="add_to_compare_list(company)"> [[company.name]] - [[company.isin_code]] </li>
