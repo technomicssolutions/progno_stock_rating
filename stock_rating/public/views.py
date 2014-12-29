@@ -60,12 +60,8 @@ class FBLoginRedirect(View):
             if  is_public_user(request):     
                 if request.session.get('next_url', ''):
                     return HttpResponseRedirect(request.session.get('next_url', ''))
-                return render(request, 'home.html', {})
-            else:
-                return HttpResponseRedirect(reverse('dashboard'))
-        else:
-            return render(request, 'home.html', {})
-            
+        return render(request, 'home.html', {})
+
 class Home(View):
     def get(self, request, *args, **kwargs):
         user = request.user
