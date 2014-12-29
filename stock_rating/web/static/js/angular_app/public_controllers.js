@@ -497,6 +497,9 @@ function SearchViewController($scope, $http) {
                 paginate($scope.companies, $scope);
                 hide_loader();
             })
+        }
+        else{
+            $scope.companies =[];
         }  
     }
     $scope.validate_help = function(){
@@ -523,7 +526,7 @@ function SearchViewController($scope, $http) {
         $('.help_popup').css('display', 'block');
     }
     $scope.hide_popup = function(){
-        $scope.companies = [];
+        $scope.companies =[];
         $scope.company_name = '';
         $('#stock_search_overlay').css('display', 'none');
         $('.help_popup').css('display', 'none');
