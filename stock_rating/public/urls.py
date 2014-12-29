@@ -6,13 +6,14 @@ from django.conf.urls import patterns, url
 from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, \
 	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList, public_login_required,\
      ViewCompareList, SearchResult, SearchCompany, DeleteFromCompareList, ChangeCompareList, \
-     HelpView, ActivateAccount, TermsOfUse, Disclaimer, PrivacyPolicy)
+     HelpView, ActivateAccount, TermsOfUse, Disclaimer, PrivacyPolicy, FBLoginRedirect)
 
 LOGIN_URL = '/login/'
 
 urlpatterns = patterns('',
 
     url(r'^$', Home.as_view(), name="home"),
+    url(r'^fb_login_redirect/$', FBLoginRedirect.as_view(), name="fb_login_redirect"),
     url(r'^login/$', Login.as_view(), name="public_login"),
     url(r'^logout/$', Logout.as_view(), name="public_logout"),
     url(r'^signup/$', Signup.as_view(), name="signup"),

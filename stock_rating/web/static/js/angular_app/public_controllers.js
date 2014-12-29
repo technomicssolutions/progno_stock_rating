@@ -401,7 +401,7 @@ function ViewCompareListController($scope, $http) {
     }
     $scope.get_compare_list_details = function(){
         show_loader();
-        $http.get('/compare_list/').success(function(data){
+        $http.get('/compare_list/?ajax=true').success(function(data){
             hide_loader();
             $scope.compare_list = data.compare_list;
             $scope.analytical_heads = data.analytical_heads;

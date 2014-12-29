@@ -45,7 +45,7 @@ def is_public_user(request):
     except Exception:
         return False
 
-class Home(View):
+class FBLoginRedirect(View):
     def get(self, request, *args, **kwargs):
         user = request.user
         if request.user.is_authenticated():
@@ -60,6 +60,17 @@ class Home(View):
             if  is_public_user(request):     
                 if request.session.get('next_url', ''):
                     return HttpResponseRedirect(request.session.get('next_url', ''))
+                return render(request, 'home.html', {})
+            else:
+                return HttpResponseRedirect(reverse('dashboard'))
+        else:
+            return render(request, 'home.html', {})
+            
+class Home(View):
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        if user.is_authenticated():
+            if  is_public_user(request):     
                 return render(request, 'home.html', {})
             else:
                 return HttpResponseRedirect(reverse('dashboard'))
