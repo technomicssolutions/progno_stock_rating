@@ -1,5 +1,6 @@
 
 <div ng-controller="SearchViewController" ng-init="init('{{csrf_token}}')" class="search_div">
+	<div id="header_search_overlay" ng-click="hide_search_popup()"></div>
 	{% include 'help_popup.html' %}                
 	<a href="" class="help" ng-click="show_help()"></a>
 	<input type="text" name="header_search" placeholder="Enter Stock Name" class="search_box" ng-change="search_companies()" ng-model="company_name">
