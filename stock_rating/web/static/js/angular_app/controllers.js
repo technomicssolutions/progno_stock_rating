@@ -34,7 +34,7 @@ function hide_loader(){
     $('#overlay').css('display', 'none');
     $('.spinner').css('display', 'none');
 }
-function show_dropdow(){
+function show_dropdown(){
     $('#dropdown_menu').css('display', 'block');
 }
 function hide_dropdown(){

@@ -414,12 +414,16 @@ function ViewCompareListController($scope, $http) {
         return new Array(n);
     }
     $scope.show_stock_search_popup = function(){
+        $scope.company_name = '';
+        $scope.companies = [];
         $('#stock_search_overlay').css('display', 'block');
         $('.popup').css('display', 'block');
     }
     $scope.hide_stock_search_popup = function(){
+        $scope.company_name = ''; 
         $('#stock_search_overlay').css('display', 'none');
         $('.popup').css('display', 'none');
+
     }
     $scope.add_stock = function(){
         console.log('in add stock');
@@ -519,6 +523,8 @@ function SearchViewController($scope, $http) {
         $('.help_popup').css('display', 'block');
     }
     $scope.hide_popup = function(){
+        $scope.companies = [];
+        $scope.company_name = '';
         $('#stock_search_overlay').css('display', 'none');
         $('.help_popup').css('display', 'none');
     }

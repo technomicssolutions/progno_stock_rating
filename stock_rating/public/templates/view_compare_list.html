@@ -23,17 +23,17 @@
 			<div class="col-md-12">
 				<table class="table table-striped list_table">
 					<tr>
-						<th></th>
+						<th style="width:auto;"></th>
 						<th ng-repeat="company in compare_list"><a href="" class="white_text" ng-click="change_stock(company);">Change Stock</a></th>
 						<th ng-repeat="i in range(4-compare_list.length) track by $index"></th>
 					</tr>
 					<tr>
-						<td></td>
+						<td style="width:auto;"></td>
 						<td ng-repeat="company in compare_list"> [[company.company_name]] <a href="{% url 'delete_from_compare_list' %}?isin_code=[[company.isin_code]]" > &nbsp; X </a> </td>
 						<td ng-repeat="i in range(4-compare_list.length) track by $index" ng-click="add_stock();">Add Stock</td>
 					</tr>
 					<tr>
-						<td>
+						<td style="width:auto;">
 							<p> &nbsp; </p>
 							<p> StocklabScore </p>
 							<p> Industry </p>
@@ -47,7 +47,7 @@
 					</tr>
 					<tbody>
 						<tr ng-repeat="head in analytical_heads">
-							<td>
+							<td style="width:auto;">
 								<p><b>[[head.head_name]]</b></p>
 								<div class="function_score"> 
 									<p ng-repeat="function in head.functions">[[function]]</p>
