@@ -93,16 +93,6 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
-MIDDLEWARE_CLASSES = (
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
-
 ROOT_URLCONF = 'stock_rating.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -187,7 +177,8 @@ FACEBOOK_EXTENDED_PERMISSIONS = ['email', 'user_birthday', 'user_likes', 'publis
 SOCIAL_AUTH_FACEBOOK_EXTRA_DATA = [('gender', 'gender'),('birthday', 'birthday'), ('location','location')]
 
 LOGIN_URL          = '/login/'
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/fb_login_redirect/'
+
 
 RECAPTCHA_PUBLIC_KEY = '6Ld2gvwSAAAAAFGdHMT6dgfDxL5JUOW4Z_SNAIgo'
 RECAPTCHA_PRIVATE_KEY = '6Ld2gvwSAAAAAElFWJenb8JTeoDW5v2a6JFlPNS5'
