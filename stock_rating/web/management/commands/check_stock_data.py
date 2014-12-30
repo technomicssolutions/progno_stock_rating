@@ -35,16 +35,16 @@ class Command(BaseCommand):
                     if stock_data[k] == "":
                         unavailable_data.append(k)
                 company.unavailable_data = unavailable_data
+                if len(unavailable_data) == 0:
+                    company.is_all_data_available = True
+                else:
+                    company.is_all_data_available = False
+                    company.companyfunctionscore_set.all().delete()
+                    company.companymodelfunctionpoint_set.all().delete()
+                    company.companymodelscore_set.all().delete()
             else:
-                company.unavailable_data = ['No data available']
-                company.is_all_data_available = False
-            if len(unavailable_data) == 0:
-                company.is_all_data_available = True
-            else:
-                company.is_all_data_available = False
-                company.companyfunctionscore_set.all().delete()
-                company.companymodelfunctionpoint_set.all().delete()
-                company.companymodelscore_set.all().delete()
+                company.unavailable_data = []
+                company.is_all_data_available = False            
             company.save()
 
                         

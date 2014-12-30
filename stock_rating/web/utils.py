@@ -109,14 +109,24 @@ def create_stock_data(data_file):
                                 company_stock.stock_data = {}                            
                             company_stock.stock_data[labels[i]] = row[i]
                             company_stock.created_by = data_file.uploaded_by
-                            company_stock.save()
-                            if row[i] == '' and len(row[i]) <= 0:
-                                company.unavailable_data.append(labels[i])
-                            if len(company.unavailable_data) > 0:
-                                company.is_all_data_available = False
-                            else:
-                                company.is_all_data_available = True
-                            company.save()
+                            company_stock.save() 
+                if company_stock:
+                    unavailable_data = []
+                    stock_data = company_stock.stock_data
+                    for k in stock_data:
+                        if stock_data[k] == "":
+                            unavailable_data.append(k)
+                    if len(unavailable_data) > 0:
+                        company.is_all_data_available = False
+                    else:
+                        company.is_all_data_available = True
+                    company.unavailable_data = unavailable_data                           
+                    company.save()
+                else:
+                    company.is_all_data_available = False
+                    company.unavailable_data = []                           
+                    company.save()
+
     data_file.processing_completed = True
     data_file.save()
 
