@@ -8,7 +8,7 @@ from views import (Login,Logout, Dashboard, Administration, Users, SaveUser, Res
     ModelDetails, DeleteParameter, DataUpload, AnalyticalHeads, DeleteHead, FieldMapping, \
     FileFields, OperatorsView, Companies, DeleteFunction, ModelStarRating, SaveModelStarRating, \
     RatingReport, DeleteRating, FieldsWithMapping, DeleteDataFile, RatingReportByStarCount, \
-    RatingXML, progno_login_required)
+    RatingXML, progno_login_required, CompanyModelStarRating)
 
 LOGIN_URL = '/progno/login/'
 
@@ -57,7 +57,8 @@ urlpatterns = patterns('',
     url(r'rating_report_by_starcount/$', progno_login_required(RatingReportByStarCount.as_view(), login_url= LOGIN_URL), name="rating_report_by_starcount"),
     url(r'rating_report/$', progno_login_required(RatingReport.as_view(), login_url= LOGIN_URL), name="rating_report"),
     url(r'fields_with_mapping/$', progno_login_required(FieldsWithMapping.as_view(), login_url= LOGIN_URL), name="fields_with_mapping"),
-    url(r'rating_xml/$', progno_login_required(RatingXML.as_view(), login_url= LOGIN_URL), name="rating_xml"),        
+    url(r'rating_xml/$', progno_login_required(RatingXML.as_view(), login_url= LOGIN_URL), name="rating_xml"), 
+    url(r'company_model_starrating/$', progno_login_required(CompanyModelStarRating.as_view(), login_url= LOGIN_URL), name="company_model_starrating"),       
 )
 
 
