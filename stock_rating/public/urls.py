@@ -6,7 +6,8 @@ from django.views.decorators.vary import vary_on_headers
 from views import (Login, Logout, Home, Signup, StarRating, StarRatingReport, \
 	VerifyRecaptcha, AddToWatchlist, AddToComparelist, ViewWatchList, public_login_required,\
      ViewCompareList, SearchResult, SearchCompany, DeleteFromCompareList, ChangeCompareList, \
-     HelpView, ActivateAccount, TermsOfUse, Disclaimer, PrivacyPolicy, FBLoginRedirect)
+     HelpView, ActivateAccount, TermsOfUse, Disclaimer, PrivacyPolicy, FBLoginRedirect, ForgotPassword,\
+     ResetPassword)
 
 LOGIN_URL = '/login/'
 
@@ -34,6 +35,8 @@ urlpatterns = patterns('',
     url(r'^terms_of_use/$', TermsOfUse.as_view(), name="terms_of_use"),
     url(r'^disclaimer/$', Disclaimer.as_view(), name="disclaimer"),
     url(r'^privacy_policy/$', PrivacyPolicy.as_view(), name="privacy_policy"),
+    url(r'^forgot_password/$', ForgotPassword.as_view(), name="forgot_password"),
+    url(r'^reset_password/$', ResetPassword.as_view(), name="reset_password"),
 )
 
 
