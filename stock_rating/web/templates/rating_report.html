@@ -48,6 +48,8 @@
 					<th> Brief Comment </th>
 					<th> Detailed Comment </th>
 					<th> &nbsp; </th>
+					<th> &nbsp; </th>
+					<th> &nbsp; </th>
 				</tr>
 				<tr ng-repeat="rating in star_ratings">
 					<td ng-show="rating.message.length == 0">[[rating.company_name]]</td>
@@ -64,6 +66,7 @@
 					</td>
 					<td ng-show="rating.message.length == 0"> <input type="button" value="X" ng-click="remove_search_result($index)" /> </td>
 					<td ng-show="rating.message.length > 0" colspan="7" align="center" class="error_msg">[[rating.message]]</td>
+					<td align="center" ><a href="{% url 'company_model_starrating' %}?isin_code=[[rating.isin_code]]"> Recalculate Rating </a></td>
 				</tr>
 			</table>
 		</div>
