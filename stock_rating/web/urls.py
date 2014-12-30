@@ -59,7 +59,7 @@ urlpatterns = patterns('',
     url(r'fields_with_mapping/$', progno_login_required(FieldsWithMapping.as_view(), login_url= LOGIN_URL), name="fields_with_mapping"),
     url(r'rating_xml/$', progno_login_required(RatingXML.as_view(), login_url= LOGIN_URL), name="rating_xml"), 
     url(r'company_model_starrating/$', progno_login_required(CompanyModelStarRating.as_view(), login_url= LOGIN_URL), name="company_model_starrating"),       
-    url(r'delete_data_file/$', progno_login_required(DeleteDataFile.as_view(), login_url= LOGIN_URL), name="delete_data_file"),       
+    url(r'delete_data_file/(?P<file_id>\d+)$', progno_login_required(DeleteDataFile.as_view(), login_url= LOGIN_URL), name="delete_data_file"),       
 
 )
 
