@@ -43,8 +43,9 @@ hdr = {'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML,
        'Accept-Charset': 'ISO-8859-1,utf-8;q=0.7,*;q=0.3',
        'Accept-Encoding': 'none',
        'Accept-Language': 'en-US,en;q=0.8',
-       'Connection': 'keep-alive'
-       }
+       'Connection': 'keep-alive',
+       'Vary':'User-Agent'
+      }
 base_url = "http://www.nseindia.com/content/historical/EQUITIES/" #2014/OCT/cm29OCT2014bhav.csv.zip"
 date = datetime.now().date()
 directory = str(date.year)+"/"+month[str(date.month)]+"/"
