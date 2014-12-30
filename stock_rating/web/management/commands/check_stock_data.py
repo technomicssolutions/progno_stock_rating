@@ -23,7 +23,7 @@ month = {
 }
 
 class Command(BaseCommand):
-    help = "Check is all data is_all_data_available"
+    help = "Check if all data is available"
 
     def handle(self, *args, **options):
         companies = Company.objects.all()

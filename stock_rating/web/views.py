@@ -1106,7 +1106,6 @@ class CompanyModelStarRating(View):
         for k in stock_data:
             if stock_data[k] == "":
                 unavailable_data.append(k)
-        print unavailable_data
         company.unavailable_data = unavailable_data
         if len(unavailable_data) == 0:
             company.is_all_data_available = True

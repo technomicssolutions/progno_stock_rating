@@ -1,6 +1,7 @@
 from django.contrib import admin
 from web.models import *
 
+import xml.etree.cElementTree as ET
 
 def export_csv(modeladmin, request, queryset):
     import csv
@@ -77,6 +78,43 @@ def export_xls(modeladmin, request, queryset):
     
 export_xls.short_description = u"Export XLS"
 
+def export_xml(modeladmin, request, queryset):
+    response = HttpResponse(mimetype='application/xml')
+    response['Content-Disposition'] = 'attachment; filename=stocks.xml'
+    root = ET.Element("COMPANIES")
+    for obj in queryset:
+        model_score = CompanyModelScore.objects.filter(company=obj)
+        if model_score.count() > 0:
+            score = str(model_score[0].points)
+            stars = str(model_score[0].star_rating.star_count)
+            brief_comment = str(model_score[0].star_rating.comment)
+        else:
+            score = ''
+            stars = ''
+            brief_comment = ''
+        doc = ET.SubElement(root, "Company")
+
+        field1 = ET.SubElement(doc, "Name")
+        field1.text = obj.company_name
+
+        field2 = ET.SubElement(doc, "ISIN")
+        field2.text = obj.isin_code
+
+        field3 = ET.SubElement(doc, "Score")
+        field3.text = score
+
+        field4 = ET.SubElement(doc, "Stars")
+        field4.text = stars
+
+        field5 = ET.SubElement(doc, "BriefComment")
+        field5.text = brief_comment
+
+    tree = ET.ElementTree(root)
+    tree.write(response)
+    return response
+
+export_xml.short_description = u"Export XML"
+
 # def export_xlsx(modeladmin, request, queryset):
 #     import openpyxl
 #     from openpyxl.cell import get_column_letter
@@ -121,10 +159,8 @@ class UserPermissionAdmin(admin.ModelAdmin):
 class CompanyAdmin(admin.ModelAdmin):
     search_fields = ['industry__industry_name', 'company_name', 'isin_code']
     list_filter = ('is_all_data_available',)
-    actions = [export_csv, export_xls]
+    actions = [export_csv, export_xls, export_xml]
         
-
-
 class IndustryAdmin(admin.ModelAdmin):
     search_fields = ['industry_name']
 
