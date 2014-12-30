@@ -567,6 +567,8 @@ footer a {
     position: absolute;
     width: 95%;
     z-index: 2;
+    max-height: 170px;
+    overflow-y: auto;
 }
 .search_div ul li{
 	width: 100%;
