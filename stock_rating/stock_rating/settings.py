@@ -118,6 +118,8 @@ INSTALLED_APPS = (
     'public',
     'social_auth',
 )
+INSTALLED_APPS = ("longerusername",) + INSTALLED_APPS
+MAX_USERNAME_LENGTH = 200
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
