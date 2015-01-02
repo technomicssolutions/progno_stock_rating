@@ -90,6 +90,7 @@ def process_company_file(data_file):
 def create_stock_data(data_file):
     for sheet in data_file.sheets:
         company_stock = None
+        company = None
         if len(sheet['rows']) > 0:
             labels = sheet['rows'][0]
             for row in sheet['rows']:
@@ -123,9 +124,10 @@ def create_stock_data(data_file):
                     company.unavailable_data = unavailable_data                           
                     company.save()
                 else:
-                    company.is_all_data_available = False
-                    company.unavailable_data = []                           
-                    company.save()
+                    if company:
+                        company.is_all_data_available = False
+                        company.unavailable_data = []                           
+                        company.save()
 
     data_file.processing_completed = True
     data_file.save()
