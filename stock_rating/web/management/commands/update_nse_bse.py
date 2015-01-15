@@ -36,7 +36,7 @@ class Command(BaseCommand):
 
 def get_bse_price():
     date = datetime.now().date()
-    date = date + timedelta(days=-1)
+    #date = date + timedelta(days=-1)
     hdr = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.64 Safari/537.11',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -114,9 +114,8 @@ def get_nse_price():
         }
         base_url = "http://www.nseindia.com/content/historical/EQUITIES/" #2014/OCT/cm29OCT2014bhav.csv.zip"
         date = datetime.now().date()
-        date = date + timedelta(days=-1)
+        #date = date + timedelta(days=-1)
         directory = str(date.year)+"/"+month[date.month]+"/"
-        print directory
         day = date.day
         if day < 10:
             day = "0"+str(day)
