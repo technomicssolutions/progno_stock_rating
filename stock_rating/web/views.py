@@ -1068,8 +1068,9 @@ class OperatorsView(View):
 
 class DeleteFunction(View):
     def get(self, request, *args, **kwargs):
-        function = Function.objects.get(id=kwargs['function_id'])
-        function.delete()
+        function = Function.objects.get(id=int(kwargs['function_id']))
+        formula = function.formula
+        formula.delete()
         return HttpResponseRedirect(reverse('function_settings'))
 
 class DeleteDataFile(View):
