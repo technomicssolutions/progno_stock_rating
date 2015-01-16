@@ -147,7 +147,7 @@
 				<th> Modified </th>
 				<th> Action </th>
 			</tr>
-			<tr ng-repeat="function in functions">
+			<tr ng-repeat="function in visible_list">
 				<td> [[($index)+((current_page-1)*page_interval)+1]] </td>
 				<td>[[ function.name ]]</td>
 				<td>[[ function.head ]]</td>

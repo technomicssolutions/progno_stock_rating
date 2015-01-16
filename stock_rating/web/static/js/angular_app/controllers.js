@@ -5,6 +5,7 @@ function paginate(list, $scope, page_interval) {
         $scope.page_interval = 20;
     else 
         $scope.page_interval = page_interval;
+    console.log($scope.page_interval)
     $scope.current_page = 1;
     $scope.pages = list.length / $scope.page_interval;
     if($scope.pages > parseInt($scope.pages))
@@ -430,7 +431,6 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         $scope.test = ['sd', '+', 'dg'].join(' ');
     }
     $scope.change_type = function(type){
-        console.log('type', type);
         $scope.select_type = type;
         if(type == 1)
         {
@@ -886,6 +886,7 @@ function FunctionController($scope, $element, $http, $timeout, $location)
         show_loader();
         $http.get(url).success(function(data) {
             $scope.functions = data.functions;
+            console.log(data.functions.length);
             paginate($scope.functions, $scope);
             hide_loader();
         })
