@@ -72,14 +72,20 @@ def process_company_file(data_file):
             company_name = worksheet.cell_value(curr_row, 0)
             industry = worksheet.cell_value(curr_row, 1)
             isin = worksheet.cell_value(curr_row, 2)
+            bse_code = worksheet.cell_value(curr_row, 3)
             industry, created = Industry.objects.get_or_create(industry_name=industry)
             industry.created_by = data_file.uploaded_by
             industry.save()
             try:
                 company = Company.objects.get(isin_code=isin)
             except:
-                company = Company()
-                company.isin_code = isin
+                try:
+                    company = Company.objects.get(company_name=company_name)    
+                except:
+                    company = Company()
+            company.isin_code = isin
+            if bse_code:
+                company.BSE_code = int(bse_code)
             company.industry = industry
             company.company_name = company_name
             company.created_by = data_file.uploaded_by
@@ -135,12 +141,16 @@ def create_stock_data(data_file):
 def calculate_general_function_score(function, company):
     stock = CompanyStockData.objects.get(company=company)
     stock = stock.stock_data
+    print "function=================", function
     function_operands = function.formula.operands.all()
+    print function_operands
+
     formula = function.formula.formula_string    
     function_value = ''
     for operand in function_operands:
         mapping = FieldMap.objects.get(data_field = operand)
         key_name = mapping.file_field
+        print key_name, stock[key_name]
         if stock[key_name] != '':
             vars()[operand.name] = float(stock[key_name])
         else:
@@ -170,7 +180,6 @@ def calculate_consistency_function_score(function, company):
         try:
             value = CompanyFunctionScore.objects.get(function=fun, company=company)     
             value = value.score       
-            print fun, value
         except:
             value = calculate_general_function_score(fun, company)        
         operands_sum = operands_sum + value
