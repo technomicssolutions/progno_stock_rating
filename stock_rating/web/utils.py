@@ -112,7 +112,8 @@ def create_stock_data(data_file):
                             continue
                     else:
                         if company_stock:
-                            company_stock.stock_data = {}                            
+                            if company_stock.stock_data == None:
+                                company_stock.stock_data = {}                            
                             company_stock.stock_data[labels[i]] = row[i]
                             company_stock.created_by = data_file.uploaded_by
                             company_stock.save() 
