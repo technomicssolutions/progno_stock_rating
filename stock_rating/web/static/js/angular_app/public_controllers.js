@@ -139,6 +139,7 @@ function LoginRegistrationController($scope, $element, $http, $timeout, $locatio
     $scope.save_new_user = function(){
         $scope.msg = '';
         $scope.new_user.terms = String($scope.new_user.terms);
+        console.log($scope.new_user)
         params = { 
             'user_details': angular.toJson($scope.new_user),
             "csrfmiddlewaretoken" : $scope.csrf_token,

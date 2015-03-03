@@ -153,7 +153,14 @@ class Signup(View):
             next_url = '/'
         if request.is_ajax():
             user_details = ast.literal_eval(request.POST['user_details'])
-            user = User()
+            user,created = User.objects.get_or_create(username=user_details['username'])
+            if not created:
+                res = {
+                    'result': 'error',
+                    'message': 'user already exist',
+                }
+                response = simplejson.dumps(res)
+                return HttpResponse(response, status=200, mimetype='application/json')
             user.username = user_details['username']
             user.first_name = user_details['fullname']
             user.email = user_details['username']

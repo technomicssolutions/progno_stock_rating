@@ -1,5 +1,4 @@
 
-
 function paginate(list, $scope, page_interval) {
     if(!page_interval)
         $scope.page_interval = 20;
@@ -41,8 +40,7 @@ function show_dropdown(){
 function hide_dropdown(){
     $('#dropdown_menu').css('display', 'none');
 }
-function DashboardController($scope, $element, $http, $timeout, $location)
-{
+function DashboardController($scope, $element, $http, $timeout, $location){
     $scope.init = function(user){
         $scope.user_id = user;
         $scope.show_popup = false;
@@ -69,8 +67,7 @@ function DashboardController($scope, $element, $http, $timeout, $location)
     }
 }
 
-function AdministrationController($scope, $element, $http, $timeout, $location)
-{
+function AdministrationController($scope, $element, $http, $timeout, $location){
     $scope.init = function(csrf_token){
         $scope.csrf_token = csrf_token;
         $scope.show_popup = false;
@@ -259,8 +256,7 @@ function AdministrationController($scope, $element, $http, $timeout, $location)
     }
 }
 
-function FieldController($scope, $element, $http, $timeout, $location)
-{
+function FieldController($scope, $element, $http, $timeout, $location){
     $scope.new_field = {
         'field_name': '',
         'field_description': '',
@@ -1679,8 +1675,7 @@ function DataUploadController($scope, $element, $http, $timeout, $location)
         return new Array(n);
     }
 }
-function FieldMappingController($scope, $element, $http, $timeout, $location)
-{
+function FieldMappingController($scope, $element, $http, $timeout, $location){
     $scope.init = function(csrf_token, mapping_status){
         $scope.csrf_token = csrf_token;
         $scope.hide_dropdown();
